@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes" />
+	<!--以上勿動 -->
+
+	<title>跑步遊戲測試</title>
+	<style type="text/css">
+		body {margin:0; padding:0;font-family:Arial,SimHei;font-size:63%;background :url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpiZGBgOMOABpgYsAAKBQECDABS8gDW/CaiEQAAAABJRU5ErkJggg==") ; background-size : 5px 5px;}
+
+		img { 
+  			border:none ; 
+  			vertical-align:top
+		}
+		
+		#camain {
+			width: 580px;
+			height: 860px;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			margin-left: -290px;
+			margin-top: -430px;
+			z-index: 5;
+	
+			background-color:#D3D3D3;
+			overflow: hidden;	
+		}
+		#camain > div{ 
+	 		position:absolute ;	 
+			animation-fill-mode:forwards;        
+	 		-webkit-animation-fill-mode:forwards;        
+		}
+		#click, #customClick{ /*點擊區塊*/
+			width:580px; 
+			height:860px;
+		}
+
+		.playground{ position: relative; width: 580px; height: 360px; background: url(images/ground.png); } 
+		.playground #gameTime { position: absolute; color: #FFF; top: 24px; left: 264px; text-align: center; width: 50px;}
+		.playground #runMan{position: absolute; width: 84px; height: 126px; top: 180px; left: 90px; background-image: url(images/guligo.png); background-size: auto 100%; background-position: left top; }
+		.playground #runMan.R {background-position: right top; }
+		.playground #finishT { display: none; position: absolute; color: #FFF; font-size: 80px; width: 300px; height: 100px; left: 50%; top:50%; margin-left: -150px; margin-top: -30px;text-shadow: 5px 5px 20px #000000;}
+		
+		.controlPanel{ position: relative; width: 580px; height: 500px; background: #d85f69; border-top: 2px dashed #000 ; overflow: hidden;}
+		.controlPanel #goal{ position: absolute; top: 10px; width: 580px; height: 120px; background: url(images/goal.png) repeat center top; }
+		.controlPanel .edge{ position: absolute; width: 10px; height: 500px; background: #F8F8F8; }
+		.controlPanel .edge.R{ right: 20px; }
+		.controlPanel .edge.L{ left: 20px; }
+
+		.controlPanel .edgeBlock{ position: absolute; width: 12px; height: 200px; background: #600; top: 250px; }
+		.controlPanel .edgeBlock.R{ right: 19px; }
+		.controlPanel .edgeBlock.L{ left: 19px; }
+
+		.controlPanel .tip {position: absolute; width: 55px; height: 361px; background: url(images/arrow.png);}
+		.controlPanel .tip.R {
+			right: 160px;
+		    -webkit-animation: tipMoveR 1.5s linear infinite;
+			-moz-animation: tipMoveR 1.5s linear infinite;
+			-o-animation: tipMoveR 1.5s linear infinite;
+			animation: tipMoveR 1.5s linear infinite;
+		}
+		@-webkit-keyframes tipMoveR {
+			0% { top: 100px;}
+			50% { top: 50px;}
+			100% { top: 100px;}
+		}
+		@-moz-keyframes tipMoveR {
+			0% { top: 100px;}
+			50% { top: 50px;}
+			100% { top: 100px;}
+		}
+		@-o-keyframes tipMoveR {
+			0% { top: 100px;}
+			50% { top: 50px;}
+			100% { top: 100px;}
+		}
+		@keyframes tipMoveR {
+			0% { top: 100px;}
+			50% { top: 50px;}
+			100% { top: 100px;}
+		}
+
+		.controlPanel .tip.L {
+			left: 160px;
+		    -webkit-animation: tipMoveL 1.5s linear infinite;
+			-moz-animation: tipMoveL 1.5s linear infinite;
+			-o-animation: tipMoveL 1.5s linear infinite;
+			animation: tipMoveL 1.5s linear infinite;
+		}
+		@-webkit-keyframes tipMoveL {
+			0% { top: 50px;}
+			50% { top: 100px;}
+			100% { top: 50px;}
+		}
+		@-moz-keyframes tipMoveL {
+			0% { top: 50px;}
+			50% { top: 100px;}
+			100% { top: 50px;}
+		}
+		@-o-keyframes tipMoveL {
+			0% { top: 50px;}
+			50% { top: 100px;}
+			100% { top: 50px;}
+		}
+		@keyframes tipMoveL {
+			0% { top: 50px;}
+			50% { top: 100px;}
+			100% { top: 50px;}
+		}
+
+		.controlPanel #panArea {position: absolute; width: 100%; height: 100%; background: rgba(0, 255,255,0); z-index: 999;}
+	</style>
+</head>
+<body>
+	<!--crazyad必留，用來包所有div -->
+	<div id="crazyad">
+  		<!--camain必留，用來包所有關閉按鈕close和主要點選區塊click -->
+  		<div id="camain">
+    		<!--若畫面區塊要讓使用者點選，click必留-->
+    		<div id="customClick">  
+				<div class="playground">
+					<div id="gameTime">00:00</div>
+					<div id="runMan"></div>
+					<div id="finishT">FINISH</div>
+				</div>
+
+				<div class="controlPanel">
+					<div class="edge R"></div>
+					<div class="edge L"></div>
+
+					<div class="edgeBlock R"></div>
+					<div class="edgeBlock L"></div>
+					<div id="goal"></div>
+
+					<div class="tip R"></div>
+					<div class="tip L"></div>
+					<div id="panArea"></div>
+				</div>
+    		</div>
+  		</div>
+	</div>
+	<!--勿動 -->
+	<script type="text/javascript" src="http://m.vpadn.com/tpl/html5/vpadn-logo-728x90_mb.js"></script>
+	<script type="text/javascript" src="http://m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+	<script type="text/javascript">
+		var Timer;
+		var beginTime;
+		var edgeTop = 250;
+		var goalTop = 10;
+		var hammertime;
+		var preDeltaY = 0;
+		var moveStep = 0;
+		var stepCount = 8000;
+		var $runMan = $('#runMan');
+
+		var enterFrame = function(){
+			if (Timer) window.cancelAFrame(Timer);
+
+			if(moveStep > 0) $runMan.toggleClass('R');
+			stepCount -= moveStep;
+			if(stepCount > 6000){
+				$runMan.css({'top':'180px','left': parseInt(90 + ((8000-stepCount)/2000)*300) + 'px'});
+			}else if(stepCount > 5000){
+				$runMan.css({
+					'top': parseInt(130 + Math.cos((6000-stepCount)*0.18*(Math.PI/180))*50)+ 'px',
+					'left': parseInt(390 + Math.sin((6000-stepCount)*0.18*(Math.PI/180))*50)+ 'px'
+				});
+			}else if(stepCount > 3000){
+				$runMan.css({'top':'80px','left': parseInt(390 - ((5000-stepCount)/2000)*300) + 'px'});
+			}else if(stepCount > 2000){
+				$runMan.css({
+					'top': parseInt(35 + Math.cos((3000-stepCount)*0.18*(Math.PI/180))*45)+ 'px',
+					'left': parseInt(90 - Math.sin((3000-stepCount)*0.18*(Math.PI/180))*45)+ 'px'
+				});
+			}else{
+				$runMan.css({'top':'-10px','left': parseInt(90 + ((2000-stepCount)/2000)*400) + 'px'});
+			}
+
+
+			edgeTop += moveStep;
+			if(edgeTop > 700) edgeTop = -200;
+			$('.edgeBlock').css('top', edgeTop + 'px');
+
+			goalTop += moveStep;
+			if(goalTop > 1000 && stepCount < 500) goalTop = -120;
+			$('#goal').css('top', goalTop + 'px');
+
+			moveStep = 0;
+			gametime_Counter();
+			if(stepCount > 0) Timer = window.requestAFrame(enterFrame);
+			else $('#finishT').fadeIn(500);
+		}
+
+		var gametime_Counter = function() {
+			var nowTime = new Date();
+
+			var timeDiff=nowTime-beginTime;
+
+			var leftMins=Math.floor(timeDiff/(1000*60));
+			if (leftMins > 0) timeDiff=timeDiff-(leftMins*(1000*60));
+
+			var leftSecs = Math.floor(timeDiff/1000);
+
+			$('#gameTime').html(strRight('00'+leftMins, 2) + ':' + strRight('00'+leftSecs, 2));
+		}
+
+		window.onload = function () {
+			hammertime = new Hammer($('#panArea')[0], {
+            	preventDefault: true
+        	});
+            hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+            hammertime.on('panend pandown', function (e) {
+                e.preventDefault();
+
+				if(e.deltaY - preDeltaY > 0) moveStep = e.deltaY - preDeltaY;
+				preDeltaY = e.deltaY;
+				if(e.type == 'panend') preDeltaY = 0;
+				
+            });
+
+			beginTime = new Date();
+			enterFrame();
+		};
+		
+		//各 Browsers 的 requestAnimationFrame() 處理==========================================================
+		window.requestAFrame = (function () {
+			return window.requestAnimationFrame ||
+					window.webkitRequestAnimationFrame ||
+					window.mozRequestAnimationFrame ||
+					window.oRequestAnimationFrame ||
+					// if all else fails, use setTimeout
+					function (callback) {
+						return window.setTimeout(callback, 1000 / 60); // shoot for 60 fps
+					};
+		})();
+
+		//各 Browsers 的 cancelAnimationFrame() 處理==========================================================
+		window.cancelAFrame = (function () {
+			return window.cancelAnimationFrame ||
+					window.webkitCancelAnimationFrame ||
+					window.mozCancelAnimationFrame ||
+					window.oCancelAnimationFrame ||
+					function (id) {
+						window.clearTimeout(id);
+					};
+		})();
+
+		//字串取右邊
+		var strRight = function (str, num) {
+			return str.substring(str.length - num, str.length);
+		}
+	</script>
+</body>
+</html>

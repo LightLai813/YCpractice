@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>VPON｜臉部表情自由拉扯</title>
+    <style>
+        html, body{ margin: 0; width: 100%; height: 100%;}
+        body{ background: #000;}
+
+        #faceBlock{
+            position: relative;
+            margin: 50px auto;
+            width:500px;
+            height:500px;
+             z-index: 1;
+        }
+
+         #threejsArea{
+            position: absolute;
+            width:500px;
+            height:500px;
+            z-index: 1;
+        }
+
+        #panArea{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            cursor: pointer;
+            /*background: rgba(0, 255, 255, 0.5);*/
+        }
+
+        canvas.gifFrame{
+            position: absolute;
+            top: -2000px;
+            width: 500px;
+            height: 500px;
+        }
+
+        #BTN_trangif{
+            display: inline-block;
+
+            -webkit-border-radius: 5px; 
+            -moz-border-radius: 5px; 
+            -o-border-radius: 5px; 
+            border-radius: 5px; 
+            text-align: center; 
+            padding: 30px; 
+            font-size: 1.5em; 
+            font-weight:500; 
+            cursor: pointer; 
+
+            color: #FFF; 
+            background: #474a4d;
+            border: 2px solid #999;
+            -webkit-text-decoration: none;
+            -moz-text-decoration: none;
+            -o-text-decoration: none;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="faceBlock">
+        <div id="threejsArea"></div>
+        <div id="panArea"></div>
+    </div>
+    <div id="BTN_trangif">輸出GIF</div>
+    <img id="IMG_Result" />
+
+    <script src="http://m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="scripts/three.min.js"></script>
+    <script type="text/javascript" src="scripts/b64.js"></script>
+    <script type="text/javascript" src="scripts/LZWEncoder.js"></script>
+    <script type="text/javascript" src="scripts/NeuQuant.js"></script>
+    <script type="text/javascript" src="scripts/GIFEncoder.js"></script>
+    <script type="text/javascript" src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+    <script src="socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        var socket;
+
+        //設定Threejs
+        var container = document.getElementById('threejsArea');     //three.js 容器
+        var camera, scene, renderer;                                //three.js 必要物件
+        var planeGeo = new THREE.PlaneGeometry(500, 500, 100, 100); //平面物件
+
+        //設定Hammer
+        var hammertime = new Hammer(document.getElementById('panArea'), { preventDefault: true }); 
+        var prePos = { x: 0, y: 0};     //記錄上一刻的座標
+        var effectRang = 30;            //影響範圍
+        var movePoints = new Array();   //要移動的點
+        var points = function(index, factor){   //點的內容
+            this.index = index,
+            this.moveFactor = factor*0.1;
+        }
+
+        //設定encode
+        var gifEncoder = new GIFEncoder();
+        gifEncoder.setRepeat(0);
+        gifEncoder.setDelay(33);
+        gifEncoder.setSize(500,500);
+        gifEncoder.start();
+
+        var gifFrameList = [];
+
+        var init = function(){
+            //建立three.js環境
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(53, 1, 1, 1000);
+
+            var light = new THREE.AmbientLight(0x404040);
+            scene.add(light);
+
+            var texture = THREE.ImageUtils.loadTexture('normal.jpg', {}, function() {
+                renderer.render(scene, camera);
+            });
+
+            var material = new THREE.MeshBasicMaterial({
+                map: texture, 
+                color: 0xFFFFFF,
+                transparent: true,
+                wireframe: false
+            })
+
+            var mesh = new THREE.Mesh(planeGeo, material);
+            mesh.position.z = -500;
+            scene.add(mesh);
+
+            renderer = new THREE.WebGLRenderer({alpha: true});
+            renderer.setSize(500, 500);
+
+            renderer.setClearColor(0x000000, 1);
+            container.appendChild(renderer.domElement);
+            renderer.render(scene, camera);
+
+            //設定hammer
+            hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL});
+            hammertime.on('panmove panstart panend', function(e) {
+
+                //移動目前的點
+                if(e.type=='panmove'){
+                    var moveDist = {
+                        x: e.deltaX - prePos.x,
+                        y: e.deltaY - prePos.y
+                    } ;
+
+                    for(var i=0,point; point=movePoints[i]; i++){
+                        planeGeo.vertices[point.index].x += moveDist.x*point.moveFactor;
+                        planeGeo.vertices[point.index].y -= moveDist.y*point.moveFactor;
+                    }
+
+                    planeGeo.verticesNeedUpdate = true;
+                    renderer.render(scene, camera);
+                }
+
+                //重新設定下一次要用的點
+                var mousePoint = {
+                    x: e.pointers[0].layerX-250,
+                    y: -e.pointers[0].layerY+250
+                };
+                setMovePoints(mousePoint);
+                prePos = e.type=='panstart' ? {x: 0, y: 0} : {x: e.deltaX, y: e.deltaY};
+
+                if(e.type=='panmove') addGifFrame();
+            });
+
+            $('#BTN_trangif').unbind().bind('click',createGif);
+        }
+
+        var addGifFrame = function(){
+            var canvas = document.createElement('canvas');
+            canvas.className='gifFrame';
+            canvas.width = 500;
+            canvas.height = 500;
+            document.body.appendChild(canvas);  
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(renderer.domElement, 0, 0);
+            gifFrameList.push(ctx);
+        }
+
+        var createGif = function(){
+            for(var i=0,ctx; ctx=gifFrameList[i]; i+=5){
+                gifEncoder.addFrame(ctx);
+                console.log(i);
+            }
+            for(var i=gifFrameList.length-1,ctx; ctx=gifFrameList[i]; i-=5){
+                gifEncoder.addFrame(ctx);
+                console.log(i);
+            }
+            gifEncoder.finish();
+            
+
+            //建立socket.io
+            socket = io.connect('192.168.168.123:20001',{'force new connection':true, 'reconnect':false});
+
+            socket.on('GIFComplete', function (data) {
+                //console.log(location.href + 'gif/' + data.imgID);
+                $('#IMG_Result').attr('src','gif/' + data.imgID);
+            });
+
+            socket.emit('saveGif', {
+                imgID: (+new Date()),
+                file: 'data:image/gif;base64,'+encode64(gifEncoder.stream().getData())
+            });
+        }
+
+        var setMovePoints = function(mousePos){
+            movePoints = [];
+            for (var i = 0, len = planeGeo.vertices.length; i < len; i++) {
+                var distance = pointsDistance(mousePos, planeGeo.vertices[i]);
+                if(distance < effectRang){
+                    movePoints.push(new points(i, (distance/effectRang)));
+                }
+            }
+        }
+
+        var pointsDistance = function(P1, P2){
+            var disX =  P1.x - P2.x;
+            var disY =  P1.y - P2.y;
+            return Math.sqrt(disX*disX + disY*disY);
+        }
+
+        var getTheta = function(center, end) {
+            var dx = end.x - center.x;
+            var dy = end.y - center.y;
+            var theta = Math.atan2(dy, dx); // effectRange (-PI, PI]
+            theta *= 180 / Math.PI; // rads to degs, effectRange (-180, 180]
+            return theta;
+        }
+
+        init();
+    </script>
+</body>
+</html>

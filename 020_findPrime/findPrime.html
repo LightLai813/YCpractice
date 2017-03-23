@@ -1,0 +1,36 @@
+<html>
+<head>
+</head>
+<body>
+    <script type="text/javascript">
+        var intoNum = 100000;
+        var primeArray = [3];
+        var findTheMaxPrime = function(num){
+            console.log(+(new Date()));
+            primeArray = [3];
+            if(num%2==0) num--;
+            for(var i=5;i<num;i+=2){
+                var isPrime=true;
+                for(var j=0, divisor;divisor=primeArray[j];j++){
+                    if(i%divisor==0){
+                        isPrime=false;
+                        break;
+                        
+                    }
+                }
+                if (isPrime) primeArray.push(i);
+            }
+            console.log(+(new Date()));
+            console.log(primeArray);
+        }
+
+        // var isPrime = function (num){
+        //     for (var i = 2; i < Math.sqrt(num); i++) {
+        //         if (num % i == 0) return false;
+        //     }
+        //     return true;
+        // }
+        findTheMaxPrime(intoNum);
+    </script>
+</body>
+</html>

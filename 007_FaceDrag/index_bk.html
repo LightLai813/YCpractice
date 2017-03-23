@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>VPON｜臉部表情自由拉扯</title>
+    <style>
+        html, body{ margin: 0; width: 100%; height: 100%;}
+        body{ background: #000;}
+
+        #faceBlock{
+            position: relative;
+            margin: 50px auto;
+            width:500px;
+            height:500px;
+             z-index: 1;
+        }
+
+         #threejsArea{
+            position: absolute;
+            width:500px;
+            height:500px;
+            z-index: 1;
+        }
+
+        #panArea{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            /*background: rgba(0, 255, 255, 0.5);*/
+        }
+    </style>
+</head>
+<body>
+    <div id="faceBlock">
+        <div id="threejsArea"></div>
+        <div id="panArea"></div>
+    </div>
+    <script type="text/javascript" src="scripts/three.min.js"></script>
+    <script type="text/javascript" src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+    <script type="text/javascript">
+        var container = document.getElementById('threejsArea');
+        var camera;
+        var scene;
+        var renderer;
+        var geometry;
+
+        var hammertime;
+        var theVerticalIndex;
+        var prePos = { x: 0, y: 0};
+        var movePoints = [];
+        var points = function(index, factor){
+            this.index = index,
+            this.moveFactor = factor
+        }
+        var rang = 100;
+
+        var init = function(){
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(53, 1, 1, 1000);
+
+            var light = new THREE.AmbientLight(0x404040);
+            scene.add(light);
+
+            geometry = new THREE.PlaneGeometry(500, 500, 25, 25);
+
+            var texture = THREE.ImageUtils.loadTexture('normal.jpg', {}, function() {
+                renderer.render(scene, camera);
+            });
+
+            var material = new THREE.MeshBasicMaterial({
+                map: texture, 
+                //color: 0xFFFFFF,
+                transparent: true,
+                wireframe: false
+            })
+
+            var mesh = new THREE.Mesh(geometry, material);
+            mesh.position.z = -500;
+            scene.add(mesh);
+
+            renderer = new THREE.WebGLRenderer({alpha: true});
+            renderer.setSize(500, 500);
+
+            renderer.setClearColor(0x000000, 1);
+            container.appendChild(renderer.domElement);
+
+            renderer.render(scene, camera);
+
+            hammertime = new Hammer(document.getElementById('panArea'), {
+                preventDefault: true
+            });
+            hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL});
+            hammertime.on('panmove panend panstart', function(e) {
+                switch(e.type){
+                    case 'panstart':
+                        var mouseX = e.pointers[0].layerX,
+                        mouseY = e.pointers[0].layerY;
+
+                        theVerticalIndex = getTheClosePoint({
+                            x: mouseX-250,
+                            y: -mouseY+250
+                        });
+
+                        prePos = {x: 0, y: 0};
+                        break;
+
+                    case 'panmove':
+                        geometry.vertices[theVerticalIndex].x += e.deltaX - prePos.x;
+                        geometry.vertices[theVerticalIndex].y -= e.deltaY - prePos.y;
+  
+                        checkPointDistance(theVerticalIndex);
+
+                        geometry.verticesNeedUpdate = true;
+                        renderer.render(scene, camera);
+
+                        prePos = {x: e.deltaX, y: e.deltaY};
+                        break;
+
+                    case 'panend':
+                        break;
+                }
+            });
+
+        }
+
+        var getTheClosePoint = function(mousePos){
+            var theSmallDistance = 9999;
+            var theIndex = -1;
+            for (var i = 0, len = geometry.vertices.length; i < len; i++) {
+                var distance = pointsDistance(mousePos, geometry.vertices[i]);
+                if(distance < theSmallDistance){
+                    theIndex = i;
+                    theSmallDistance = distance;
+                }
+            }
+            return theIndex;
+        }
+
+        var pointsDistance = function(P1, P2){
+            var disX =  P1.x - P2.x;
+            var disY =  P1.y - P2.y;
+            return Math.sqrt(disX*disX + disY*disY);
+        }
+
+        var checkPointDistance = function(index){
+            for(var i=0,len=geometry.vertices.length; i < len; i++){
+                if(i != theVerticalIndex && i != index){
+                    var distance = pointsDistance(geometry.vertices[index], geometry.vertices[i]);
+                    if(distance < 10){
+                        var theta = getTheta(geometry.vertices[index], geometry.vertices[i]);
+                        //console.log(theta);
+                        geometry.vertices[i].x = Math.cos(theta*(Math.PI/180))*10 + geometry.vertices[index].x;
+                        geometry.vertices[i].y = Math.sin(theta*(Math.PI/180))*10 + geometry.vertices[index].y;
+                        checkPointDistance(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        var getTheta = function(center, end) {
+            var dx = end.x - center.x;
+            var dy = end.y - center.y;
+            var theta = Math.atan2(dy, dx); // range (-PI, PI]
+            theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
+            //if (theta < 0) theta = 360 + theta; // range [0, 360)
+            return theta;
+        }
+        init();
+
+        
+    </script>
+</body>
+</html>

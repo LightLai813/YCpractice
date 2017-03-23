@@ -1,0 +1,29 @@
+
+<!-- saved from url=(0058)file:///Users/vpon/WebSite/_studyClub/01_classical_01.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>
+     // 01. 預設模式 The Default Pattern
+
+    function Parent(name) {
+        this.name = name || 'Adam';
+    }
+
+    Parent.prototype.say = function () {
+        return this.name;
+    };
+
+    function Child(name) { 
+        this.name = name;
+    }
+
+    inherit(Child, Parent);
+
+    function inherit(C, P){
+        C.prototype = new P();
+    }
+
+    var kid = new Child('Kid');
+    delete kid.name;
+    console.log(kid);
+    console.log(kid.say()); // "Adam"
+</script>
+</head><body></body></html>

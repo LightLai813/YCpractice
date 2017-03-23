@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<!-- saved from url=(0062)http://192.168.168.159/works/201612/01_Nespresso/IS/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes">
+    <!--以上勿動 -->
+
+    <title>vpon</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, SimHei;
+            font-size: 63%;
+            background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpiZGBgOMOABpgYsAAKBQECDABS8gDW/CaiEQAAAABJRU5ErkJggg==");
+            background-size: 5px 5px;
+        }
+        
+        #crazyad {}
+        /*-勿動-*/
+        
+        #crazyad div {
+            position: absolute;
+        }
+        
+        img {
+            border: none;
+            vertical-align: top
+        }
+        
+        #camain {
+            width: 580px;
+            height: 860px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -290px;
+            margin-top: -430px;
+            z-index: 5;
+            overflow: hidden;
+            background-image: url(images/bg.jpg);
+            background-repeat: no-repeat;
+        }
+        
+        #camain div {
+            position: absolute;
+            animation-fill-mode: forwards;
+            -webkit-animation-fill-mode: forwards;
+        }
+        
+        #customClick {
+            /*點擊區塊*/
+            width: 580px;
+            height: 860px;
+        }
+        
+        #cut1 {
+            width: 580px;
+            height: 860px;
+            background-image: url(images/bg2.jpg);
+            background-repeat: no-repeat;
+            animation: 0.8s linear 1;
+            -webkit-animation: 0.8s linear 1;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        @keyframes cut1 {
+            0% {
+                opacity: 1
+            }
+            100% {
+                opacity: 0
+            }
+        }
+        @-webkit-keyframes cut1 {
+            0% {
+                opacity: 1
+            }
+            100% {
+                opacity: 0
+            }
+        }
+        
+        #p1 {
+            z-index: 2000;
+        }
+        
+        #c1 {
+            z-index: 1000;
+            animation: 2s linear infinite;
+            -webkit-animation: 2s linear infinite;
+        }
+        
+        @keyframes c1 {
+            0%,
+            100% {
+                transform: translateY(-5px)
+            }
+            50% {
+                transform: translateY(30px)
+            }
+        }
+        @-webkit-keyframes c1 {
+            0%,
+            100% {
+                -webkit-transform: translateY(-5px)
+            }
+            50% {
+                -webkit-transform: translateY(30px)
+            }
+        }
+        
+        #c2 {
+            z-index: 3000;
+            animation: 2s linear infinite;
+            -webkit-animation: 2s linear infinite;
+        }
+        
+        @keyframes c2 {
+            0%,
+            100% {
+                transform: translateY(30px)
+            }
+            50% {
+                transform: translateY(-20px)
+            }
+        }
+        @-webkit-keyframes c2 {
+            0%,
+            100% {
+                -webkit-transform: translateY(30px)
+            }
+            50% {
+                -webkit-transform: translateY(-20px)
+            }
+        }
+        
+        #c3 {
+            z-index: 3000;
+            animation: 2s linear infinite;
+            -webkit-animation: 2s linear infinite;
+        }
+        
+        @keyframes c3 {
+            0%,
+            100% {
+                transform: translateY(-30px)
+            }
+            50% {
+                transform: translateY(30px)
+            }
+        }
+        @-webkit-keyframes c3 {
+            0%,
+            100% {
+                -webkit-transform: translateY(-30px)
+            }
+            50% {
+                -webkit-transform: translateY(30px)
+            }
+        }
+        
+        #c4 {
+            z-index: 3000;
+            animation: 2s linear infinite;
+            -webkit-animation: 2s linear infinite;
+        }
+        
+        @keyframes c4 {
+            0%,
+            100% {
+                transform: translateY(30px)
+            }
+            50% {
+                transform: translateY(-40px)
+            }
+        }
+        @-webkit-keyframes c4 {
+            0%,
+            100% {
+                -webkit-transform: translateY(30px)
+            }
+            50% {
+                -webkit-transform: translateY(-40px)
+            }
+        }
+        
+        #w1 {
+            z-index: 9990;
+            bottom: 55px;
+            animation: 0.3s linear 1;
+            -webkit-animation: 0.3s linear 1;
+            display: none;
+        }
+        
+        @keyframes w1 {
+            0% {
+                transform: translateY(20px);
+                opacity: 0
+            }
+            100% {
+                transform: translateY(0px);
+                opacity: 1
+            }
+        }
+        @-webkit-keyframes w1 {
+            0% {
+                -webkit-transform: translateY(20px);
+                opacity: 0
+            }
+            100% {
+                -webkit-transform: translateY(0px);
+                opacity: 1
+            }
+        }
+        
+        #btn {
+            width: 540px;
+            left: 20px;
+            text-align: center;
+            top: 670px;
+            z-index: 900;
+        }
+        
+        #btn img {
+            margin: 0px 5px;
+        }
+
+        #crazyad {
+			zoom: calc(640 / 580);
+		}
+		
+		@media (orientation:landscape) {
+			body {
+				min-height: 640px;
+			}
+		}
+    </style>
+</head>
+
+<body style="zoom: 1.17188;">
+    <!--crazyad必留，用來包所有div -->
+    <div id="crazyad">
+
+        <!--camain必留，用來包所有關閉按鈕close和主要點選區塊click -->
+        <div id="camain" style="transform: rotate(0deg);">
+            <!--若畫面區塊要讓使用者點選，click必留-->
+            <div id="customClick">
+                <div id="cut1" style="animation-name: cut1;">
+                    <div id="p1"><img src="./vpon_files/p1.png"></div>
+                    <div id="c1" style="animation-name: c1;"><img src="./vpon_files/c1.png"></div>
+                    <div id="c2" style="animation-name: c2;"><img src="./vpon_files/c2.png"></div>
+                    <div id="c3" style="animation-name: c3;"><img src="./vpon_files/c3.png"></div>
+                    <div id="c4" style="animation-name: c4;"><img src="./vpon_files/c4.png"></div>
+                    <div id="w1" style="display: block; animation-name: w1;"><img src="./vpon_files/w1.png"></div>
+                </div>
+                <div id="btn">
+                    <a id="LNK_Offers" href="javascript: void(0);"><img src="./vpon_files/b1.png"></a>
+                    <a id="LNK_Coupon" href="javascript: void(0);"><img src="./vpon_files/b2.png"></a>
+                    <a id="LNK_LowPrice" href="javascript: void(0);"><img src="./vpon_files/b3.png"> </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    (function() {
+        var e = function() {
+            var e, t = document.getElementById("crazyad"),
+                n = document.getElementById("camain"),
+                i = navigator.userAgent.toLowerCase();
+            if (n) {
+                if (i.indexOf("ipad") > -1) {
+                    t.style.minHeight = "initial"
+                }
+                if (document.documentElement.clientWidth > document.documentElement.clientHeight) {
+                    if (window.orientation === -90) {
+                        n.style.webkitTransform = "rotate(90deg)"
+                    } else if (window.orientation === 90 || window.orientation === 0) {
+                        n.style.webkitTransform = "rotate(-90deg)"
+                    }
+                    e = document.documentElement.clientHeight / 639
+                } else {
+                    n.style.webkitTransform = "rotate(0deg)";
+                    e = document.documentElement.clientWidth / 640
+                }
+                document.body.style.zoom = e
+            }
+        };
+    
+        document.addEventListener("DOMContentLoaded", setInterval(e, 150));
+            
+        })();
+    </script>
+    <script type="text/javascript" src="./vpon_files/vpadn-logo-728x90_mb.js"></script>
+	<script type="text/javascript" src="./vpon_files/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="./vpon_files/ad-0.2.js"></script>
+	<script type="text/javascript" src="./vpon_files/gd-0.3.js" id="gd"></script>
+	<script type="text/javascript">
+		//測試站用vpsdk=====================================================================================
+		if(vpsdk == undefined){
+			var vpsdk = {
+				addEventListener: function(e, callback){ callback(); },
+				removeEventListener: function(e){},
+				click: function(){},
+				openBrowser: function(success, fail, link) { location.href=link; }
+			}
+
+			var transformClickUrl = function(link){
+				return link;
+			}
+
+			var clickUrl = 'https://www.youtube.com/watch?v=YXsvn5yhrEo';
+		}
+		//測試站用vpsdk=====================================================================================
+
+        var Link = {
+            offers: 'https://www.nespresso.com/hk/zh/pages/festive?icid=BAI_B2C_HKzh_LOC_Nov16_Generic_NC2_Menu_Festive_2016_Machine',
+            coupon: 'https://www.nespresso.com/hk/zh/pages/festive?icid=BAI_B2C_HKzh_LOC_Nov16_Generic_NC2_Menu_Festive_2016_Machine',
+            price: 'https://www.nespresso.com/hk/zh/pages/festive?icid=BAI_B2C_HKzh_LOC_Nov16_Generic_NC2_Menu_Festive_2016_Machine'
+        }
+
+        function init(){
+            document.getElementById('c1').style.animationName = 'c1'; 
+            document.getElementById('c2').style.animationName = 'c2'; 
+            document.getElementById('c3').style.animationName = 'c3'; 
+            document.getElementById('c4').style.animationName = 'c4'; 
+            document.getElementById('c1').style.webkitAnimationName = 'c1'; 
+            document.getElementById('c2').style.webkitAnimationName = 'c2'; 
+            document.getElementById('c3').style.webkitAnimationName = 'c3'; 
+            document.getElementById('c4').style.webkitAnimationName = 'c4'; 
+            setTimeout(function() {
+                document.getElementById('w1').style.display = 'block'; 
+                document.getElementById('w1').style.animationName = 'w1'; 
+                document.getElementById('w1').style.webkitAnimationName = 'w1'; 
+
+                setTimeout(function() {
+                    document.getElementById('cut1').style.animationName = 'cut1'; 	
+                    document.getElementById('cut1').style.webkitAnimationName = 'cut1';
+
+                    document.getElementById('LNK_Offers').addEventListener('click', function(e){
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        vpsdk.click();
+                        vpon.beacon.sendOnce('IS', 'interact', '點擊頁面＿最新優惠').then(function() {
+                            vpsdk.openBrowser(undefined, undefined, transformClickUrl(Link.offers+ '&cr={click_redir}'));
+                        });
+                    });   
+
+                    document.getElementById('LNK_Coupon').addEventListener('click', function(e){
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        vpsdk.click();
+                        vpon.beacon.sendOnce('IS', 'interact', '點擊頁面＿下載優惠券').then(function() {
+                            vpsdk.openBrowser(undefined, undefined, transformClickUrl(Link.coupon+ '&cr={click_redir}'));
+                        });
+                    });   
+
+                    document.getElementById('LNK_LowPrice').addEventListener('click', function(e){
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        vpsdk.click();
+                        vpon.beacon.sendOnce('IS', 'interact', '點擊頁面＿咖啡粉囊更低價格').then(function() {
+                            vpsdk.openBrowser(undefined, undefined, transformClickUrl(Link.price+ '&cr={click_redir}'));
+                        });
+                    });   
+
+                }, 2000);	
+            }, 200);   
+        }
+
+        window.onload = init;
+</script>
+
+
+<style type="text/css">
+<!--
+.cls-vpadn-logos,.cls-vpadn-logoe,.cls-vpadn-logos :after,.cls-vpadn-logoe :after ,.cls-vpadn-logo-clickarea{position:absolute;right:0;bottom:0}.cls-vpadn-logos,.cls-vpadn-logoe{z-index:1000;background-image:-webkit-linear-gradient(bottom,rgba(119,119,119,0.4) 0,rgba(51,51,51,0.4) 100%);border-top:solid 1px rgba(102,102,102,.5);border-left:solid 1px rgba(102,102,102,.5)}.cls-vpadn-logos :after,.cls-vpadn-logoe :after{content:""}.cls-vpadn-logoe{-webkit-animation-duration:.3s;-webkit-animation-timing-function:linear;-webkit-animation-iteration-count:1;-webkit-animation-name:ani-vpadn-logo-expand}.cls-vpadn-logos :after,.cls-vpadn-logoe :after{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAPCAMAAADarb8dAAAAA3NCSVQICAjb4U/gAAAAjVBMVEX///////8JCAf////y8vKfn58qKSgUExIJCAf///9HRkUJCAf///9cW1sdHBsLCgkJCAf///9YV1dIR0YkIyL///+fn5+MjIuAf3/////7+/uysrGpqaj////5+fnh4eHQ0M/IyMjAwMD////5+fnt7e3n5+fb29vZ2dn////7+/v5+fn39/fx8PD///+eEr5eAAAAL3RSTlMAEREiIiIiIiIzMzNERERERFVVVVVmZmZmd3d3d4iIiIiIiJmZmZmZmaqqqqqquy0rQQoAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzbovLKMAAAAjklEQVQImW2O1xbCMAxDVcIIhBFGgbJKKcuh6P8/j7RJOTxwX+wjS7ZhrEGkY60G9J3XKOjFS1JgTaog2IKSAP2Ku2BYOWZ18tLo3nAgh3UzEc7rwezGMix/0PlitmwGng059olnjAKDN0/QS2HafrQnu9bvVq0wcsynFY/4cqYU8Wag58hfA6BKyRL85QPSzAzSJ2A9fAAAAABJRU5ErkJggg==") no-repeat 50% 50%}.cls-vpadn-logoe :after{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAPCAMAAAB+xwfOAAAAA3NCSVQICAjb4U/gAAAA9lBMVEX///////8zMzMJCAf////z8/Ofn58qKSgUExIJCAf///9HRkUJCAf///+Ojo17enpcW1szMzMdHBsbGhkZGBgODQwLCgkJCAf////l5eWoqKdfXl5cW1tYV1dUVFNPT05KSUhIR0YqKSgkIyL////19fXMzMzGxsbDw8O7urqgoKCNjYyGhoWAf397enpzc3L////7+/vd3d2ysrGsrKupqaj////5+fnh4eHW1tbV1NTQ0M/JycnGxsbDw8PAwMC+vr7////7+/v39/ft7e3n5+fl5eXd3d3b29vZ2dn////7+/v5+fn39/f19fXz8/Px8PD////JxQojAAAAUnRSTlMAERERIiIiIiIiMzMzRERERERERERERERVVVVVVVVVVVVVVVVmZmZmZmZmZmZmZmZ3d3d3d3eIiIiIiIiIiIiIiJmZmZmZmZmZmaqqqqqqqqq7pmaCvQAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAEaSURBVCiRlZDXVsMwEETX2BQH0YuA0DG9hWaaIdiEBGQ7ZP7/Z5C8LpyTF2deNKujuzsrElJQLltKl+rI/UJU2K1EebWgM8BhJ9+grFrMZIobHnMQo1ULIbudd5cPwIbMpRezxb/CLbywzdt5hTXDrnbwufzRTzL1b0lu99gng3Vb3nfYp10zwP5GrA9xCZzeodThym9VzJ5X3jeDdD2jo/1ALfSMM32uEO1AcXr3GcfvWRatXb6dGuCR3D0FT3TRYKaJqImQn4kAR0HejPaB7NSJxqX+CkczF7zqNcJNpEtcvOBkiJmO8bSY6qCaKeWNJaVXc0MMvUIF0LEqRrUscnzFChvkFYxVMBMx/0e5Tx05oWlM5I/AjKQ/v0pK/vBkccEAAAAASUVORK5CYII=") no-repeat 40% 50%}.cls-vpadn-logos,.cls-vpadn-logoe{height:26px;width:26px;-webkit-border-top-left-radius:10px}.cls-vpadn-logos :after,.cls-vpadn-logoe :after{background-size:auto 16px;height:26px;width:26px}.cls-vpadn-logo-clickarea{height:40px;width:40px}.cls-vpadn-logoe{width:68px}.cls-vpadn-logoe :after{width:68px;background-size:auto 16px}@-webkit-keyframes ani-vpadn-logo-expand{0%{-webkit-transform:translateX(42px)}100%{-webkit-transform:translateX(0)}}@-webkit-keyframes ani-vpadn-logo-shrink{0%{-webkit-transform:translateX(0)}100%{-webkit-transform:translateX(42px)}}
+--!>
+</style><script type="text/javascript" charset="utf-8">
+<!--
+function shrinkVpadnLogo(){document.getElementById("vpadn-logo").style.webkitAnimationName="ani-vpadn-logo-shrink";setTimeout("cleanVpadnLogo()",300)}function cleanVpadnLogo(){document.getElementById("vpadn-logo").className="cls-vpadn-logos";document.getElementById("vpadn-logo").style.webkitAnimationName=""};
+-->
+</script><div style="position: fixed; right: 0px; bottom: 0px; z-index: 999998;"><div id="vpadn-logo" class="cls-vpadn-logos"><div id="vpadn-logo-clickarea" class="cls-vpadn-logo-clickarea"></div></div></div></body></html>

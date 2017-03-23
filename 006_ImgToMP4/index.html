@@ -1,0 +1,460 @@
+<!doctype html>
+<html>
+	<head>
+	<meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=640; initial-scale=0.5; maximum-scale=1.0; minimum-scale=0.5; user-scalable=no;" />
+	<title>VPON｜Facebook 動動大頭貼</title>
+	<style type="text/css">
+		html, body{ margin: 0; width: 100%; font-family: Helvetica; background: #474a4d;}
+		.btn{ 
+            display: inline-block;
+
+            -webkit-border-radius: 5px; 
+            -moz-border-radius: 5px; 
+            -o-border-radius: 5px; 
+            border-radius: 5px; 
+            text-align: center; 
+            padding: 30px; 
+            font-size: 1.5em; 
+            font-weight:500; 
+            cursor: pointer; 
+
+            color: #FFF; 
+            background: #474a4d;
+            border: 2px solid #999;
+            -webkit-text-decoration: none;
+            -moz-text-decoration: none;
+            -o-text-decoration: none;
+            text-decoration: none;
+        }
+
+        .content{ width: 640px; height: 100%; margin: 50px auto; text-align: center;}
+        
+        #CVS_UserImg { 
+            display: none; 
+            position: relative; 
+            margin: 0 auto;
+            border: 2px solid #999;
+            -webkit-border-radius: 5px; 
+            -moz-border-radius: 5px; 
+            -o-border-radius: 5px; 
+            border-radius: 5px; 
+        }
+        #BTN_UploadPic {
+            position: relative; 
+            width: 39%;
+        }
+        #BTN_DLProfile{
+            display: none;
+            width: 39%;
+        }
+
+        #userMail{
+            display: none;
+
+            -webkit-border-radius: 5px; 
+            -moz-border-radius: 5px; 
+            -o-border-radius: 5px; 
+            border-radius: 5px; 
+            border: 2px solid #999;
+            background: #EEE;
+
+            width: 588px;
+            padding: 20px;
+            font-size: 1.5em;
+            margin:3px;
+        }
+
+        #loadingDIV{
+            display: none;
+            position: relative;
+            -webkit-border-radius: 5px; 
+            -moz-border-radius: 5px; 
+            -o-border-radius: 5px; 
+            border-radius: 5px; 
+            border: 2px solid #999;
+            width: 628px;
+            height: 68px;
+            font-size: 1.5em;
+            margin:3px;
+            overflow: hidden;
+            text-align: center;
+            line-height: 68px;
+        }
+
+        #loadingDIV .Strip{
+            position: absolute;
+            background: #EEE;
+            width: 0;
+            height: 100%;
+        }
+
+        #loadingDIV .percent {
+            position: relative;
+            color: #aeaba9;
+        }
+	</style>
+</head>
+<body>
+	<!--loading畫面-->
+    <div id="Loading" style="display: none; background: rgba(0, 0, 0, 0.9); width: 100%; height: 100%; z-index: 1000; position: absolute; top:0px; left:0px; z-index:999;">
+        <div style="width:50px; height:50px; left:50%; top:50%; margin-left:-25px; margin-top: -25px; position:absolute;">
+            <svg width='50px' height='50px' viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-ring"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><defs><filter id="uil-ring-shadow" x="-100%" y="-100%" width="300%" height="300%"><feOffset result="offOut" in="SourceGraphic" dx="0" dy="0"></feOffset><feGaussianBlur result="blurOut" in="offOut" stdDeviation="0"></feGaussianBlur><feBlend in="SourceGraphic" in2="blurOut" mode="normal"></feBlend></filter></defs><path d="M10,50c0,0,0,0.5,0.1,1.4c0,0.5,0.1,1,0.2,1.7c0,0.3,0.1,0.7,0.1,1.1c0.1,0.4,0.1,0.8,0.2,1.2c0.2,0.8,0.3,1.8,0.5,2.8 c0.3,1,0.6,2.1,0.9,3.2c0.3,1.1,0.9,2.3,1.4,3.5c0.5,1.2,1.2,2.4,1.8,3.7c0.3,0.6,0.8,1.2,1.2,1.9c0.4,0.6,0.8,1.3,1.3,1.9 c1,1.2,1.9,2.6,3.1,3.7c2.2,2.5,5,4.7,7.9,6.7c3,2,6.5,3.4,10.1,4.6c3.6,1.1,7.5,1.5,11.2,1.6c4-0.1,7.7-0.6,11.3-1.6 c3.6-1.2,7-2.6,10-4.6c3-2,5.8-4.2,7.9-6.7c1.2-1.2,2.1-2.5,3.1-3.7c0.5-0.6,0.9-1.3,1.3-1.9c0.4-0.6,0.8-1.3,1.2-1.9 c0.6-1.3,1.3-2.5,1.8-3.7c0.5-1.2,1-2.4,1.4-3.5c0.3-1.1,0.6-2.2,0.9-3.2c0.2-1,0.4-1.9,0.5-2.8c0.1-0.4,0.1-0.8,0.2-1.2 c0-0.4,0.1-0.7,0.1-1.1c0.1-0.7,0.1-1.2,0.2-1.7C90,50.5,90,50,90,50s0,0.5,0,1.4c0,0.5,0,1,0,1.7c0,0.3,0,0.7,0,1.1 c0,0.4-0.1,0.8-0.1,1.2c-0.1,0.9-0.2,1.8-0.4,2.8c-0.2,1-0.5,2.1-0.7,3.3c-0.3,1.2-0.8,2.4-1.2,3.7c-0.2,0.7-0.5,1.3-0.8,1.9 c-0.3,0.7-0.6,1.3-0.9,2c-0.3,0.7-0.7,1.3-1.1,2c-0.4,0.7-0.7,1.4-1.2,2c-1,1.3-1.9,2.7-3.1,4c-2.2,2.7-5,5-8.1,7.1 c-0.8,0.5-1.6,1-2.4,1.5c-0.8,0.5-1.7,0.9-2.6,1.3L66,87.7l-1.4,0.5c-0.9,0.3-1.8,0.7-2.8,1c-3.8,1.1-7.9,1.7-11.8,1.8L47,90.8 c-1,0-2-0.2-3-0.3l-1.5-0.2l-0.7-0.1L41.1,90c-1-0.3-1.9-0.5-2.9-0.7c-0.9-0.3-1.9-0.7-2.8-1L34,87.7l-1.3-0.6 c-0.9-0.4-1.8-0.8-2.6-1.3c-0.8-0.5-1.6-1-2.4-1.5c-3.1-2.1-5.9-4.5-8.1-7.1c-1.2-1.2-2.1-2.7-3.1-4c-0.5-0.6-0.8-1.4-1.2-2 c-0.4-0.7-0.8-1.3-1.1-2c-0.3-0.7-0.6-1.3-0.9-2c-0.3-0.7-0.6-1.3-0.8-1.9c-0.4-1.3-0.9-2.5-1.2-3.7c-0.3-1.2-0.5-2.3-0.7-3.3 c-0.2-1-0.3-2-0.4-2.8c-0.1-0.4-0.1-0.8-0.1-1.2c0-0.4,0-0.7,0-1.1c0-0.7,0-1.2,0-1.7C10,50.5,10,50,10,50z" fill="#CCCCCC" filter="url(#uil-ring-shadow)"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" repeatCount="indefinite" dur="1s"></animateTransform></path></svg>
+        </div>
+    </div>
+
+
+    <div class="content">
+        <input type="hidden" id="orientation" name="orientation" value="">
+        <input type="file" id="FIL_userImage" name="FIL_userImage" accept="image/*;capture=camera" style="display: none;" />
+
+        <canvas id="CVS_UserImg"></canvas>
+        <div id="loadingDIV">
+            <div class="Strip"></div>
+            <div class="percent">0%</div>
+        </div>
+        <input type="email" id="userMail" placeholder="請輸入您的電子信箱"/>
+        <label for="FIL_userImage"><div id="BTN_UploadPic" class="btn">上傳照片</div></label>
+        <a id="BTN_DLProfile" class="btn" href="javascript: void(0);" target="_blank">寄送影片至信箱中<br/></a>
+    </div>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="scripts/socket.io.js"></script>
+    <script src="scripts/binaryajax.js"></script>
+    <script src="scripts/exif.js"></script>
+    <script src="scripts/megapix-image.js"></script>
+    <script src="scripts/FCClientJS.js"></script>
+    <script src="scripts/commonJS.js"></script>
+	<script type="text/javascript">
+        // 步驟
+        // 1. 圖片先輸入canvas，轉成實體pic
+        // 2. 丟給FCClient 抓 臉部資料
+        // 3. 製作動態Canvas，輸出成批次圖片
+        // 4. 轉成mp4
+        var picUrl = '';
+
+        var	socket;
+        var socketID;
+        var videoID = (+new Date());
+        console.log(videoID);
+        var frameCount = 0;
+        var cryIndex = 0;
+        var timer;
+        var isRenderVideo = false;
+
+        var FIL_userImg = document.getElementById('FIL_userImage');
+
+        var userImg;
+        var tempImg = new Image();
+        var mouthImg = new Image();
+        mouthImg.src = 'cry/mouth.png';
+        var noseImg = new Image();
+        noseImg.src = 'cry/nose.png';
+
+        var canvas = document.getElementById('CVS_UserImg');
+        var ctx = canvas.getContext('2d');
+
+        var facePadding = 100;
+        var face;
+
+        window.onload = function(){
+            //var svr="'http://"+window.location.href.replace("http://","").split("/")[0];;
+			socket = io.connect('192.168.168.123:20001',{'force new connection':true, 'reconnect':false});
+            //socket = io.connect('//cmp.vpadn.com', { path: '/fbprofile/socket.io',});
+	    // socket = io.connect('http://cmp.vpadn.com', {
+        //     //socket = io.connect('10.0.4.12:20001', { 
+        //         'path': '/fbprofile/socket.io',
+		// 'upgrade': false,
+        //     });
+            socket.on('welcome', function (data) {
+                isConnect=true;
+                socketID = data.socketId;
+                FIL_userImg.addEventListener('change' ,checkUserImg, false);
+                console.log('welcome, ' + videoID);
+            });
+
+            socket.on('MP4Complete', function (data) {
+                $('#loadingDIV .percent').html('100%');
+                $('#loadingDIV .Strip').stop().animate({'width':'100%'}, 100, 'linear',function(){
+                    $('#loadingDIV').hide();
+                    $('#userMail').show();
+                    $('#BTN_DLProfile').html('寄送影片至信箱中').attr('href', 'javascript: sendMail();');
+                });
+                
+            });
+
+            socket.on('PNGComplete', function (data) {
+                faceAnimate();
+            });
+
+            socket.on('MailComplete', function () {
+                alert('動動大頭貼已寄送至您的信箱');
+                $('#Loading').fadeOut(500);
+            });
+
+            socket.on('MailFail', function () {
+                alert('系統發生錯誤，請稍候再試');
+                $('#Loading').fadeOut(500);
+            });
+        }
+
+        var sendMail = function(){
+            var mail = $('#userMail').val();
+            if($.trim(mail) == ''){
+                alert('請輸入電子信箱');
+                return false;
+            }else if (!checkEmail(mail)) {
+                alert('請輸入正確EMAIL');
+                return false;
+            } 
+
+            $('#Loading').fadeIn(500);
+            socket.emit('sendMail', {
+                videoID: videoID,
+                Recipient: mail
+            });
+        }
+
+
+        //信箱格式判斷
+        var checkEmail = function (email) {
+            EmailTest = new RegExp(/^\s*([a-zA-Z0-9]+)([\.\-\_]?[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(\.[a-zA-Z0-9\_\-]+)+\s*$/)
+            if (EmailTest.test(email)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        //檢查使用者上傳圖片
+        function checkUserImg(){
+            if(timer) clearTimeout(timer);
+            frameCount = 0;
+            cryIndex = 0;
+            $('#Loading').fadeIn(500);
+            canvas.style.display = 'none';
+            if (FIL_userImg.value != '') {
+                var file = this.files[0];
+                mpImg = new MegaPixImage(file);
+
+                if(!/image\/(jpg|jpeg|JPG|JPEG|png|PNG)/.test(file.type)){
+                    FIL_userImg.value = '';
+                    alert('請上傳正確的圖檔格式，接受副檔名包含.jpg .jpeg .png');
+                    $('#Loading').fadeOut(500);
+                }else{
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function(e){
+                        //辨別相片旋轉
+                        var bin = atob(this.result.split(',')[1]);
+                        var exif = EXIF.readFromBinaryFile(new BinaryFile(bin));
+                        var isRotate = false;
+                        var scale = 1;
+
+                        document.getElementById('orientation').value=exif.Orientation;
+                        switch( exif.Orientation ){
+                            case 6:
+                            case 8:
+                            case 5:
+                            case 7:
+                                isRotate = true;
+                                break;
+                            default:
+                                isRotate = false;
+                        }
+
+                        if(file.size/1024>399){
+                            scale = 399/(file.size/1024);
+                        }
+
+                        userImg = new Image();
+                        userImg.onload = function(){
+                            if(picUrl != ''){
+                                faceDetection(picUrl);
+                                tempImg.src = picUrl;
+                            }else{
+                                var cW = isRotate ? userImg.height : userImg.width;
+                                var cH = isRotate ? userImg.width : userImg.height;
+
+                                if(scale < 1){
+                                    cW = parseInt(cW*scale);
+                                    cH = parseInt(cH*scale);
+                                }
+
+                                canvas.setAttribute('width', cW);
+                                canvas.setAttribute('height', cH);
+                            
+                                ctx.fillStyle='#FFF';
+                                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                ctx.save();
+                                if(isRotate) ctx.rotate(Math.PI / 2);
+                                ctx.drawImage(userImg, 0, isRotate ? -cW : 0, isRotate ? cH : cW, isRotate ? cW : cH);
+                                ctx.restore();
+                                
+                                tempImg.src = canvas.toDataURL('image/jpeg');
+                                canvasToUrl();
+                            }
+                        }
+                        userImg.src = picUrl != '' ? picUrl : this.result;
+                    }
+                }
+            } else return false;
+        }
+
+        var canvasToUrl = function(){
+            var PicBase64 = canvas.toDataURL("image/jpeg");
+            $.ajax({
+                url: 'http://cmp.vpadn.com/api_upload_pic/upload_pic.php',
+                type: 'post',
+                datatype:'JSON',
+                data: {
+                    pic: PicBase64,
+                    campaignsID: 'test',
+                    imgtype: 'jpg',
+                    isFinal:true,
+                },
+                success: function (data, txtSataus) {
+                    if(data.code == 0){
+                        console.log(data.imgUrl);
+                        faceDetection(data.imgUrl);
+                    }else{
+                        alert(data.msg);
+                    }
+                },
+                error: function (e) {
+                    alert('系統發生錯誤，請稍候再試');
+                }
+            });
+        }
+
+        var faceDetection = function (imgUrl) {
+            var client = new FCClientJS('d25866759bbd42e49c21e6401ee6041d', '2918cb1b43a5428ba3d01c49f92d828e');
+			client.facesDetect(imgUrl, null, {detect_all_feature_points: true}, function(data){
+                $('#BTN_UploadPic').html('重新上傳照片');
+                $('#BTN_DLProfile').css({'display':'inline-block'}).html('動動大頭貼製作中');
+
+                var picW = data.photos[0].width;
+                var picH = data.photos[0].height;
+                var faceInfo = data.photos[0].tags[0];
+
+                if(undefined !== faceInfo){
+                    var rect = {
+                        x: parseInt((faceInfo.center.x - (faceInfo.width/2)) * picW * 0.01),
+                        y: parseInt((faceInfo.center.y - (faceInfo.height/2)) * picH * 0.01),
+                        w: parseInt(faceInfo.width * picW * 0.01),
+                        h: parseInt(faceInfo.height * picH * 0.01)
+                    }
+                    var factor = (500-2*facePadding)/(rect.w>rect.h?rect.w:rect.h);
+                    face = {
+                        drawX: -rect.x*factor+facePadding,
+                        drawY: -rect.y*factor+facePadding,
+                        drawW: picW*factor,
+                        drawH: picH*factor,
+                        eyeLeft: {
+                            x: parseInt((faceInfo.eye_left.x*0.01*picW*factor)-rect.x*factor)+facePadding,
+                            y: parseInt((faceInfo.eye_left.y*0.01*picH*factor)-rect.y*factor)+facePadding
+                        },
+                        eyeRight: {
+                            x: parseInt((faceInfo.eye_right.x*0.01*picW*factor)-rect.x*factor)+facePadding,
+                            y: parseInt((faceInfo.eye_right.y*0.01*picH*factor)-rect.y*factor)+facePadding
+                        },
+                        nose: {
+                            x: parseInt((faceInfo.nose.x*0.01*picW*factor)-rect.x*factor)+facePadding,
+                            y: parseInt((faceInfo.nose.y*0.01*picH*factor)-rect.y*factor)+facePadding
+                        },
+                        mouse: {
+                            x: parseInt((faceInfo.mouth_center.x*0.01*picW*factor)-rect.x*factor)+facePadding,
+                            y: parseInt((faceInfo.mouth_center.y*0.01*picH*factor)-rect.y*factor)+facePadding
+                        },
+                        roll: faceInfo.roll
+                    }
+
+
+                    canvas.setAttribute('width', 500);
+                    canvas.setAttribute('height', 500);
+                    canvas.style.display = 'block';
+
+                    $('#loadingDIV').show();
+                    faceAnimate();
+                
+                }else{
+                    alert('抓不到臉');
+                    $('#BTN_DLProfile').hide();
+                }
+                $('#Loading').fadeOut(500);
+            });
+        }
+
+        var faceAnimate = function(){
+            if(timer) clearTimeout(timer);
+            cryIndex++;
+            if(cryIndex > 30) cryIndex =1;
+            var cryImg = new Image();
+            cryImg.onload = function(){
+                ctx.clearRect(0,0,canvas.width, canvas.height);
+                ctx.drawImage(tempImg, face.drawX, face.drawY, face.drawW, face.drawH); //臉
+
+                //嘴
+                ctx.save();
+                ctx.translate(face.mouse.x,face.mouse.y);
+                ctx.rotate(face.roll * Math.PI / 180);
+                ctx.translate(-face.mouse.x,-face.mouse.y);
+                ctx.drawImage(mouthImg, face.mouse.x - 75,face.mouse.y-50);       
+                ctx.restore();
+
+                 //鼻子
+                ctx.save();
+                ctx.translate(face.nose.x,face.nose.y);
+                ctx.rotate(face.roll * Math.PI / 180);
+                ctx.translate(-face.nose.x,-face.nose.y);
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.drawImage(noseImg, face.nose.x - 80,face.nose.y-100);            
+                ctx.restore();
+
+                //左眼
+                ctx.save();
+                ctx.translate(face.eyeLeft.x,face.eyeLeft.y);
+                ctx.rotate(face.roll * Math.PI / 180);
+                ctx.translate(-face.eyeLeft.x,-face.eyeLeft.y);
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.drawImage(cryImg, face.eyeLeft.x - 50,face.eyeLeft.y+10);   
+                ctx.restore();
+
+                //右眼
+                ctx.save();
+                ctx.translate(face.eyeRight.x,face.eyeRight.y);
+                ctx.rotate(face.roll * Math.PI / 180);
+                ctx.translate(-face.eyeRight.x,-face.eyeRight.y);
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.drawImage(cryImg, face.eyeRight.x - 50,face.eyeRight.y+10);    
+                ctx.restore();       
+
+                if(frameCount<30){
+                    var percent = (frameCount++) * 3;
+                    $('#loadingDIV .percent').html(percent + '%');
+                    $('#loadingDIV .Strip').stop().animate({'width':percent + '%'}, 100);
+                    socket.emit('renderPng', {
+                        videoID: videoID,
+                        frame: frameCount,
+                        file: canvas.toDataURL()
+                    });
+                }else{
+                    if(!isRenderVideo){
+                        $('#loadingDIV .percent').html('95%');
+                        $('#loadingDIV .Strip').stop().animate({'width':'95%'}, 100);
+
+                        isRenderVideo = true;
+                        socket.emit('renderMP4', {
+                            videoID: videoID
+                        });
+                    }
+                    timer = setTimeout(faceAnimate, 33);
+                }
+            }
+            cryImg.src = 'cry/tear' + strRight('0000' + cryIndex, 4) + '.png';
+        }
+	</script>
+</body>
+</html>

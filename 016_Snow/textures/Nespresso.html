@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<!-- saved from url=(0104)file:///Users/vpon/WebSite/works/201612/01_Nespresso/web/index.html?hello=ss&cr=%7Bclick_redir%7D#offers -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<meta name="viewport" content="width=640; maximum-scale=1.0; minimum-scale=0.5; user-scalable=yes;">
+	<title>Nespresso</title>
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 0;
+			font-size: 63%;
+			font-family: Arial, SimHei;
+			-webkit-text-size-adjust: none;
+			background-color: #FBF3E8;
+		}
+		
+		img {
+			border: none;
+			vertical-align: top
+		}
+		
+		#content {
+			width: 640px;
+			margin: 0 auto;
+			background-color: #FBF3E8;
+			text-align: center;
+		}
+		
+		#tab {
+			position: relative;
+			width: 640px;
+			height: 950px;
+		}
+		
+		#tab img {
+			padding: 0;
+		}
+		
+		#tab1,
+		#tab2,
+		#tab3,
+		#tab4 {
+			position: absolute;
+		}
+		
+		#tab2,
+		#tab3,
+		#tab4 {
+			display: none
+		}
+		
+		#btn {
+			text-align: center;
+			width: 640px;
+			top: 550px;
+			position: absolute;
+		}
+		/*-----------------------圖片區-------------------------*/
+		
+		ul,
+		li {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+		
+		#carousel {
+			width: 640px;
+			height: 710px;
+			position: relative;
+		}
+		
+		#carousel a.prev,
+		#carousel a.next {
+			position: absolute;
+			top: 100px;
+			display: block;
+			width: 80px;
+			height: 110px;
+			text-indent: -9999px;
+			z-index: 999;
+		}
+		
+		#carousel .prev {
+			background: url(images/arr-left.png) no-repeat;
+			left: 15px;
+		}
+		
+		#carousel .next {
+			background: url(images/arr-right.png) no-repeat;
+			right: 15px;
+		}
+		
+		#carousel .slides {
+			overflow: hidden;
+			position: relative;
+			width: 640px;
+			height: 710px;
+			text-align: center;
+		}
+		
+		#carousel .slides ul {
+			position: absolute;
+			width: 3000px;
+			height: 100%;
+		}
+		
+		#carousel .slides li {
+			width: 640px;
+			height: 100%;
+			float: left;
+		}
+
+		#menu{
+			list-style: none;
+		}
+
+		#menu li {
+			display:inline-block;
+			width: 160px;
+		}
+
+		#menu li > .on {
+			display:none;
+		}
+
+		#menu li > .off {
+			display:block;
+		}
+
+		#menu li.active > .on {
+			display:block;
+		}
+
+		#menu li.active > .off {
+			display:none;
+		}
+
+		.tabBlock{
+			display: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="content">
+		<img src="./Nespresso_files/logo.png">
+		<div id="tab">
+			<ul id="menu">
+				<li><img class="off" src="./Nespresso_files/tab1.png"><img class="on" src="./Nespresso_files/tab1h.png"></li><!--
+				--><li><img class="off" src="./Nespresso_files/tab2.png"><img class="on" src="./Nespresso_files/tab2h.png"></li><!--
+				--><li class="active"><img class="off" src="./Nespresso_files/tab3.png"><img class="on" src="./Nespresso_files/tab3h.png"></li><!--
+				--><li><img class="off" src="./Nespresso_files/tab4.png"><img class="on" src="./Nespresso_files/tab4h.png"></li>
+			</ul>
+			<div id="tab1" class="tabBlock" style="display: none;">
+				<img src="./Nespresso_files/index.jpg">
+				<div id="btn">
+					<a href="https://maps.google.com/maps?z=16&amp;q=%E5%B0%96%E6%B2%99%E5%92%80%E6%B5%B7%E6%B8%AF%E5%9F%8E%E6%B5%B7%E6%B4%8B%E4%B8%AD%E5%BF%83311%E8%99%9F%E5%BA%97&amp;hl=zh-TW&amp;sensor=false" id="map" target="_blank"><img src="./Nespresso_files/btn_m.png"></a>
+				</div>
+			</div>
+
+			<div id="tab2" class="tabBlock" style="display: none;">
+				<img src="./Nespresso_files/1_02.jpg">
+				<div id="carousel">
+					<div class="slides">
+						<ul style="left: -640px;">
+							
+							
+							
+							
+							
+							<li><img src="./Nespresso_files/2_03.jpg"><img src="./Nespresso_files/2_04.jpg"></li><li><img src="./Nespresso_files/3_03.jpg"><img src="./Nespresso_files/3_04.jpg"></li><li><img src="./Nespresso_files/4_03.jpg"><img src="./Nespresso_files/4_04.jpg"></li><li><img src="./Nespresso_files/5_03.jpg"><img src="./Nespresso_files/5_04.jpg"></li><li><img src="./Nespresso_files/6_03.jpg"><img src="./Nespresso_files/6_04.jpg"></li><li><img src="./Nespresso_files/7_03.jpg"><img src="./Nespresso_files/7_04.jpg"></li><li><img src="./Nespresso_files/1_03.jpg"><img src="./Nespresso_files/1_04.jpg"></li>
+							
+						</ul>
+					</div>
+					<a href="javascript: void(0);" class="prev">&lt;</a>
+					<a href="javascript: void(0);" class="next">&gt;</a>
+				</div>
+			</div>
+
+			<div id="tab3" class="tabBlock" style="display: block;">
+				<img src="./Nespresso_files/p3.jpg">
+				<a target="_blank" href="https://www.nespresso.com/hk/zh/pages/festive?icid=BAI_B2C_HKzh_LOC_Nov16_Generic_NC2_Menu_Festive_2016_Machine"><img src="./Nespresso_files/btn_s.png"></a>
+			</div>
+			<div id="tab4" class="tabBlock" style="display: none;">
+
+				<img src="./Nespresso_files/p4.jpg">
+				<a target="_blank" href="https://www.nespresso.com/hk/zh/pages/new-price"><img src="./Nespresso_files/btn_more.png"></a>
+			</div>
+		</div>
+
+	</div>
+	<script type="text/javascript" src="./Nespresso_files/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="./Nespresso_files/ad-0.2.js"></script>
+	<script type="text/javascript" src="./Nespresso_files/gd-0.3.js" id="gd"></script>
+	<script type="text/javascript" src="./Nespresso_files/jquery.wipetouch.js"></script>
+	<script type="text/javascript" src="./Nespresso_files/pic.js"></script>
+	<script>
+		function init(){
+			var hashtag = location.hash;
+			alert(location.search);
+			switch(hashtag.toLowerCase().split('?')[0]){
+				case '#machine':
+					showTab(2);
+					break;
+				case '#offers':
+					showTab(3);
+					break;
+				case '#price':
+					showTab(4);
+					break;
+				default:
+					showTab(1);
+			}
+			//alert(hashtag);
+			
+
+			$('#menu li').unbind().bind('click',function(e){
+				var index = parseInt($(this).index())+1;
+				showTab(index);
+			});
+
+			function showTab(index){
+				$('#menu li').removeClass('active');
+				$('#menu li:nth-of-type('+index+')').addClass('active');
+
+				$('.tabBlock').hide();
+				$('#tab' + index).show();
+
+				var hashTag = '';
+				if(index==2){
+					location.hash = 'machine';
+				}else if(index==3){
+					location.hash = 'offers';
+				}else if(index==4){
+					location.hash = 'price';
+				}else{
+					location.hash = '';
+				}
+			}
+
+			$('#map').attr('href','https://maps.google.com/maps?z=16&q='+encodeURIComponent('尖沙咀海港城海洋中心311號店')+'&hl=zh-TW&sensor=false');
+		}
+		window.onload = init;
+	</script>
+
+
+</body></html>

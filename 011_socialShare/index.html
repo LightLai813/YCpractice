@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=640, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=no" />
+<!--以上勿動 -->
+<title>Vpon</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica;
+            background: #EEE;
+        }
+
+        h2{
+            margin: 30px;
+		    font-size: 1.5em;
+		}      
+
+        .btn{
+			border-radius: 5px;
+    		padding: 20px 30px;
+    		display: block;
+    		cursor: pointer;
+    		margin: 30px;
+			font-size: 2em;
+			color: #FFF;
+		}
+
+        .btn#BTN_FBMsg{
+            background: #3b5998;
+        }
+
+        .btn#BTN_Whatapp{
+            background: #54CB5F;
+        }
+		
+		#MSG_Result{
+			width: 100%;
+			text-align: center;
+			font-size: 3em;
+			color: #555;
+		}
+    </style>
+	<script type="text/javascript">
+
+	</script>
+</head>
+<body>
+    <div class="main">
+        <!--<div>
+            <p id="MSG_Result">等待動作</p>
+        </div>-->
+        <h2>Please tap the button to share the link to social media.</h2>
+        <div>
+            <div id="BTN_FBMsg" class="btn">Share to Facebook Messenger</div>
+            <div id="BTN_Whatapp" class="btn">Share to WhatsApp</div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="http://m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+    <script type="text/javascript">
+		document.getElementById('BTN_FBMsg').addEventListener('click', function(e){share(e.target.id);}); 
+		document.getElementById('BTN_Whatapp').addEventListener('click', function(e){share(e.target.id);}); 
+
+        var shareLink = 'http://static.idolator.com/uploads/2015/10/adele-hello.jpg';
+		var share = function(senderId){
+			//document.getElementById('MSG_Result').innerHTML = '進行分享'; 
+			
+			var redirectUrl = '';
+
+			switch(senderId){
+				case 'BTN_FBMsg': 	//FB.ui: feed
+					//redirectUrl = 'fb-messenger://share?link=' + encodeURIComponent(shareLink) + '&text=helloworld';
+					redirectUrl = 'fb-messenger://share?message=hello';
+					break;
+
+				case 'BTN_Whatapp': 	//FB.ui: share
+					redirectUrl = 'whatsapp://send?text=' + encodeURIComponent(shareLink);
+					break;
+			};
+
+			if(redirectUrl !== ''){
+				try {
+					location.href = redirectUrl;
+				}
+				catch(err) {
+					console.log('ho');
+				}
+			}
+		}		
+    </script>
+</body>
+</html>

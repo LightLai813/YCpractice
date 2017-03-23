@@ -1,0 +1,156 @@
+<!doctype HTML>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=1280; initial-scale=0.5; user-scalable=0;">
+    <title>Coin Boom!｜Eugene's work</title>
+    <style type="text/css">
+        html {
+            -webkit-touch-callout:none;
+            -webkit-user-select:none;
+            -khtml-user-select:none;
+            -moz-user-select:none;
+            -ms-user-select:none;
+            user-select:none;
+            -webkit-tap-highlight-color:rgba(0,0,0,0);
+        }
+        html,body{ margin: 0; overflow: hidden;}
+        #myCanvas{ 
+            background: url(http://p7.storage.canalblog.com/75/29/1080503/102678965_o.jpg);
+            background-size: auto 100%;
+            background-position: center right;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+
+    <script type="text/javascript">
+        var canvas = document.getElementById("myCanvas"),
+            ctx = canvas.getContext("2d");                  
+        var particles = new Array();                        //粒子集合
+        var frameRate = 60;                                 //畫面更新頻率
+        var gravity = 1.0;                                  //重力
+        var shadowColor = 'rgba(0, 0, 0, 0.3)';
+        
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        //Function 亂數Float
+        var rndFloat = function(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        var Particle=function(x, y, size, rotate, color, VX, VY, VR){
+            this.x = x;             //X座標
+            this.y = y;             //Y座標
+            this.size = size;       //圈圈大小
+            this.scaleX = 1.0;      //水平寬度
+            this.scaleY = 0.1;      //垂直高度
+            this.rotate = rotate;   //翻轉角度
+            this.color = color;     //圈圈顏色
+            this.VX = VX;           //水平移動速度
+            this.VY = VY;           //垂直移動速度
+            this.VR = VR;           //翻轉速度
+   
+            this.update = function(){
+                this.scaleX += this.VR;                 
+                if(this.scaleX > 1) this.scaleX = -1;
+                
+                this.scaleY += 0.05;
+                if(this.scaleY > 1) this.scaleY = 1;
+                
+                this.VY += gravity * 0.4;
+
+                this.x += this.VX;
+                this.y += this.VY;
+                
+                if(this.y > canvas.height + 100) {
+                    var i = particles.indexOf(this);
+                    if(i != -1) particles.splice(i, 1);
+                }
+            };
+            
+		    this.draw = function(){
+                ctx.save();
+                
+                ctx.translate(this.x,this.y);
+                ctx.rotate(this.rotate*Math.PI/180);
+                ctx.scale(this.scaleX, this.scaleY);
+
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size, 0, Math.PI*2, true);
+                ctx.closePath();
+                
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                
+                if(this.color != shadowColor){
+                    ctx.strokeStyle = '#886600';
+                    ctx.stroke();
+                }
+  
+                ctx.restore();
+            };
+	    }
+
+        var createExplosion = function(x, y, color, count){
+		    while(count--){
+                particles.push(new Particle(
+                    x,                      //X座標
+                    y,                      //Y座標
+                    rndFloat(5, 15),        //硬幣尺寸
+                    rndFloat(0, 180),       //旋轉角度
+                    color,                  //硬幣顏色
+                    6 * rndFloat(-1, 1),    //水平初始速度
+                    rndFloat(-50, 0),       //垂直初始速度(往上多)
+                    rndFloat(0.01, 0.1)     //旋轉速度
+                ));
+            }
+        }
+	
+        var update =function(){
+            // ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            // ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (var i=0, particle; particle = particles[i]; i++){
+                particle.update();
+                particle.draw();
+            }
+        }
+        
+        var makeBoom = function(mouseX, mouseY){
+            var x = mouseX || rndFloat(0, ctx.canvas.width);
+            var y = mouseY || rndFloat(0, ctx.canvas.height);
+            
+            createExplosion(x, y, shadowColor, 15);
+            createExplosion(x, y, "#c37511", 10);
+            createExplosion(x, y, "#e7a22b", 10);
+            createExplosion(x, y, "#ffd222", 5);
+        }
+        
+        window.onload = function(){
+            setInterval(update, 1000/frameRate);
+
+            document.body.addEventListener('touchstart',function(e){
+                makeBoom(e.pageX, e.pageY);
+                e.preventDefault();
+				e.stopPropagation();
+            });
+            
+            document.body.addEventListener('click',function(e){
+                makeBoom(e.pageX, e.pageY);
+                e.preventDefault();
+				e.stopPropagation();
+            });
+        }
+        
+        window.onresize = function(){
+            canvas.width  = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=640, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes" />
+    <!--以上勿動 -->
+    <title>Vpon</title>
+</head>
+<body>
+</body>
+<script>
+    var parseParamsFromUrl = function () {
+        var params = {};
+
+        var url = window.location.toString();
+        var key = '';
+        var value = '';
+
+        if (url.indexOf('?') != -1) {
+            var ary = url.split('?')[1].split('&');
+            for (var i in ary) {
+                key = ary[i].split('=')[0];
+                value = decodeURIComponent(ary[i].split('=')[1]);
+
+                params[key] = value;
+            }
+        }
+        return params;
+    };
+
+    var params = parseParamsFromUrl();
+
+    function callVideo() {
+        //a2 doc: /usr/local/adon/xpon-html/8a80818255dd84900155fcae62b503ee/
+        var webview = "http://tw.adon.vpon.com/xpon/activity/8a80818255dd84900155fcb3371603f0/webview.html";
+
+        //vpsdk.useCustomClose(undefined, undefined, true);    //使用cutom close
+        vpsdk.openVideoEx(
+            undefined, //_completeCallback
+            undefined, // _errorCallback
+            'http://tw-video.vpon.com/video/LIGHT_ISVC20160519.mp4', // video url   //========改影片路徑
+            { // _layoutParams
+                //"p_t": "vw",          //直的,w=web, v=video顯示設定
+                //"p_v_pos": "bottom",  //====影片位置 top/ middle/ bottom / full
+                "l_t": "vw",            //橫的
+                "bk_c": 0x00000000,     //背景色 argb
+                "w_in_front": true,     //webview是否在前
+                "auto_replay": false,   //播完是否自動重播
+                "auto_start" : true     //進場是否自動播放
+            },
+            false,                      //_endedCloseBtn
+            false,                       //_autoClose
+            3,                          //_countDownInSec, 影片播放幾秒後顯示close
+            '%dsecs',                   //_countDownText
+            undefined,                  //Tracking id
+            undefined, //_btns(額外文字連結)
+            // [
+            //    {
+            //     "action":"open_url",
+            //     "launch_type":"outapp",
+            //     "btn_text":encodeURIComponent('了解更多'),
+            //     "data":{
+            //         "u": "https://www.facebook.com/lkkhk/?ref=aymt_homepage_panel",
+            //         "custom_close":0,
+            //         "show_prog_bar":1,
+            //         "show_nav_bar":1,
+            //         "use_webview_load_url": 1
+            //     }
+            //   }
+            // ], //====(optional)_btns(額外文字連結)
+            true,                       //_mute 是否靜音
+            webview,                    //_webUrl
+            true,                       //_closeParent
+            undefined,                  //_brandIconU
+            undefined,                  //_brandText
+            params["adid"],             //_adid
+            params["bid"],              //_bannerid
+            58,                         //_totaltime   //========改秒數(減兩秒)
+            params["uid"],              //_uid
+            undefined,                  //未知
+            undefined                   //是否鎖回上一頁(Andoird)
+        );
+    }
+</script>
+</html>

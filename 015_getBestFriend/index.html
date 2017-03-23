@@ -1,0 +1,404 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=640; user-scalable=0;">
+    <title>the Best Facebook Friends｜Light's works</title>
+    <style>
+        html, body{ margin: 0; width: 100%; height: 100%; background: #EEE;}
+        #wrapper{ 
+            position: relative; 
+            width: 100%; 
+            max-width: 640px; 
+            height: auto; 
+            min-height: 100%; 
+            margin:0 auto;     
+            text-align: center;
+        }
+
+        #wrapper canvas{position: relative; margin:0 auto;}
+        .btn {
+            border-radius: 10px;
+            padding: 50px 0;
+            font-size: 1.5em;
+            font-weight: 500;
+            display: inline-block;
+            cursor: pointer;
+            background: #3b5998;
+            color: #FFF;
+        }
+
+        #BTN_GetFriend{
+            position: relative;
+            display:block;
+            text-align: center;
+            margin:20px auto;
+            width: 600px;
+            font-size: 2em;
+        }
+
+        #Loading{
+            width: 100%; 
+            height: 100%; 
+            position: fixed; 
+            top: 0px; 
+            left: 0px;
+            z-index: 999; 
+            background: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <div id='fb-root'></div>
+
+    <div id="Loading">
+        <div style="width:50px; height:50px; left:50%; top:50%; margin-left:-25px; margin-top: -25px; position:absolute;">
+            <svg width='50px' height='50px' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-ring"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><defs><filter id="uil-ring-shadow" x="-100%" y="-100%" width="300%" height="300%"><feOffset result="offOut" in="SourceGraphic" dx="0" dy="0"></feOffset><feGaussianBlur result="blurOut" in="offOut" stdDeviation="0"></feGaussianBlur><feBlend in="SourceGraphic" in2="blurOut" mode="normal"></feBlend></filter></defs><path d="M10,50c0,0,0,0.5,0.1,1.4c0,0.5,0.1,1,0.2,1.7c0,0.3,0.1,0.7,0.1,1.1c0.1,0.4,0.1,0.8,0.2,1.2c0.2,0.8,0.3,1.8,0.5,2.8 c0.3,1,0.6,2.1,0.9,3.2c0.3,1.1,0.9,2.3,1.4,3.5c0.5,1.2,1.2,2.4,1.8,3.7c0.3,0.6,0.8,1.2,1.2,1.9c0.4,0.6,0.8,1.3,1.3,1.9 c1,1.2,1.9,2.6,3.1,3.7c2.2,2.5,5,4.7,7.9,6.7c3,2,6.5,3.4,10.1,4.6c3.6,1.1,7.5,1.5,11.2,1.6c4-0.1,7.7-0.6,11.3-1.6 c3.6-1.2,7-2.6,10-4.6c3-2,5.8-4.2,7.9-6.7c1.2-1.2,2.1-2.5,3.1-3.7c0.5-0.6,0.9-1.3,1.3-1.9c0.4-0.6,0.8-1.3,1.2-1.9 c0.6-1.3,1.3-2.5,1.8-3.7c0.5-1.2,1-2.4,1.4-3.5c0.3-1.1,0.6-2.2,0.9-3.2c0.2-1,0.4-1.9,0.5-2.8c0.1-0.4,0.1-0.8,0.2-1.2 c0-0.4,0.1-0.7,0.1-1.1c0.1-0.7,0.1-1.2,0.2-1.7C90,50.5,90,50,90,50s0,0.5,0,1.4c0,0.5,0,1,0,1.7c0,0.3,0,0.7,0,1.1 c0,0.4-0.1,0.8-0.1,1.2c-0.1,0.9-0.2,1.8-0.4,2.8c-0.2,1-0.5,2.1-0.7,3.3c-0.3,1.2-0.8,2.4-1.2,3.7c-0.2,0.7-0.5,1.3-0.8,1.9 c-0.3,0.7-0.6,1.3-0.9,2c-0.3,0.7-0.7,1.3-1.1,2c-0.4,0.7-0.7,1.4-1.2,2c-1,1.3-1.9,2.7-3.1,4c-2.2,2.7-5,5-8.1,7.1 c-0.8,0.5-1.6,1-2.4,1.5c-0.8,0.5-1.7,0.9-2.6,1.3L66,87.7l-1.4,0.5c-0.9,0.3-1.8,0.7-2.8,1c-3.8,1.1-7.9,1.7-11.8,1.8L47,90.8 c-1,0-2-0.2-3-0.3l-1.5-0.2l-0.7-0.1L41.1,90c-1-0.3-1.9-0.5-2.9-0.7c-0.9-0.3-1.9-0.7-2.8-1L34,87.7l-1.3-0.6 c-0.9-0.4-1.8-0.8-2.6-1.3c-0.8-0.5-1.6-1-2.4-1.5c-3.1-2.1-5.9-4.5-8.1-7.1c-1.2-1.2-2.1-2.7-3.1-4c-0.5-0.6-0.8-1.4-1.2-2 c-0.4-0.7-0.8-1.3-1.1-2c-0.3-0.7-0.6-1.3-0.9-2c-0.3-0.7-0.6-1.3-0.8-1.9c-0.4-1.3-0.9-2.5-1.2-3.7c-0.3-1.2-0.5-2.3-0.7-3.3 c-0.2-1-0.3-2-0.4-2.8c-0.1-0.4-0.1-0.8-0.1-1.2c0-0.4,0-0.7,0-1.1c0-0.7,0-1.2,0-1.7C10,50.5,10,50,10,50z" fill="#3b5998" filter="url(#uil-ring-shadow)"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" repeatCount="indefinite" dur="1s"></animateTransform></path></svg>
+        </div>
+    </div>
+
+    <div id="wrapper">
+        <div id="BTN_GetFriend" class="btn">To get your the best friends.</div>
+    </div>
+
+   
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+
+    <script>
+        //添加原生Date prototype
+        Date.prototype.addDays = function(days){
+            var dat = new Date(this.valueOf());
+            dat.setDate(dat.getDate() + days);
+            return dat;
+        }
+
+        //Function 亂數Int==========================================================
+		var RndInt = function(min, max) {
+			return Math.floor(Math.random()*(max - min + 1) + min);
+		}
+
+
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '583909008447009',//請輸入自己的Facebook Application ID, Application需取得user_posts這項權限
+                xfbml      : true,
+                version    : 'v2.7'
+            });
+            
+            //FB.init後才檢查是否已登入
+            checkLogin();
+            $('#Loading').hide();
+        };
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+        
+        var FBID = '';          //記錄使用者Facebook ID
+        var FBName = '';        //記錄使用者Facebook Name
+        var friendList = {};    //儲存朋友各類資訊
+        var countMount = 0;     //紀錄未完成事件數目
+        
+        //判斷是否登入 與 應用程式已授權
+        var checkLogin = function(){
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    $('#BTN_GetFriend').unbind().bind('click',function(){
+                        $('#Loading').show();
+                        loginFun(response);
+                    });
+                }else {
+                    $('#BTN_GetFriend').unbind().bind('click',function(){
+                        $('#Loading').show();
+                        unLoginFun();
+                    });
+                }
+            });
+        }
+        
+        //確認已登入 與 應用程式已授權 後之動作
+        var loginFun = function(response){
+            FBID = response.authResponse.userID;
+            accessToken = response.authResponse.accessToken;
+            getUserName();
+            getUserPosts();
+        }
+        
+        //取得使用者姓名
+        var getUserName = function() {
+            FB.api('/me', function (response) {
+                FBName = response.name;
+            });
+        }
+        
+        //Facebook 尚未登入 或應用程式上未授權之動作
+        var unLoginFun = function(){
+            FB.login(function (response) {
+                if (response.authResponse) {
+                    loginFun(response);
+                } else {
+                    alert('請同意應用程式授權');
+                    $('#Loading').hide();
+                }
+            }, {scope: 'user_posts,user_friends'});
+        }
+        
+        //取得使用者塗鴉牆上的資料
+        var getUserPosts = function(){
+            friendList = {};    //將friendList淨空
+            var nowDate = new Date();
+            var yearAgo = nowDate.addDays(-365*2);  //只取得兩年內的資料
+            FB.api('/me/feed?fields=id&since='+ parseInt(Date.parse(yearAgo) / 1000) + '&limit=275',function (response) {
+                if (response && !response.error) {
+                    $.each(response.data, function(key, value) {
+                        getPostsInfo(value.id);//撈取發文資料
+                    });
+                }else{
+                    
+                }
+                
+                //判斷事件是否都執行完
+                countMount--;
+                if(countMount < 0) showFinal();
+            });
+        }
+        
+        //撈取發文資料
+        var getPostsInfo = function(postID, isSub){
+            countMount++;
+            
+            //只取 likes, comments 和 width_tags 三種資料
+            FB.api('/' + postID + '?fields=likes.limit(1000),comments.limit(1000),with_tags.limit(1000)',function (response) {
+                if (response && !response.error) {
+                    //解析每則 Comment 資訊
+                    if(response.comments){
+                        $.each(response.comments.data, function(key, value) {
+                            addfriendList(value.from.id, value.from.name);
+                            if(!isSub) getPostsInfo(value.id, true);
+                        });
+                    }
+                    
+                    //解析每個 Like 資訊
+                    if(response.likes){
+                        $.each(response.likes.data, function(key, value) {
+                            addfriendList(value.id, value.name);
+                        });
+                    }
+                    
+                    //解析每個 Tag 資訊
+                    if(response.with_tags){
+                        $.each(response.with_tags.data, function(key, value) {
+                            addfriendList(value.id, value.name);
+                        });
+                    }
+                }
+                
+                //判斷事件是否都執行完
+                countMount--;
+                if(countMount < 0) showFinal();
+            });
+        }
+        
+        var addfriendList = function(FID, Name){
+            if(FID==FBID) return; //自己不加入陣列
+
+            //判斷該朋友資訊是否已在 friendList 裡，若無則初始化，有 count 加一
+            if(!friendList[FID]) friendList[FID] = {'ID': FID, 'name': Name, 'count': 1};
+            else friendList[FID].count++;
+        }
+        
+        //最後程序：將 friendList 依 count 多寡重新排序，並添加至畫面
+        var showFinal = function(){
+            //將 friendList 轉成 array，並加以排序
+            var friendSort = Object.keys(friendList).map(function(k){return friendList[k]}).sort(function(a,b){return b.count-a.count});
+
+            var totalComplete = 0;
+            var friends = new Array();
+            var friendInfo = [
+                {x:240,y:47,size:90},
+                {x:360,y:60,size:90},
+                {x:130,y:58,size:90},
+                {x:10,y:60,size:90},
+                {x:500,y:75,size:90}
+            ]
+
+            friends.push({name:FBName, img:new Image()});
+            friends[0].img.crossOrigin='anonymous';
+            friends[0].img.onload = checkImgLoad;
+            friends[0].img.src = 'https://graph.facebook.com/' + FBID + '/picture?height=90&width=90';
+
+            for(var i=0;i<Math.min(friendSort.length,4);i++){
+                friends.push({name:friendSort[i].name,img:new Image()});
+                friends[i+1].img.crossOrigin='anonymous';
+                friends[i+1].img.onload = checkImgLoad;
+                friends[i+1].img.src = 'https://graph.facebook.com/' + friendSort[i].ID + '/picture?height=90&width=90';
+            }
+
+            //人數不足五人時，再額外撈其他好友
+            if(friends.length<5) supplyFriendList();
+ 
+            function supplyFriendList(){
+                var friendList = new Array();
+                getFriendList();
+                function getFriendList(nextTag){
+                    var selectStr = '/me/taggable_friends?fields=name,picture.width(90).height(90)&limit=250';
+                    if(nextTag) selectStr += '&after=' + nextTag;
+                    FB.api(selectStr, function (response) {
+                        if (response && !response.error) {
+                            addFriend:
+                            for (var i = 0; i<response.data.length; i++) {
+                                for(var j=0; j<friends.length;j++){
+                                    if(friends[j].name == response.data[i].name) continue addFriend;
+                                }
+                                friendList.push({name: response.data[i].name, img: response.data[i].picture.data.url});
+                            }
+
+                            if(response.paging.next) getFriendList(response.paging.cursors.after);
+                            else addFriendToList(friendList);
+                        } else {
+                            alert('some error');
+                        }
+                    });
+                }
+            }
+
+            function addFriendToList(friendList){
+                var needAmount = 5-friends.length;
+                for(var i=0;i<needAmount;i++){
+                    var target = RndInt(0, friendList.length-1);
+                    
+                    friends.push({name:friendList[target].name,img:new Image()});
+                    var index = friends.length-1;
+                    friends[index].img.crossOrigin='anonymous';
+                    friends[index].img.onload = checkImgLoad;
+                    friends[index].img.src = friendList[target].img;
+                    friendList.splice(target,1);
+                }
+            }
+
+            function checkImgLoad(e){
+                totalComplete++;
+                if(totalComplete >= 5) setResult();
+            }
+
+            function setResult(){
+                var bgImg = new Image();
+                bgImg.onload = function(){
+                    var resultCAV = document.createElement('canvas');
+                    resultCAV.setAttribute('id', 'resultCAV');
+                    resultCAV.width = 600;
+                    resultCAV.height = 315;
+                    var ctx = resultCAV.getContext('2d');
+                    ctx.strokeStyle='#222';
+                    ctx.lineWidth=5;
+                    ctx.fillStyle='white';
+                    ctx.font='15px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.drawImage(bgImg,0,0);
+                    for(var i=0, friend; friend=friends[i];i++){
+                        ctx.fillRect(
+                            friendInfo[i].x-2, 
+                            friendInfo[i].y-2, 
+                            friendInfo[i].size+4, 
+                            friendInfo[i].size+4
+                            );
+                        ctx.drawImage(
+                            friend.img, 
+                            friendInfo[i].x, 
+                            friendInfo[i].y, 
+                            friendInfo[i].size, 
+                            friendInfo[i].size
+                        );
+
+
+                        ctx.strokeText(
+                            friend.name,
+                            friendInfo[i].x+friendInfo[i].size*.5,
+                            friendInfo[i].y+friendInfo[i].size+20
+                        );
+                        ctx.fillText(
+                            friend.name,
+                            friendInfo[i].x+friendInfo[i].size*.5,
+                            friendInfo[i].y+friendInfo[i].size+20
+                        );
+                    }
+
+                    document.getElementById('wrapper').appendChild(resultCAV);
+
+                    $('#BTN_GetFriend').html('To share the picture to Facebook').unbind().bind('click',savaPic);
+
+                    $('#Loading').hide();
+
+                }
+                bgImg.src='bg.jpg';
+            }
+        }
+
+        
+
+        var savaPic = function(){
+            $('#Loading').show();
+
+            var resultCAV = document.getElementById('resultCAV');
+            var PicBase64 = resultCAV.toDataURL('image/png');
+            
+            $.ajax({
+                url: 'http://cmp.vpadn.com/api_upload_pic/upload_pic.php',
+                type: 'post',
+                datatype:'JSON',
+                data: {
+                    pic: PicBase64,
+                    campaignsID: 'POC_BestFriend',
+                    imgtype: 'png',
+                    isFinal:true,
+                },
+                success: function (data, txtSataus) {
+                    if(data.code == 0){
+                        $('#BTN_GetFriend').unbind().bind('click',function(){
+                            shareToFacebook(data.imgUrl);
+                        });
+                        shareToFacebook(data.imgUrl);
+                    }else{
+                        alert(data.msg);
+                    }
+                },
+                error: function (e) {
+                    alert('系統發生錯誤，請稍候再試');
+                }
+            });
+        }
+
+        var shareToFacebook=function(imgUrl){
+            $('#Loading').show();
+
+            var LinkInfo = {
+                URL: 'http://www.vpon.com/',
+                Title: '可行性評估-fb登入抓取好友大頭照合成照片後分享',
+                Descript: '自己與最好的四位朋友',
+                Caption: '有的放矢行動行銷股份有限公司,Vpon Inc.',
+                Picture: imgUrl
+            }
+
+            FB.ui({
+                method: 'feed',
+                title: LinkInfo.Title,
+                link: LinkInfo.URL,
+                picture: LinkInfo.Picture,
+                description: LinkInfo.Descript,
+                caption: LinkInfo.Caption
+            }, function (response) {
+                if (response && response.post_id) {
+                    alert('分享成功');
+                } else {
+                    alert('分享失敗');
+                }
+                $('#Loading').hide();
+            });
+        }
+    </script>
+</body>
+</html>

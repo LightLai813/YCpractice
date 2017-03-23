@@ -1,0 +1,215 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Emotion Test</title>
+    <style>
+		html, body{
+			margin: 0;
+			width: 100%;
+			font-family: Helvetica;
+		}
+
+		.btn{
+			border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight:500;
+            cursor: pointer;
+		}
+
+		#Btn_UploadImg{
+            text-align: center;
+            width:70px;
+			color: #FFF;
+			background: #474a4d;
+		}
+        
+        input[type=text]{
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            border: 1px solid #E1E1E1;
+        }
+        
+        #Area_Edit{
+            margin: 10px;
+        }
+        
+        #Area_Edit > div{
+            margin-bottom: 10px;   
+        }
+        
+        #DIV_Result{
+            position: relative;
+            margin: 10px;
+        }
+        
+        .faceDIV{
+            position:absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .faceDIV .faceRect{
+            position: absolute;
+        }
+        
+        .faceDIV .faceScores {
+            margin: 10px;
+            position: absolute;
+            padding: 5px;
+            width: 120px;
+            height: 120px;
+            border: #CCC solid 1px;
+            background: #EFEFEF;
+            z-index: 999;
+            display: none;
+        }
+        
+        .faceDIV.on .faceScores {
+            display: block;
+        }
+	</style>
+</head>
+
+<body>
+    <div id="Area_Edit">
+        <div>提供圖片連結 <input type="text" id="IMG_Url" style="width: 1000px;" value="http://images.latinpost.com/data/images/full/75705/chile-soccer-team.jpg" /></div>
+        <div>或是上傳圖片 <input type="file" id="IMG_Upload" /></div>
+        <div id="Btn_UploadImg" class="btn">分析圖片</div>
+    </div>
+    
+    <div id="DIV_Result"></div>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript">
+        //apiKey可由此處取得 https://www.projectoxford.ai/emotion 
+        var apiKey = '8cafd590940d4a1a9940a9762dba888d';
+
+        $('#Btn_UploadImg').bind('click',function () {
+            var imgFile,        //傳輸檔案內容主體
+                ContentType;    //傳輸檔案Content-Type
+            if($('#IMG_Url').val() !== ''){
+                imgFile = "{\"url\": \"" + $('#IMG_Url').val() + "\"}";
+                ContentType = "application/json";
+            } else if(document.getElementById('IMG_Upload').files[0] !== undefined ){
+                imgFile = document.getElementById('IMG_Upload').files[0];
+                ContentType = "application/octet-stream";
+            } else {
+                alert('請輸入圖片連結 或 上傳圖片');
+                return false;
+            }
+            
+            callFaceDetecionAPI(imgFile, ContentType);
+        });
+        
+        function callFaceDetecionAPI(imgFile, ContentType) {
+            $.ajax({
+                url: 'https://api.projectoxford.ai/emotion/v1.0/recognize',
+                beforeSend: function (xhrObj) {
+                    xhrObj.setRequestHeader("Content-Type", ContentType);
+                    xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", apiKey);
+                },
+                type: "POST",
+                data: imgFile,
+                processData: false,
+                success: function(response){
+                    showResult(response);
+                },
+                error: function(){
+                    console.log('error');
+                }
+            });
+        }
+        
+        function showResult(data) {
+            $('#DIV_Result').empty().append('<img src="' + $('#IMG_Url').val() + '" />');
+
+            for(var i=0, len=data.length; i<len; i++){
+                var index = parseInt(i+1);
+                
+                var faceRect = data[i].faceRectangle;
+                var faceScore = data[i].scores;
+                
+                var strokeColor = '';
+                var theHighestScore = 0;
+                
+                var color = d3.scale.category10();
+                var Data = [
+                            { Type: '悲傷', Count: faceScore.sadness},
+                            { Type: '驚喜', Count: faceScore.surprise},
+                            { Type: '厭惡', Count: faceScore.disgust},
+                            { Type: '憤怒', Count: faceScore.anger},
+                            { Type: '恐懼', Count: faceScore.fear},
+                            { Type: '鄙視', Count: faceScore.contempt},
+                            { Type: '快樂', Count: faceScore.happiness},
+                            { Type: '無感', Count: faceScore.neutral}
+                            ];
+                            
+                var $faceDIV = $('<div/>', {class: 'faceDIV'});
+                $faceDIV.appendTo('#DIV_Result');
+                $faceDIV.append('<div id="score' + index + '" class="faceScores" ></div>');
+                var scoreLeft = parseInt(faceRect.left + faceRect.width -1);
+                $('#score' + index).css({
+                    'left': scoreLeft + 'px',
+                    'top': parseInt(faceRect.top - 10) + 'px',
+                });
+        
+                var s = d3.select('#score' + index)
+                    .append('svg')
+                        .attr('style','width:100%;height:100%;');
+                        
+                s.selectAll('text')
+                    .data(Data)
+                    .enter()
+                    .append('text')
+                        .attr("x", function(d) { return 0; })
+                        .attr("y", function(d, i){ return i * 15 + 10; })
+                        .text( function (d) { return d.Type; })
+                        .attr("font-family", "微軟正黑體")
+                        .attr("font-size", "12px")
+                        .attr("fill", "#444");   
+
+                s.selectAll('rect')
+                    .data(Data)
+                    .enter()
+                    .append('rect')
+                        .attr({
+                            'fill':function(d, i){ 
+                                if(d.Count > theHighestScore){
+                                    theHighestScore = d.Count;
+                                    strokeColor = color(i);
+                                }
+                                return color(i); 
+                            },
+                            'width':function(d, i){ return d.Count * 100; },
+                            'height':12,
+                            'x':30,
+                            'y':function(d, i){ return i * 15; }
+                        });        
+                
+                            
+                $faceDIV.append('<div id="face' + index + '" class="faceRect" ></div>');
+                $('#face' + index).css({
+                    'left': faceRect.left + 'px',
+                    'top': faceRect.top + 'px',
+                    'width': faceRect.width + 'px',
+                    'height': faceRect.height + 'px',
+                    'border': strokeColor + ' solid 2px'
+                });
+                
+                $faceDIV.hover(
+                    function() {
+                        $(this).addClass('on');
+                    }, function() {
+                        $(this).removeClass('on');
+                    }
+                )
+            }
+        }
+    </script>
+</body>
+
+</html>

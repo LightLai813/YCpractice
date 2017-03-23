@@ -1,0 +1,41 @@
+html, body{ margin: 0; width: 100%; height: 100%; background: #EEE;}
+
+.wrapper{ position: relative; width: 100%; max-width: 640px; height: auto; min-height: 100%; margin:0 auto; }
+
+header {position: relative; width: 100%; height: 50px; background: #CCC; text-align: center; font-size: 1.5em; line-height: 50px; font-family: '微軟正黑體';}
+#editArea {position: relative; width: 90%; height: auto; margin: 20px auto; text-align: center;}
+#editArea img.userImage {position: relative; z-index:1; width: 100%; }
+
+#PNL_Edit {display:none;}
+#patternPicker{ position:relative; width:500px; height: 100px; margin:10px auto; z-index: 10; list-style: none; padding: 0;}
+#patternPicker > li {position: relative; width: 80px; height: 80px; margin:9px; float: left; border: #BBB solid 1px;  }
+#patternPicker .pattern{ position:absolute; width: 80px; height: 80px; cursor: pointer;  background-size: 100% 100%;}
+
+#tapeArea {position: absolute; z-index: 10; width: 100%; height: 100%; top:0; left:0; overflow: hidden;}
+#tapeArea #cancelArea {position: absolute; z-index: 1; width: 100%; height: 100%;}
+#tapeArea .tape {position: absolute;}
+
+#CVS_Result {display: none; }
+
+footer{position: relative; width: 100%; height: 33px; line-height:33px; margin-top: -33px; text-align: center; background: #444; color: #FFF; font-size: 0.5em; }
+#BTN_rotate{position: absolute;
+    padding: 10px 20px;
+    display: inline-block;
+    border: 1px solid #AAA;
+    right: 0;
+    bottom: -12px;}
+/*常用元件*/
+.btn {
+    border-radius: 5px;
+    display: block;
+    cursor: pointer;
+    margin: 5px auto;
+    font-size: 1em;
+    text-align: center;
+    width: 90%;
+    padding: 20px 0;
+    
+    background: #AAA;
+    color: #FFF;
+}
+.shadow { text-shadow: 1px 1px 2px #000;}

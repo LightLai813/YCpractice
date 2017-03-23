@@ -1,0 +1,150 @@
+@font-face {
+    font-family: "slk";
+    src: url(../font/slkscr.ttf) format("truetype");
+}
+
+html, body{
+    margin: 0; 
+    width: 100%; 
+    height: 100%; 
+    font-family: 'slk';
+    background: #5392fb;
+    
+    -webkit-text-size-adjust:none;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+
+    -webkit-text-size-adjust: 100%; /*解決IOS 翻轉螢幕字型會變大變小的問題 Prevent font scaling in landscape while allowing user zoom */
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -khtml-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-backface-visibility: hidden; 
+}
+.wrapper{
+    position: relative; 
+    width: 640px; 
+    height: auto; 
+    min-height: 100%; 
+    overflow: hidden;
+    margin:0 auto; 
+    background: #5392fb;
+}
+
+#Jumper{
+    position: absolute; 
+    width: 130px; 
+    height: 175px; 
+    left: 50%;
+    bottom: 300px;
+    margin-left: -65px;
+    margin-top: -85px;
+    background-image: url(../images/jumper.png); 
+    background-position-x: 0;
+
+    z-index: 100;
+}
+#Jumper.headRight{
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
+
+#countdown{
+    position: absolute;
+    font-size: 300px;
+    color: #D00;
+    top: 15%;
+    width: 100%;
+    text-align: center;
+
+    z-index: 200;
+}
+
+#score{
+    position: absolute;
+    padding: 20px;
+    font-size: 50px;
+    color: #FFF;
+    right: 0;
+
+    z-index: 200;
+}
+
+#grass{
+    position: absolute; 
+    width: 640px; 
+    height: 300px; 
+    bottom: 0;
+    background-image: url(../images/grass.png); 
+
+    z-index: 200;
+}
+
+.pudding{
+    position: absolute; 
+    width: 93px; 
+    height: 93px; 
+    margin-left: -45px;
+    margin-top: -45px;
+    background-image: url(../images/pudding.png); 
+    background-size: auto 100%;
+
+    z-index: 50;
+}
+
+.pudding.big{
+    width: 180px; 
+    height: 180px; 
+    margin-left: -95px;
+    margin-top: -95px;
+}
+
+
+.pudding {
+    -webkit-animation: puddingAni 1.5s linear infinite;
+	-moz-animation: puddingAni 1.5s linear infinite;
+	-o-animation: puddingAni 1.5s linear infinite;
+	animation: puddingAni 1.5s linear infinite;
+}
+@-webkit-keyframes puddingAni {
+    0%   {background-position-x: left;}
+    50%   {background-position-x: left;}
+    50.1%  {background-position-x: right;}
+    100%  {background-position-x: right;}
+}
+@-moz-keyframes puddingAni {
+    0%   {background-position-x: left;}
+    50%   {background-position-x: left;}
+    50.1%  {background-position-x: right;}
+    100%  {background-position-x: right;}
+}
+@-o-keyframes puddingAni {
+    0%   {background-position-x: left;}
+    50%   {background-position-x: left;}
+    50.1%  {background-position-x: right;}
+    100%  {background-position-x: right;}
+}
+@keyframes puddingAni {
+    0%   {background-position-x: left;}
+    50%   {background-position-x: left;}
+    50.1%  {background-position-x: right;}
+    100%  {background-position-x: right;}
+}
+
+.cloud{
+    position: absolute; 
+    width: 124px; 
+    height: 99px; 
+    background-image: url(../images/cloud.png); 
+
+    z-index: 1;
+}

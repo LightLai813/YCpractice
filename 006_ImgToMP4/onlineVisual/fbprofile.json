@@ -1,0 +1,20 @@
+{
+  "apps": [
+    {
+      "name": "fbprofile",
+      "script": "./HtmlServer.js",
+      "instances": 0,
+      "exec_mode": "fork",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": "20001",
+      },
+      "error_file": "./log/err.log",
+      "out_file": "./log/out.log",
+      "pid_file": "./log/fbprofile.pid",
+      "log_date_format" : "YYYY-MM-DD HH:mm Z",
+      "watch": true,
+      "ignore_watch": ["./log", "./node_modules"]
+    }
+  ]
+}

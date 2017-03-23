@@ -1,0 +1,354 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>換頁特效</title>
+    <style>
+        html,
+        body {
+            font-family: "Montserrat", "游ゴシック", "Yu Gothic", YuGothic, "Hiragino Kaku Gothic ProN", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, "ＭＳゴシック", sans-serif;
+        }
+        
+        a {
+            text-decoration: none;
+        }
+        
+        .posts {
+            position: relative;
+            width: 100%;
+        }
+        
+        .posts .post {
+            position: relative;
+            display: block;
+            margin: 30px 1vw;
+            width: 22vw;
+            opacity: 0;
+            letter-spacing: 2px;
+            float: left;
+        }
+        
+        .posts .post figure {
+            position: relative;
+            display: block;
+            width: 100%;
+            margin: 0;
+            padding-bottom: 64%;
+            overflow: hidden;
+        }
+        
+        .posts .post figure img {
+            display: block;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .info {
+            position: relative;
+        }
+        
+        .info:before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            background-repeat: no-repeat;
+            background-image: url(http://www.shime.co/wp-content/themes/shime/img/arrow.png);
+            background-position: center center;
+            background-size: contain;
+        }
+        
+        .info>div {
+            display: block;
+            color: #231F20;
+            font-weight: 900;
+        }
+        
+        .info>time {
+            display: block;
+            margin-top: 6px;
+            color: #F0573A;
+        }
+        
+        .info>h4 {
+            margin-top: 8px;
+            color: #939597;
+            font-size: 13px;
+            line-height: 140%;
+        }
+        
+        .pagination {
+            margin-top: 100px;
+            text-align: center;
+            clear: both;
+        }
+        
+        .pagination .page {
+            margin: 0 5px;
+            display: inline-block;
+            padding: 0;
+            width: 25px;
+            height: 25px;
+            color: #231F20;
+            font-size: 18px;
+            line-height: 26px;
+            border: none;
+            background: #fff;
+            cursor: pointer;
+            -webkit-transition: 0.3s all ease;
+            -moz-transition: 0.3s all ease;
+            transition: 0.3s all ease;
+            cursor: pointer;
+        }
+        
+        .pagination .page.current {
+            color: #fff;
+            background: #F0573A;
+            -webkit-transition: 0.3s all ease;
+            -moz-transition: 0.3s all ease;
+            transition: 0.3s all ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="posts">
+            <a class="post" href="javascript: void(0);">
+                <figure></figure>
+                <div class="info">
+                    <div></div>
+                    <time></time>
+                    <h4></h4>
+                </div>
+            </a>
+            <a class="post" href="javascript: void(0);">
+                <figure></figure>
+                <div class="info">
+                    <div></div>
+                    <time></time>
+                    <h4></h4>
+                </div>
+            </a>
+            <a class="post" href="javascript: void(0);">
+                <figure></figure>
+                <div class="info">
+                    <div></div>
+                    <time></time>
+                    <h4></h4>
+                </div>
+            </a>
+            <a class="post" href="javascript: void(0);">
+                <figure></figure>
+                <div class="info">
+                    <div></div>
+                    <time></time>
+                    <h4></h4>
+                </div>
+            </a>
+        </div>
+        <div class="pagination">
+            <span class="page current">1</span>
+            <span class="page ">2</span>
+        </div>
+    </div>
+    <script type="text/javascript" src="//code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+        // 新聞資料
+        var pageInfo = [
+            [{
+                pic: 'http://img.technews.tw/wp-content/uploads/2016/10/20162046/102370182703-624x430.png',
+                cate: 'Works',
+                time: '2016.10.19',
+                title: '「hello again」的 Mac 傳承，蘋果台灣時間 10/28 凌晨將發表新電腦'
+
+            }, {
+                pic: 'http://img.technews.tw/wp-content/uploads/2016/08/22093355/AP_832899693686-624x416.jpg',
+                cate: 'News',
+                time: '2016.08.19',
+                title: '格羅方德 2016 上半年虧損逾台幣 400 億 重慶設廠計畫也最終告吹'
+
+            }, {
+                pic: 'http://img.technews.tw/wp-content/uploads/2016/10/21014751/a00tgvzw.bmp',
+                cate: 'TechNews',
+                time: '2016.08.15',
+                title: '任天堂全新主機 Nintendo Swtich 發表，介於平板與主機間的新產品'
+
+            }, {
+                pic: 'http://attach.mobile01.com/attach/201607/mobile01-aa5da0c853a180d28932e39b6cb1ee72.jpg',
+                cate: 'Sport',
+                time: '2016.08.08',
+                title: '大谷翔平關門狂飆165公里 火腿晉級日本一總冠軍'
+
+            }],
+            [{
+                pic: 'http://www.shime.co/wp-content/uploads/2016/09/adc1331433591aef65bd05c217478037-460x300.png',
+                cate: 'WORK',
+                time: '2016.08.02',
+                title: '株式会社BOKURA'
+
+            }, {
+                pic: 'http://www.shime.co/wp-content/uploads/2016/09/f6d4b5658ff512a54db70b9fac94c376-460x300.jpg',
+                cate: 'WORK',
+                time: '2016.07.30',
+                title: '株式会社ココカラ・トラスト'
+
+            }, {
+                pic: 'http://www.shime.co/wp-content/uploads/2016/09/5fa092799eec1e8d9f79f1b01d0ec1b7-460x300.jpg',
+                cate: 'WORK',
+                time: '2016.07.19',
+                title: '曹洞宗総合研究センター'
+
+            }]
+        ];
+
+        var init = function() {
+            // 設定頁碼鈕 click 事件
+            var $pageBtn = $('.pagination .page');
+            $pageBtn.unbind().bind('click', function(e) {
+                $pageBtn.removeClass('current');
+                $(this).addClass('current');
+
+                var index = $(this).index();
+                setNew(index);
+            });
+
+            // 初始新聞設定
+            setNew(0);
+        }
+
+        // 新聞頁面處理
+        function setNew(index) {
+            var data = pageInfo[index]; // 抓取目標頁面新聞資料
+
+            $('.posts .post').each(function(i, elem) {
+
+                // 使用時間差，讓新聞批次顯示
+                setTimeout(function() {
+
+                    // 當新聞數量，不足框架數量時，將框架透明度設成 0
+                    if (data.length < i + 1) {
+                        $(elem).animate({
+                            opacity: 0
+                        }, 300, function() {
+                            $(this).find("img").css({
+                                opacity: 0
+                            }); // 裡面的圖片透明度也要設成0，避免下次過場時露餡
+                        });
+                        return false;
+                    }
+
+                    var newInfo = data[i];
+
+                    // 如果有新聞內容，將框架透明度顯示為 1
+                    $(elem).animate({
+                        opacity: 1
+                    }, 300);
+
+                    // 在框架內新增新聞圖片，初始透明度是0，慢慢淡入
+                    $('<img/>', {
+                            src: newInfo.pic,
+                            style: 'opacity: 0;'
+                        }).appendTo($(elem).find('figure'))
+                        .animate({
+                            opacity: 1
+                        }, 500);
+
+                    // lupin(要動態改變內容的元素, 類別, 目標內容)
+                    lupin($(elem).find('.info div'), 'category', newInfo.cate); // 分類特效
+                    lupin($(elem).find('.info time'), 'time', newInfo.time); // 時間特效
+                    lupin($(elem).find('.info h4'), 'title', newInfo.title); // 標題特效
+                }, i * 100);
+            });
+        }
+
+
+        function lupin(elem, mode, text) {
+            elem.html(''); // 先將元素內容清空
+
+            // 各種類別要使用的亂碼元素
+            var chars = {
+                category: "ABCDEFGHIJKLMNOPQRSTUVWXYZ", // 分類用
+                time: "0123456789.", // 日期用
+                title: text // 標題用(用標題本身字符)
+            };
+            var v = 30, // 替換速度(值越小越快，把這值調很大，讓動態變很慢，就可以看清楚動態樣子了)
+                l = text.length, // 字串長度
+                start = 0, // 要跑動態的起始字元
+                last = 0; // 要跑動態的結束字元
+
+            for (var i = 0; i < l; i++) {
+                setTimeout(function() {
+                    $('<span/>')
+                        .appendTo(elem)
+                        .text(chars[mode].charAt(Math.floor(Math.random() * chars[mode].length))); // 從 char 隨機取一個字元塞到元素內
+                }, i * v);
+
+                setTimeout(function() {
+                    start++; /*讓動態起始字元，慢慢向後遞移，這樣前面的字元，就會一個一個被固定*/
+                }, i * (v * 2));
+            }
+
+            var timer = setInterval(function() {
+                for (var i = start; i < l; i++) {
+
+                    // 當去塞入正確的字符
+                    if (start != last) {
+                        elem.find("span").eq(last).text(text.charAt(last++));
+                    }
+                    elem.find("span").eq(i).text(chars[mode].charAt(Math.floor(Math.random() * chars[mode].length)));
+                }
+            }, v);
+
+            // 當所有字串完成(時間等於 字串長度X(速度Ｘ2))
+            setTimeout(function() {
+                elem.text(text);
+                clearInterval(timer);
+            }, l * (v * 2));
+        }
+
+
+        function numberRunRun(elem, number, during) {
+            elem.html(''); // 先將元素內容清空
+
+
+            for (var i = 0; i < l; i++) {
+                setTimeout(function() {
+                    $('<span/>')
+                        .appendTo(elem)
+                        .text(chars[mode].charAt(Math.floor(Math.random() * chars[mode].length))); // 從 char 隨機取一個字元塞到元素內
+                }, i * v);
+
+                setTimeout(function() {
+                    start++; /*讓動態起始字元，慢慢向後遞移，這樣前面的字元，就會一個一個被固定*/
+                }, i * (v * 2));
+            }
+
+            var timer = setInterval(function() {
+                for (var i = start; i < l; i++) {
+
+                    // 當去塞入正確的字符
+                    if (start != last) {
+                        elem.find("span").eq(last).text(text.charAt(last++));
+                    }
+                    elem.find("span").eq(i).text(chars[mode].charAt(Math.floor(Math.random() * chars[mode].length)));
+                }
+            }, v);
+
+            // 當所有字串完成(時間等於 字串長度X(速度Ｘ2))
+            setTimeout(function() {
+                elem.text(text);
+                clearInterval(timer);
+            }, l * (v * 2));
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

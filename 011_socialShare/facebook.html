@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=640, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=no" />
+<!--以上勿動 -->
+<title>Vpon</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial,SimHei;
+            font-size: 63%;
+            background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpiZGBgOMOABpgYsAAKBQECDABS8gDW/CaiEQAAAABJRU5ErkJggg==");
+            background-size: 5px 5px;
+            min-height: 860px;
+        }
+
+        #crazyad { }
+        /*-勿動-*/
+        img {
+            border: none;
+            vertical-align: top;
+        }
+
+        #camain {
+            width: 580px;
+            height: 860px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -290px;
+            margin-top: -430px;
+            z-index: 5;
+            overflow: hidden;
+			background-color: #fff;
+        }
+
+        #camain div {
+            position: relative;
+        }
+
+        #customClick {
+            width: 520px;
+            height: 800px;
+			padding: 30px;
+        }
+
+		h2{
+			font-size: 2em;
+		}
+        .btn{
+			border-radius: 5px;
+    		padding: 20px 15px;
+    		display: block;
+    		cursor: pointer;
+    		margin: 5px;
+			font-size: 3em;
+            
+            background: #3b5998;
+			color: #FFF;
+		}
+		
+		#MSG_Result{
+			width: 100%;
+			text-align: center;
+			font-size: 3em;
+			color: #555;
+		}
+    </style>
+	<script type="text/javascript">
+
+	</script>
+</head>
+<body>
+    <!--crazyad必留，用來包所有div -->
+    <div id="crazyad">
+        <!--必留-->
+        <div id="camain"> 
+            <div id="customClick">
+				<div>
+					<p id="MSG_Result">等待動作</p>
+				</div>
+				<hr>
+                <div>
+	    	        <h2>一、使用FB.ui</h2>
+	    	        <div id="fb-root"></div>
+                    <div id="bShare1_1" class="btn">feed</div>
+                    <div id="bShare1_2" class="btn">share</div>
+                    <div id="bShare1_3" class="btn">share_open_graph</div>
+                    <div id="bShare1_4" class="btn">stream.publish</div>
+	            </div>
+	            <br/>
+	            <div>
+	    	        <h2>二、使用Dialog</h2>
+                    <div id="bShare2_1" class="btn">dialog/share</div>
+                    <div id="bShare2_2" class="btn">dialog/feed</div>
+                    <div id="bShare2_3" class="btn">sharer.php</div>
+	            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 此行註解勿動 -->
+	<script type="text/javascript" src="http://m.vpadn.com/tpl/html5/vpadn-logo-728x90_mb.js"></script>
+    <script type="text/javascript" src="http://m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+    <script type="text/javascript">
+        var appId = '1180856378633757';
+
+        var LinkInfo = {
+            URL: 'http://www.vpon.com/',
+            Title: 'Vpon威朋-大數據行動廣告平台',
+            Descript: 'Vpon威朋以大數據分析技術為基礎，為客戶精準投放行動廣告給目標受眾，每月於全亞洲觸及5億台不重複智慧型行動裝置，每日可競價流量高達120億。',
+            Caption: '有的放矢行動行銷股份有限公司,Vpon Inc.',
+            Picture: 'http://www.vpon.com/images/vponlogo.png'
+        }
+
+		//document.getElementById('bFbLogin').addEventListener('click', fFbLogin); 
+		document.getElementById('bShare1_1').addEventListener('click', function(e){fShare(e.target.id);}); 
+		document.getElementById('bShare1_2').addEventListener('click', function(e){fShare(e.target.id);}); 
+		document.getElementById('bShare1_3').addEventListener('click', function(e){fShare(e.target.id);}); 
+		document.getElementById('bShare1_4').addEventListener('click', function(e){fShare(e.target.id);}); 
+		document.getElementById('bShare2_1').addEventListener('click', function(e){fShare(e.target.id);}); 
+		document.getElementById('bShare2_2').addEventListener('click', function(e){fShare(e.target.id);}); 
+		document.getElementById('bShare2_3').addEventListener('click', function(e){fShare(e.target.id);}); 
+
+		window.fbAsyncInit = function() {
+		    FB.init({
+		      	appId      : appId,
+		      	xfbml      : true,
+		      	version    : 'v2.6'
+		    });
+		};
+
+		(function(d, s, id){
+		    var js, fjs = d.getElementsByTagName(s)[0];
+		    if (d.getElementById(id)) {return;}
+		    js = d.createElement(s); js.id = id;
+		    js.src = "//connect.facebook.net/en_US/sdk.js";
+		    fjs.parentNode.insertBefore(js, fjs);
+		 }(document, 'script', 'facebook-jssdk'));
+
+
+         var LinkInfo = {
+            URL: 'http://www.vpon.com/',
+            Title: 'Vpon威朋 - 大數據行動廣告平台',
+            Descript: 'Vpon威朋以大數據分析技術為基礎，為客戶精準投放行動廣告給目標受眾，每月於全亞洲觸及5億台不重複智慧型行動裝置，每日可競價流量高達120億。',
+            Caption: '有的放矢行動行銷股份有限公司,Vpon Inc.',
+            Picture: 'http://www.vpon.com/images/vponlogo.png'
+        }
+
+		var fShare = function(senderId){
+			document.getElementById('MSG_Result').innerHTML = '進行分享'; 
+			
+			var redirectUrl = '';
+
+			switch(senderId){
+				case 'bShare1_1': 	//FB.ui: feed
+					FB.ui({
+					  method: 'feed',
+					  name: LinkInfo.Title,
+					  link: LinkInfo.URL,
+					  picture: LinkInfo.Picture,
+					  description: LinkInfo.Descript,
+                      caption: LinkInfo.Caption
+					}, function (response) {
+				        if (response && !response.error_message) {
+				            document.getElementById('MSG_Result').innerHTML = '分享成功' + response.post_id;
+				        } else {
+				            document.getElementById('MSG_Result').innerHTML = '分享失敗';
+				        }
+				    });
+					break;
+
+				case 'bShare1_2': 	//FB.ui: share
+					FB.ui({
+				        method: 'share',
+				        title: LinkInfo.Title,
+				        href: LinkInfo.URL,
+				        picture: LinkInfo.Picture,
+					    description: LinkInfo.Descript,
+                        caption: LinkInfo.Caption
+				    }, function (response) {
+				        if (response && !response.error_message) {
+				            document.getElementById('MSG_Result').innerHTML = '分享成功';
+				        } else {
+				            document.getElementById('MSG_Result').innerHTML = '分享失敗';
+				        }
+				    });
+					break;
+
+				case 'bShare1_3': 	//FB.ui: share_open_graph
+					FB.ui({
+		                method: 'share_open_graph',
+		                action_type: 'og.likes',
+		                action_properties: JSON.stringify({
+		                    object: {
+		                        'title': LinkInfo.Title,
+		                        'image': LinkInfo.Picture,
+		                        'url': LinkInfo.URL,
+		                        'description': LinkInfo.Descript,
+		                    }
+		                })
+		            });
+					break;
+
+				case 'bShare1_4': 	//FB.ui: stream.publish
+					FB.ui({
+			        	method: 'stream.publish',
+			        	display: "iframe",
+			       		attachment: {
+			            	name: LinkInfo.Title,
+			            	caption: LinkInfo.Caption,
+			            	description: LinkInfo.Descript,
+			            	href: LinkInfo.URL,
+			            	media: [{ 'type': 'image', 'src': LinkInfo.Picture, 'width': '300', 'height': '66', 'href': LinkInfo.URL }],
+			        	}
+			    	}, function (response) {
+				        if (response && response.post_id) {
+				            document.getElementById('MSG_Result').innerHTML = '分享成功' + response.post_id;
+				        } else {
+				            document.getElementById('MSG_Result').innerHTML = '分享失敗';
+				        }
+			    	});
+					break;
+
+				case 'bShare2_1': 	//Url Direct: dialog/share
+					redirectUrl = 'https://www.facebook.com/dialog/share?app_id=' + appId + '&display=touch';
+					redirectUrl += '&name=' + encodeURIComponent(LinkInfo.Title);
+					redirectUrl += '&description=' + encodeURIComponent(LinkInfo.Descript);
+					redirectUrl += '&href=' + encodeURIComponent(LinkInfo.URL);
+					redirectUrl += '&picture=' + encodeURIComponent(LinkInfo.Picture);
+					redirectUrl += '&redirect_uri=' + encodeURIComponent(LinkInfo.URL);
+					break;
+
+				case 'bShare2_2': 	//Url Direct: dialog/feed
+					redirectUrl = 'https://m.facebook.com/dialog/feed?app_id=' + appId + '&display=touch';
+				    redirectUrl += '&name=' + encodeURIComponent(LinkInfo.Title);
+					redirectUrl += '&description=' + encodeURIComponent(LinkInfo.Descript);
+					redirectUrl += '&link=' + encodeURIComponent(LinkInfo.URL);
+					redirectUrl += '&picture=' + encodeURIComponent(LinkInfo.Picture);
+					redirectUrl += '&redirect_uri=' + encodeURIComponent(LinkInfo.URL);
+					break;
+
+				case 'bShare2_3': 	//Url Direct: sharer.php
+					redirectUrl = 'http://www.facebook.com/sharer.php?u=' + encodeURIComponent(LinkInfo.URL);
+					break;
+
+			};
+
+			if(redirectUrl !== ''){
+				vpsdk.openBrowser(undefined, undefined, redirectUrl);
+			}
+		}		
+    </script>
+</body>
+</html>

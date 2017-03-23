@@ -1,0 +1,480 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=640, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes" />
+    <title>Android Camera Access | VPON POC</title>
+    <script src="https://trackingjs.com/bower/tracking.js/build/tracking-min.js"></script>
+    <script src="https://trackingjs.com/bower/tracking.js/build/data/face-min.js"></script>
+
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, SimHei;
+            font-size: 63%;
+            background: #000;
+
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            -webkit-tap-highlight-color: transparent;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        
+        #crazyad {}
+        /*-勿動-*/
+        
+        #crazyad div {
+            position: absolute;
+        }
+        
+        img {
+            border: none;
+            vertical-align: top
+        }
+        
+        #camain {
+            width: 580px;
+            height: 860px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -290px;
+            margin-top: -430px;
+            z-index: 5;
+            overflow: hidden;
+            background-repeat: no-repeat;
+        }
+        
+        #camain div {
+            position: absolute;
+            animation-fill-mode: forwards;
+            -webkit-animation-fill-mode: forwards;
+        }
+        
+        #click,
+        #customClick {
+            /*點擊區塊*/
+            width: 580px;
+            height: 860px;
+        }
+        /*------------------------------------------------------------------------------------*/
+        
+        #crazyad {
+            zoom: calc(640 / 580);
+        }
+        
+        @media (orientation:landscape) {
+            body {
+                min-height: 640px;
+            }
+        }
+        
+        #panArea {
+            position: absolute;
+            width: 580px;
+            height: 860px;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            /*background: rgba(0, 255, 255, .7);*/
+        }
+
+        #menu{
+            width: 580px;
+            height: 860px;
+            background: #000;
+        }
+
+        #menu ul {
+            list-style: none;
+            margin-top: 200px;
+            padding-left: 100px;
+        }
+
+        #menu ul li {
+            
+            font-size: 58px;
+            padding: 30px 0;
+            cursor: pointer;
+        }
+
+        #menu ul li a {
+            color: #FFF;
+            text-decoration: none;
+            opacity: .5;
+        }
+
+        #menu ul li a:hover {
+            opacity: 1;
+        }
+
+        #demo{
+            position: relative;
+            display: none;
+            width: 580px;
+            height: 860px;
+        }
+
+        #VID_Camera,
+        #CVS_block {
+            position: absolute;
+        }
+
+        .BTN{
+            position: absolute;
+            left: 0;
+            width: 580px;
+            height: 100px;
+            line-height: 100px;
+            background: rgba(0,0,0,.5);
+            color: #FFF;
+            opacity: .7;
+            font-size: 23px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .BTN:hover{
+            opacity: 1;
+        }
+
+        #BTN_Back{
+            top: 0;
+        }
+        #BTN_Save{
+            display: none;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!--crazyad必留，用來包所有div -->
+    <div id="crazyad">
+        <!--camain必留，用來包所有關閉按鈕close和主要點選區塊click -->
+        <div id="camain">
+            <!--若畫面區塊要讓使用者點選，click必留-->
+            <div id="customClick">
+                <div id="menu">
+                    <ul>
+                        <li><a href="javascript: showDemo(1);">靜態邊框</a></li>
+                        <li><a href="javascript: showDemo(2);">動態邊框</a></li>
+                        <li><a href="javascript: showDemo(3);">臉部辨識合成</a></li>
+                    </ul>
+                </div>
+                <div id="demo">
+                    <video id="VID_Camera" width="580" height="860" preload autoplay loop muted></video>
+                    <canvas id="CVS_block" width="580" height="860"></canvas>
+                    <a id="BTN_Back" class="BTN" href="javascript: location.reload();">回上一頁</a>
+                    <a id="BTN_Save" class="BTN" href="javascript: void(0);"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var e = function () {
+                var e, t = document.getElementById("crazyad"),
+                    n = document.getElementById("camain"),
+                    i = navigator.userAgent.toLowerCase();
+                if (n) {
+                    if (i.indexOf("ipad") > -1) {
+                        t.style.minHeight = "initial"
+                    }
+                    if (document.documentElement.clientWidth > document.documentElement.clientHeight) {
+                        if (window.orientation === -90) {
+                            n.style.webkitTransform = "rotate(90deg)"
+                        } else if (window.orientation === 90 || window.orientation === 0) {
+                            n.style.webkitTransform = "rotate(-90deg)"
+                        }
+                        e = document.documentElement.clientHeight / 639
+                    } else {
+                        n.style.webkitTransform = "rotate(0deg)";
+                        e = document.documentElement.clientWidth / 640
+                    }
+                    document.body.style.zoom = e
+                }
+            };
+
+            document.addEventListener("DOMContentLoaded", setInterval(e, 150));
+
+        })();
+    </script>
+
+    <script type="text/javascript" src="//m.vpadn.com/tpl/html5/vpadn-logo-728x90_mb.js"></script>
+    <script type="text/javascript" src="//tw-img.vpon.com/img/js/ad-0.2.js"></script>
+    <script type="text/javascript" src="//tw-img.vpon.com/img/js/gd-0.3.js?vpn=EventName&vtype=IS&vga=none&vlk=none&vcid=none"
+        id="gd"></script>
+    <script type="text/javascript" src="//m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+    <script src="https://cdn.rawgit.com/LightLai813/develop/master/SwAK.Lai.js"></script>
+
+    <script>
+        var video = document.getElementById('VID_Camera');
+        var canvas = document.getElementById('CVS_block');
+        var ctx = canvas.getContext('2d');
+
+        function init(){
+
+        }
+
+        function showDemo(index) {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('demo').style.display = 'block';
+
+            switch(index){
+                case 1:
+                    var tracker = new tracking.Tracker('target');
+                    tracking.track('#VID_Camera', tracker, { camera: true });
+                    
+                    var img = new Image();
+                    img.onload = function(){
+                        ctx.clearRect(0,0,canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0, 580, 860);
+                    }
+                    img.src = 'images/sungrass0001.png';
+                    document.getElementById('BTN_Save').style.display = 'block';
+                    document.getElementById('BTN_Save').innerHTML = '擷取圖片';
+                    document.getElementById('BTN_Save').addEventListener('click',function(e){
+                        saveContent(1);
+                    })
+                    break;
+
+                case 2:
+                    loadImg();
+                    break;
+
+                case 3:
+                    loadDog();
+                    break;
+            }
+
+            
+            function loadImg(){
+                SwAK.showLoading(document.getElementById('demo'), .5);
+
+                var imgArr = [];
+                var imgCount = 0;
+                for(var i=0; i<60;i++){
+                    imgArr[i] = new Image();
+                    imgArr[i].onload = function(){
+                        imgCount++;
+                        if(imgCount >= 60){
+                            var tracker = new tracking.Tracker('target');
+                            tracking.track('#VID_Camera', tracker, { camera: true });
+                            runAnimate(0);
+                            SwAK.hideLoading();
+                        }
+                    }
+                    imgArr[i].src = 'images/sungrass' + ('0000' + (i+1)).right(4) + '.png';
+                }
+
+                function runAnimate(frameCount){
+                    if(frameCount>=60){
+                        frameCount=0;
+                    }
+
+                    var img = imgArr[frameCount];
+                    ctx.clearRect(0,0,canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, 580, 860);
+                    
+                    setTimeout(function(){
+                        runAnimate(++frameCount)
+                    }, 33);
+                }
+            }
+
+            function loadDog(){
+                SwAK.showLoading(document.getElementById('demo'), .5);
+                
+                var dog = new Image();
+                dog.onload = function(){
+                    var tracker = new tracking.ObjectTracker('face');
+                    tracker.setInitialScale(4);
+                    tracker.setStepSize(2);
+                    tracker.setEdgesDensity(0.1);
+                    tracking.track('#VID_Camera', tracker, { camera: true });
+                    tracker.on('track', function (e) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        e.data.forEach(function (rect) {
+                            ctx.lineWidth=5;
+                            ctx.strokeStyle = '#FF0000';
+                            ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+
+                            var imgWidth = rect.width*1.2;
+                            ctx.drawImage(dog, rect.x-rect.width*.1, rect.y-imgWidth*.5, imgWidth, imgWidth*.75);
+                        });
+                    });
+                    SwAK.hideLoading();
+                }
+
+                dog.src = 'images/dog.png';
+            }
+        }
+
+        function saveContent(index){
+            SwAK.showLoading(document.getElementById('demo'), .5);
+
+            var videoDataTracker = function() {
+                videoDataTracker.base(this, 'constructor');
+            };
+            tracking.inherits(videoDataTracker, tracking.Tracker);
+
+            videoDataTracker.prototype.track = function(pixels, width, height) {
+                this.emit('track', {
+                    width: width,
+                    height: height,
+                    pixel: pixels
+                });
+            }
+
+            var videoTracker = new videoDataTracker();
+            var videoTracking = tracking.track('#VID_Camera', videoTracker, { camera: true });
+
+            switch(index){
+                case 1:
+                    videoTracker.once('track', function (e) {
+                        var cameraCutCVS = document.createElement('canvas');
+                        cameraCutCVS.width = 580;
+                        cameraCutCVS.height = 860;
+
+                        var cameraCutCTX = cameraCutCVS.getContext('2d');
+
+                        var cameraCutImageData = cameraCutCTX.createImageData(580, 860);
+                        cameraCutImageData.data.set(e.pixel);
+
+                        cameraCutCTX.putImageData(cameraCutImageData, 0,0);
+
+                        var cameraCutImg = new Image();
+                        cameraCutImg.onload = function(){
+                            var camera = document.getElementById('VID_Camera');
+                            var cameraInfo = {
+                                x: 0,
+                                y: 0,
+                                w: camera.videoWidth,
+                                h: camera.videoHeight
+                            };
+
+                            
+                            if(cameraInfo.w/cameraInfo.h >= 580/860){
+                                cameraInfo.h *= 580/cameraInfo.w;
+                                cameraInfo.w = 580;
+                            }else{
+                                cameraInfo.w *= 860/cameraInfo.h;
+                                cameraInfo.h = 860;
+                            }
+
+                            cameraInfo.x = (580-cameraInfo.w)/2;
+                            cameraInfo.y = (860-cameraInfo.h)/2;
+
+                            var resultCVS = document.createElement('canvas');
+                            resultCVS.id = 'resultCVS';
+                            resultCVS.width = 580;
+                            resultCVS.height = 860;
+
+                            var resultCTX = resultCVS.getContext('2d');
+                            resultCTX.fillStyle = '#000';
+                            resultCTX.fillRect(0,0,580,860);
+                            resultCTX.drawImage(cameraCutImg, cameraInfo.x, cameraInfo.y, cameraInfo.w, cameraInfo.h);
+
+                            var bgImg = new Image();
+                            bgImg.onload = function(){
+                                resultCTX.drawImage(bgImg, 0, 0, 580, 860);
+                                var PicBase64 = resultCVS.toDataURL("image/png");
+                                jQuery.ajax({
+                                    url: 'https://cmp.vpadn.com/api_upload_pic/upload_pic.php',
+                                    type: 'post',
+                                    datatype: 'JSON',
+                                    data: {
+                                        pic: PicBase64,
+                                        campaignsID: 'test',
+                                        imgtype: 'png',
+                                        isFinal: true,
+                                    },
+                                    success: function(data, txtSataus) {
+                                        if (data.code == 0) {
+                                            location.href = data.imgUrl;
+                                        } else {
+                                            alert(data.msg);
+                                            SwAK.hideLoading();
+                                        }
+                                    },
+                                    error: function(e) {
+                                        alert('系統發生錯誤，請稍候再試');
+                                        SwAK.hideLoading();
+                                    }
+                                });
+                            }
+                            bgImg.src = 'images/sungrass0001.png';
+                        }
+                        cameraCutImg.src = cameraCutCVS.toDataURL();
+                    });
+                    break;
+                default:
+                    
+            } 
+        }
+    </script>
+    <script type="text/javascript">
+        if (vpsdk == undefined) {
+            // 測試環境
+            var vpsdk = {
+                addEventListener: function(e, callback) {
+                    callback();
+                },
+                removeEventListener: function(e) {},
+                click: function() {},
+                openBrowser: function(success, fail, link) {
+                    location.href = link;
+                },
+                env: 'develop'
+            }
+
+            var transformClickUrl = function(link) {
+                return link;
+            }
+            var clickUrl = 'http://www.vpon.com.tw/';
+
+            window.onload = init;
+        } else {
+            // 正式環境
+            var isShow = false;
+            var isLoad = false;
+
+            function checkIsLoad() {
+                if (isLoad) init();
+                else setTimeout(checkIsLoad, 200);
+            }
+
+            document.addEventListener('deviceready', function() {
+                if (null != vpsdk && null != vpsdk.addEventListener) {
+                    vpsdk.addEventListener('ready', function() {
+                        if (!isShow) {
+                            vpsdk.addEventListener('onshow', function() {
+                                checkIsLoad();
+                                vpsdk.removeEventListener('onshow');
+                            });
+                            isShow = true;
+                        }
+                    });
+                } else {
+                    setTimeout(checkIsLoad, 1000);
+                }
+            });
+
+            window.onload = function() {
+                isLoad = true;
+                console.log('test');
+            };
+        }
+    </script>
+</body>
+
+</html>

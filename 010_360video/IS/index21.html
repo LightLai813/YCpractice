@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=640, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=no" />
+	<!--以上勿動 -->
+	<title>Vpon</title>
+	<style type="text/css">
+		body {margin:0; padding:0;font-family:Arial,SimHei;font-size:63%;background :url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpiZGBgOMOABpgYsAAKBQECDABS8gDW/CaiEQAAAABJRU5ErkJggg==") ; background-size : 5px 5px;
+		}
+		#crazyad{} /*-勿動-*/	
+		img { border:none ; vertical-align:top}
+
+		#camain {
+			width:580px;
+			height:860px;
+			position: absolute ;
+			left:50%;
+			top:50%;
+			margin-left:-290px;
+			margin-top:-430px;
+			z-index:5;
+			overflow:hidden;
+			background-color: #fff;
+		}
+		#camain div{ 
+			position:absolute ; 
+			animation-fill-mode: forwards;
+			-webkit-animation-fill-mode: forwards;
+		}
+		#click, #customClick{ width:580px; height:860px;} /*-勿動-*/
+			
+		#panoContainer{ width: 100%; height: 100% }
+		#panArea{
+			position: absolute;
+			top:0;
+			left:0;
+			width: 100%;
+			height: 100%;
+			/*background: rgba(0,255,255,.3);*/
+			z-index: 999998;
+		}
+		#playBtn{
+			display:none;
+			position: absolute;
+			top:0;
+			left:0;
+			width: 100%;
+			height: 100%;
+			/*background: rgba(255,0,255,.5);*/
+			z-index: 999999;
+		}
+		#video{ display: none; }
+
+		#orientInfo{
+			padding: 0 20px;
+			position: absolute; 
+			z-index: 9999999;
+			font-size: 2em;
+			background: #FFF;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<!--crazyad必留，用來包所有div -->
+	<div id="crazyad">
+		<!--必留-->
+		<div id="camain">
+			<!--若畫面區塊要讓使用者點選，click必留-->
+			<div id="customClick">  
+				<div id="orientInfo">
+					
+				</div>
+				<!--<video id="video" muted loop webkit-playsinline>
+					<source src="http://tw-video.vpon.com/video/LIGHT_ISVC20160718.mp4" type="video/mp4">
+				</video>-->
+				<div id="panoContainer"></div>
+				<div id="panArea"></div>
+				<div id="playBtn"></div>
+			</div>
+		</div>
+	</div>
+	<!--勿動 -->
+
+	<script type="text/javascript" src="http://m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="http://m.vpadn.com/tpl/html5/vpadn-logo-728x90_mb.js"></script>
+	<script type="text/javascript" src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js"></script>
+	<script type="text/javascript" src="http://tw.img.adon.vpon.com/img/js/ad-0.2.js"></script>
+	<script type="text/javascript" src="http://tw.img.adon.vpon.com/img/js/gd-0.2.js?vpn=Light360度影片測試&vga=none&vlk=none&vcid=none" id="gd"></script>
+	<script type="text/javascript" src="DeviceOrientationController.js"></script>
+	<script type="text/javascript">
+		//測試站用vpsdk=====================================================================================
+		if(vpsdk == undefined){
+			var vpsdk = {
+				addEventListener: function(e, callback){ callback(); },
+				removeEventListener: function(e){},
+				click: function(){},
+				openBrowser: function(success, fail, link) { location.href=link; }
+			}
+			
+			var transformClickUrl = function(link){
+				return link;
+			}
+			
+			var clickUrl = 'https://tw-xpon.vpon.com/xpon/activity/8a80818255dd84900155e731dff0011e/index.html';
+		}
+		//測試站用vpsdk=====================================================================================
+		var isShow = false;
+		var	isLoad = false;
+		var scene, camera, renderer, orientController;
+		
+		var init = function(){
+			//建立場景
+			scene = new THREE.Scene(); 	
+
+			//建立攝影機
+			camera = new THREE.PerspectiveCamera(75, 580/860, 1, 1000);	
+
+			//建立渲染器
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize(580, 860);
+			document.getElementById('panoContainer').appendChild(renderer.domElement);
+
+			// 建立sphere geometry
+			var sphere = new THREE.SphereGeometry(100, 100, 40);
+			sphere.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
+
+			// 圖片
+			var texture = THREE.ImageUtils.loadTexture('snow.min.jpg', {}, function() {
+                var sphereMaterial = new THREE.MeshBasicMaterial({
+					map: texture, 
+					wireframe: false
+				});
+				// 建立sphere Mesh
+				var sphereMesh = new THREE.Mesh(sphere, sphereMaterial);
+				scene.add(sphereMesh);
+            });
+
+			// 建立 orientController
+			orientController = new DeviceOrientationController(camera, renderer.domElement);
+			orientController.connect();
+
+			render();
+		}
+
+		var render = function() {
+			orientController.update();
+			renderer.render(scene, camera);
+			requestAnimationFrame(render);
+		}
+
+        var checkIsLoad=function(){
+			if(isLoad) init();
+			else setTimeout(checkIsLoad, 200);
+	  	}
+
+        vpsdk.addEventListener("ready", function() {
+			if (!isShow) {
+				vpsdk.addEventListener("onshow", function() {
+					checkIsLoad();
+					vpsdk.removeEventListener("onshow");
+				});
+				isShow = true;
+			}
+		});
+
+		window.onload = function () {
+			isLoad = true;
+		};
+	</script>
+</body>
+</html>

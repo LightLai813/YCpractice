@@ -1,0 +1,245 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=640, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes" />
+    <!--以上勿動 -->
+    <title>vpon</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, SimHei;
+            font-size: 63%;
+            background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpiZGBgOMOABpgYsAAKBQECDABS8gDW/CaiEQAAAABJRU5ErkJggg==");
+            background-size: 5px 5px;
+        }
+        
+        #crazyad {}
+        /*-勿動-*/
+        
+        #crazyad div {
+            position: absolute;
+        }
+        
+        img {
+            border: none;
+            vertical-align: top
+        }
+        
+        #camain {
+            width: 580px;
+            height: 860px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -290px;
+            margin-top: -430px;
+            z-index: 5;
+            overflow: hidden;
+            background-repeat: no-repeat;
+        }
+        
+        #camain div {
+            position: absolute;
+            animation-fill-mode: forwards;
+            -webkit-animation-fill-mode: forwards;
+        }
+        
+        #click,
+        #customClick {
+            /*點擊區塊*/
+            width: 580px;
+            height: 860px;
+        }
+        /*------------------------------------------------------------------------------------*/
+        
+        #crazyad {
+            zoom: calc(640 / 580);
+        }
+        
+        @media (orientation:landscape) {
+            body {
+                min-height: 640px;
+            }
+        }
+        
+        #BTN_search{
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background: #555;
+            color: #FFF;
+            font-size: 22px;
+        }
+    </style>
+</head>
+
+<body>
+    <!--crazyad必留，用來包所有div -->
+    <div id="crazyad">
+        <!--camain必留，用來包所有關閉按鈕close和主要點選區塊click -->
+        <div id="camain">
+            <!--若畫面區塊要讓使用者點選，click必留-->
+            <div id="customClick">
+                <div id="BTN_search">取得目前位置</div>
+                <div id="mapArea">
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            var e = function() {
+                var e, t = document.getElementById("crazyad"),
+                    n = document.getElementById("camain"),
+                    i = navigator.userAgent.toLowerCase();
+                if (n) {
+                    if (i.indexOf("ipad") > -1) {
+                        t.style.minHeight = "initial"
+                    }
+                    if (document.documentElement.clientWidth > document.documentElement.clientHeight) {
+                        if (window.orientation === -90) {
+                            n.style.webkitTransform = "rotate(90deg)"
+                        } else if (window.orientation === 90 || window.orientation === 0) {
+                            n.style.webkitTransform = "rotate(-90deg)"
+                        }
+                        e = document.documentElement.clientHeight / 639
+                    } else {
+                        n.style.webkitTransform = "rotate(0deg)";
+                        e = document.documentElement.clientWidth / 640
+                    }
+                    document.body.style.zoom = e
+                }
+            };
+
+            document.addEventListener("DOMContentLoaded", setInterval(e, 150));
+
+        })();
+    </script>
+
+    <script type="text/javascript" src="//m.vpadn.com/tpl/html5/vpadn-logo-728x90_mb.js"></script>
+    <script type="text/javascript" src="//tw-img.vpon.com/img/js/ad-0.2.js"></script>
+    <script type="text/javascript" src="//tw-img.vpon.com/img/js/gd-0.3.js?vpn=EventName&vtype=IS&vga=none&vlk=none&vcid=none" id="gd"></script>
+    <script type="text/javascript" src="//cdn.rawgit.com/LightLai813/develop/master/SwAK.Lai.js"></script>
+    <script type="text/javascript" src="//m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="//hammerjs.github.io/dist/hammer.min.js"></script>
+    <script>
+        var autoTimer;
+        var hammerTimer;
+        var derect = '';
+
+        function init() {
+            document.getElementById('BTN_search').addEventListener('click', getLocation);
+        }
+
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                SwAK.showLoading(document.body, .5);
+                navigator.geolocation.getCurrentPosition(showLocation, errorHandler, { timeout: 10000 });
+            } else {
+                errorHandler();
+            }
+
+
+            function showLocation(position) {
+                var geoInfo = '';
+                var location = { 'lat': 0, 'lng': 0 };
+                if (position.coords) {
+                    location.lat = position.coords.latitude;
+                    location.lng = position.coords.longitude;
+                    document.getElementById('mapArea').innerHTML = '<iframe width="'+window.innerWidth+'" height="'+(window.innerHeight-45)+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q='+location.lat+','+location.lng+'&hl=zh-TW;z=14&amp;output=embed"></iframe>'
+                    SwAK.hideLoading();
+                } else {
+                    errorHandler();
+                }
+            }
+
+            function errorHandler(err) {
+                console.log(err);
+                var msg = '';
+                switch (err.code) {
+                    case err.PERMISSION_DENIED:
+                        msg = customErrorWoding();
+                        break;
+                    case err.POSITION_UNAVAILABLE:
+                        msg = '無法取得目前位置。';
+                        break;
+                    case err.TIMEOUT:
+                        msg = '連線過慢，偵測不到您的地理位置。';
+                        break;
+                    case err.UNKNOWN_ERROR:
+                        msg = '連線過慢，偵測不到您的地理位置。';
+                        break;
+                    default:
+                        msg = '偵測不到您的地理位置。';
+                }
+
+                alert(msg);
+                SwAK.hideLoading();
+                // location.href = 'https://anz.tw/zh/contact-us/branches.jsp';
+
+                function customErrorWoding() {
+                    if (SwAK.isIphoneOs || SwAK.isIpad || SwAK.isAndroid) return '您未授權分享您的所在位置，請至設定中的隱私權開啟定位';
+                    return '您未授權分享您的所在位置喔。';
+                }
+            }
+   
+        }
+    </script>
+    <script type="text/javascript">
+        if (vpsdk == undefined) {
+            // 測試環境
+            var vpsdk = {
+                addEventListener: function(e, callback) {
+                    callback();
+                },
+                removeEventListener: function(e) {},
+                click: function() {},
+                openBrowser: function(success, fail, link) {
+                    location.href = link;
+                },
+                env: 'develop'
+            }
+
+            var transformClickUrl = function(link) {
+                return link;
+            }
+            var clickUrl = 'http://www.vpon.com.tw/';
+
+            window.onload = init;
+        } else {
+            // 正式環境
+            var isShow = false;
+            var isLoad = false;
+
+            function checkIsLoad() {
+                if (isLoad) init();
+                else setTimeout(checkIsLoad, 200);
+            }
+
+            document.addEventListener('deviceready', function() {
+                if (null != vpsdk && null != vpsdk.addEventListener) {
+                    vpsdk.addEventListener('ready', function() {
+                        if (!isShow) {
+                            vpsdk.addEventListener('onshow', function() {
+                                checkIsLoad();
+                                vpsdk.removeEventListener('onshow');
+                            });
+                            isShow = true;
+                        }
+                    });
+                } else {
+                    setTimeout(checkIsLoad, 1000);
+                }
+            });
+
+            window.onload = function() {
+                isLoad = true;
+            };
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)http://192.168.168.123/20160718_360video/IS/index07.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<meta name="viewport" content="width=640, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=no">
+	<!--以上勿動 -->
+	<title>Vpon</title>
+	<style type="text/css">
+		body {margin:0; padding:0;font-family:Arial,SimHei;font-size:63%;background :url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpiZGBgOMOABpgYsAAKBQECDABS8gDW/CaiEQAAAABJRU5ErkJggg==") ; background-size : 5px 5px;
+		}
+		#crazyad{} /*-勿動-*/	
+		img { border:none ; vertical-align:top}
+
+		#camain {
+			width:580px;
+			height:860px;
+			position: absolute ;
+			left:50%;
+			top:50%;
+			margin-left:-290px;
+			margin-top:-430px;
+			z-index:5;
+			overflow:hidden;
+			background-color: #fff;
+		}
+		#camain div{ 
+			position:absolute ; 
+			animation-fill-mode: forwards;
+			-webkit-animation-fill-mode: forwards;
+		}
+		#click, #customClick{ width:580px; height:860px;} /*-勿動-*/
+			
+		#panoContainer{ width: 100%; height: 100% }
+		#panArea{
+			position: absolute;
+			top:0;
+			left:0;
+			width: 100%;
+			height: 100%;
+			/*background: rgba(0,255,255,.3);*/
+			z-index: 999998;
+		}
+		#playBtn{
+			display:none;
+			position: absolute;
+			top:0;
+			left:0;
+			width: 100%;
+			height: 100%;
+			/*background: rgba(255,0,255,.5);*/
+			z-index: 999999;
+		}
+		#video{ display: none; }
+	</style>
+</head>
+<body>
+	<!--crazyad必留，用來包所有div -->
+	<div id="crazyad">
+		<!--必留-->
+		<div id="camain">
+			<!--若畫面區塊要讓使用者點選，click必留-->
+			<div id="customClick">  
+				<!--<video id="video" muted loop webkit-playsinline>
+					<source src="http://tw-video.vpon.com/video/LIGHT_ISVC20160718.mp4" type="video/mp4">
+				</video>-->
+				<div id="panoContainer"><canvas width="1740" height="2580" style="width: 580px; height: 860px;"></canvas></div>
+				<div id="panArea" style="touch-action: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div>
+				<div id="playBtn"></div>
+			</div>
+		</div>
+	</div>
+	<!--勿動 -->
+
+	<script type="text/javascript" src="./Vpon_files/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="./Vpon_files/vpadn-logo-728x90_mb.js"></script>
+	<script type="text/javascript" src="./Vpon_files/hammer.min.js"></script>
+	<script type="text/javascript" src="./Vpon_files/three.min.js"></script>
+	<script type="text/javascript" src="./Vpon_files/ad-0.2.js"></script>
+	<script type="text/javascript" src="./Vpon_files/gd-0.2.js" id="gd"></script>
+	<script type="text/javascript">
+		//測試站用vpsdk=====================================================================================
+		if(vpsdk == undefined){
+			var vpsdk = {
+				addEventListener: function(e, callback){ callback(); },
+				removeEventListener: function(e){},
+				click: function(){},
+				openBrowser: function(success, fail, link) { location.href=link; }
+			}
+			
+			var transformClickUrl = function(link){
+				return link;
+			}
+			
+			var clickUrl = 'https://tw-xpon.vpon.com/xpon/activity/8a80818255dd84900155e731dff0011e/index.html';
+		}
+		//測試站用vpsdk=====================================================================================
+		var isShow = false;
+		var	isLoad = false;
+		var scene, camera, renderer;
+		var Timer;
+		var original = { lat: 90, lng: 0 };
+		var userMove = { lat: 0, lng: 0 };
+		var video;
+
+		var hammerTimer;
+		var preHammer = { x: 0, y: 0};     //記錄上一刻的座標
+		
+		var init = function(){
+			//建立場景
+			scene = new THREE.Scene(); 	
+
+			//建立攝影機
+			camera = new THREE.PerspectiveCamera(75, 580/860, 1, 1000);	
+
+			//建立渲染器
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize(580, 860);
+			document.getElementById('panoContainer').appendChild(renderer.domElement);
+
+			// 建立sphere geometry
+			var sphere = new THREE.SphereGeometry(100, 100, 40);
+			sphere.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
+
+			// 建立sphere 材質
+			// var sphereMaterial = new THREE.MeshBasicMaterial();
+			// sphereMaterial.map = THREE.ImageUtils.loadTexture('snow.jpg');
+         	// video = document.getElementById('video');
+            // var texture = new THREE.VideoTexture(video);
+            // texture.minFilter = THREE.LinearFilter;
+            // texture.magFilter = THREE.LinearFilter;
+            // texture.format = THREE.RGBFormat;
+			// var sphereMaterial = new THREE.MeshBasicMaterial();
+			// sphereMaterial.map = texture;
+
+
+			var sphereMaterial = new THREE.MeshBasicMaterial({
+                //map: texture, 
+                color: 0xFF0000,
+                transparent: true,
+                wireframe: true
+            });
+			// 建立sphere Mesh
+			var sphereMesh = new THREE.Mesh(sphere, sphereMaterial);
+			scene.add(sphereMesh);
+
+			render();
+
+			//設定Hammer
+			hammerTimer = new Hammer(document.getElementById('panArea'), { preventDefault: true }); 
+			hammerTimer.get('pan').set({ direction: Hammer.DIRECTION_ALL});
+			hammerTimer.on('panmove panstart', function(e) {
+				e.preventDefault();
+				if(e.type == 'panmove'){
+					var moveDist = {
+						x: e.deltaX - preHammer.x,
+						y: e.deltaY - preHammer.y
+					} ;
+					userMove.lng += moveDist.x*.1;
+					userMove.lat += moveDist.y*.1;
+				}
+
+				preHammer.x = e.type=='panstart'? 0: e.deltaX;
+				preHammer.y = e.type=='panstart'? 0: e.deltaY;
+			});
+
+			//播放設定
+            // document.getElementById('playBtn').addEventListener("click", function(){
+            //    	remove(this); 
+            //     video.play();
+
+            //     function remove(element) { 
+            //         element.parentNode.removeChild(element);
+            //     }
+            // });
+		}
+
+		var render = function () {
+			if (Timer) clearTimeout(Timer);
+
+			// if (video.hasAttribute('controls')) video.removeAttribute('controls');
+
+			// original.lng += .1;
+			// if(original.lng > 360) original.lng -= 360;
+			// else if(original.lng < 0) original.lng += 360;
+
+			var latitude = original.lat + userMove.lat;
+			if(latitude > 179) latitude = 179;
+			else if(latitude < 1) latitude = 1;
+
+			camera.lookAt({
+				x: 500*Math.sin(THREE.Math.degToRad(180-latitude))*Math.sin(THREE.Math.degToRad(original.lng+userMove.lng)),
+				y: 500*Math.cos(THREE.Math.degToRad(180-latitude)),
+				z: 500*Math.sin(THREE.Math.degToRad(180-latitude))*Math.cos(THREE.Math.degToRad(original.lng+userMove.lng))
+			});
+			
+			renderer.render(scene, camera);
+			Timer = setTimeout(render,33);
+		}
+
+
+
+        var checkIsLoad=function(){
+			if(isLoad) init();
+			else setTimeout(checkIsLoad, 200);
+	  	}
+
+        vpsdk.addEventListener("ready", function() {
+			if (!isShow) {
+				vpsdk.addEventListener("onshow", function() {
+					checkIsLoad();
+					vpsdk.removeEventListener("onshow");
+				});
+				isShow = true;
+			}
+		});
+
+		window.onload = function () {
+			isLoad = true;
+		};
+	</script>
+
+
+<style type="text/css">
+<!--
+.cls-vpadn-logos,.cls-vpadn-logoe,.cls-vpadn-logos :after,.cls-vpadn-logoe :after ,.cls-vpadn-logo-clickarea{position:absolute;right:0;bottom:0}.cls-vpadn-logos,.cls-vpadn-logoe{z-index:1000;background-image:-webkit-linear-gradient(bottom,rgba(119,119,119,0.4) 0,rgba(51,51,51,0.4) 100%);border-top:solid 1px rgba(102,102,102,.5);border-left:solid 1px rgba(102,102,102,.5)}.cls-vpadn-logos :after,.cls-vpadn-logoe :after{content:""}.cls-vpadn-logoe{-webkit-animation-duration:.3s;-webkit-animation-timing-function:linear;-webkit-animation-iteration-count:1;-webkit-animation-name:ani-vpadn-logo-expand}.cls-vpadn-logos :after,.cls-vpadn-logoe :after{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAPCAMAAADarb8dAAAAA3NCSVQICAjb4U/gAAAAjVBMVEX///////8JCAf////y8vKfn58qKSgUExIJCAf///9HRkUJCAf///9cW1sdHBsLCgkJCAf///9YV1dIR0YkIyL///+fn5+MjIuAf3/////7+/uysrGpqaj////5+fnh4eHQ0M/IyMjAwMD////5+fnt7e3n5+fb29vZ2dn////7+/v5+fn39/fx8PD///+eEr5eAAAAL3RSTlMAEREiIiIiIiIzMzNERERERFVVVVVmZmZmd3d3d4iIiIiIiJmZmZmZmaqqqqqquy0rQQoAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzbovLKMAAAAjklEQVQImW2O1xbCMAxDVcIIhBFGgbJKKcuh6P8/j7RJOTxwX+wjS7ZhrEGkY60G9J3XKOjFS1JgTaog2IKSAP2Ku2BYOWZ18tLo3nAgh3UzEc7rwezGMix/0PlitmwGng059olnjAKDN0/QS2HafrQnu9bvVq0wcsynFY/4cqYU8Wag58hfA6BKyRL85QPSzAzSJ2A9fAAAAABJRU5ErkJggg==") no-repeat 50% 50%}.cls-vpadn-logoe :after{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAPCAMAAAB+xwfOAAAAA3NCSVQICAjb4U/gAAAA9lBMVEX///////8zMzMJCAf////z8/Ofn58qKSgUExIJCAf///9HRkUJCAf///+Ojo17enpcW1szMzMdHBsbGhkZGBgODQwLCgkJCAf////l5eWoqKdfXl5cW1tYV1dUVFNPT05KSUhIR0YqKSgkIyL////19fXMzMzGxsbDw8O7urqgoKCNjYyGhoWAf397enpzc3L////7+/vd3d2ysrGsrKupqaj////5+fnh4eHW1tbV1NTQ0M/JycnGxsbDw8PAwMC+vr7////7+/v39/ft7e3n5+fl5eXd3d3b29vZ2dn////7+/v5+fn39/f19fXz8/Px8PD////JxQojAAAAUnRSTlMAERERIiIiIiIiMzMzRERERERERERERERVVVVVVVVVVVVVVVVmZmZmZmZmZmZmZmZ3d3d3d3eIiIiIiIiIiIiIiJmZmZmZmZmZmaqqqqqqqqq7pmaCvQAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAEaSURBVCiRlZDXVsMwEETX2BQH0YuA0DG9hWaaIdiEBGQ7ZP7/Z5C8LpyTF2deNKujuzsrElJQLltKl+rI/UJU2K1EebWgM8BhJ9+grFrMZIobHnMQo1ULIbudd5cPwIbMpRezxb/CLbywzdt5hTXDrnbwufzRTzL1b0lu99gng3Vb3nfYp10zwP5GrA9xCZzeodThym9VzJ5X3jeDdD2jo/1ALfSMM32uEO1AcXr3GcfvWRatXb6dGuCR3D0FT3TRYKaJqImQn4kAR0HejPaB7NSJxqX+CkczF7zqNcJNpEtcvOBkiJmO8bSY6qCaKeWNJaVXc0MMvUIF0LEqRrUscnzFChvkFYxVMBMx/0e5Tx05oWlM5I/AjKQ/v0pK/vBkccEAAAAASUVORK5CYII=") no-repeat 40% 50%}.cls-vpadn-logos,.cls-vpadn-logoe{height:26px;width:26px;-webkit-border-top-left-radius:10px}.cls-vpadn-logos :after,.cls-vpadn-logoe :after{background-size:auto 16px;height:26px;width:26px}.cls-vpadn-logo-clickarea{height:40px;width:40px}.cls-vpadn-logoe{width:68px}.cls-vpadn-logoe :after{width:68px;background-size:auto 16px}@-webkit-keyframes ani-vpadn-logo-expand{0%{-webkit-transform:translateX(42px)}100%{-webkit-transform:translateX(0)}}@-webkit-keyframes ani-vpadn-logo-shrink{0%{-webkit-transform:translateX(0)}100%{-webkit-transform:translateX(42px)}}
+--!>
+</style><script type="text/javascript" charset="utf-8">
+<!--
+function shrinkVpadnLogo(){document.getElementById("vpadn-logo").style.webkitAnimationName="ani-vpadn-logo-shrink";setTimeout("cleanVpadnLogo()",300)}function cleanVpadnLogo(){document.getElementById("vpadn-logo").className="cls-vpadn-logos";document.getElementById("vpadn-logo").style.webkitAnimationName=""};
+-->
+</script><div style="position: fixed; right: 0px; bottom: 0px; z-index: 999998;"><div id="vpadn-logo" class="cls-vpadn-logos"><div id="vpadn-logo-clickarea" class="cls-vpadn-logo-clickarea"></div></div></div></body></html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=640, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes" />
+    <title>地點判斷｜Eugene's work</title>
+    <style>
+        html, body{
+            margin: 0;
+            background: #EEE;
+        }
+        #BTN_search{
+            text-align: center;
+            padding: 10px;
+            background: #555;
+            color: #FFF;
+            font-size: 22px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="BTN_search">取得目前位置</div>
+    <div id="mapArea">
+        
+    </div>
+   
+    <script type="text/javascript" src="https://cdn.rawgit.com/LightLai813/develop/master/SwAK.Lai.js"></script>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                SwAK.showLoading(document.body, .5);
+
+                navigator.geolocation.getCurrentPosition(showLocation, errorHandler, { timeout: 10000 });
+            } else {
+                errorHandler();
+            }
+
+
+            function showLocation(position) {
+                var geoInfo = '';
+                var location = { 'lat': 0, 'lng': 0 };
+                if (position.coords) {
+                    location.lat = position.coords.latitude;
+                    location.lng = position.coords.longitude;
+                    document.getElementById('mapArea').innerHTML = '<iframe width="'+window.innerWidth+'" height="'+(window.innerHeight-45)+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q='+location.lat+','+location.lng+'&hl=zh-TW;z=14&amp;output=embed"></iframe>'
+                    SwAK.hideLoading();
+                } else {
+                    errorHandler();
+                }
+            }
+
+            function errorHandler(err) {
+                var msg = '';
+                switch (err.code) {
+                    case err.PERMISSION_DENIED:
+                        msg = customErrorWoding();
+                        break;
+                    case err.POSITION_UNAVAILABLE:
+                        msg = '無法取得目前位置。';
+                        break;
+                    case err.TIMEOUT:
+                        msg = '連線過慢，偵測不到您的地理位置。';
+                        break;
+                    case err.UNKNOWN_ERROR:
+                        msg = '連線過慢，偵測不到您的地理位置。';
+                        break;
+                    default:
+                        msg = '偵測不到您的地理位置。';
+                }
+
+                alert(msg);
+                SwAK.hideLoading();
+                location.href = 'https://anz.tw/zh/contact-us/branches.jsp';
+
+                function customErrorWoding() {
+                    if (SwAK.isIphoneOs || SwAK.isIpad || SwAK.isAndroid) return '您未授權分享您的所在位置，請至設定中的隱私權開啟定位';
+                    return '您未授權分享您的所在位置喔。';
+                }
+            }
+   
+        }
+
+        window.onload = function () {
+            //按鈕綁定
+            document.getElementById('BTN_search').addEventListener('click', getLocation);
+        }
+    </script>
+</body>
+
+</html>

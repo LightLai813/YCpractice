@@ -1,0 +1,300 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+	<meta name="viewport" content="width=640, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=no" />
+	<!--以上勿動 -->
+	<title>Vpon</title>
+	<style type="text/css">
+		body {margin:0; padding:0;font-family:Arial,SimHei;font-size:63%;background :url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpiZGBgOMOABpgYsAAKBQECDABS8gDW/CaiEQAAAABJRU5ErkJggg==") ; background-size : 5px 5px;
+		}
+		#crazyad{} /*-勿動-*/	
+		img { border:none ; vertical-align:top}
+
+		#camain {
+			width:100%;
+			height:100%;
+			position: absolute ;
+			left:0;
+			top:0;
+			z-index:5;
+			overflow:hidden;
+			background-color: #000;
+		}
+		#camain div{ 
+			position:absolute ; 
+			animation-fill-mode: forwards;
+			-webkit-animation-fill-mode: forwards;
+		}
+		#click, #customClick{ 
+			width:100%;
+			height:100%;
+		} /*-勿動-*/
+
+		#panArea{
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			z-index: 500;
+			top:0;
+			left:0;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+    <!--crazyad必留，用來包所有div -->
+	<div id="crazyad">
+		<!--必留-->
+		<div id="camain">
+			<!--若畫面區塊要讓使用者點選，click必留-->
+			<div id="customClick">  
+				<canvas id="CVS_Stage"></canvas>
+				<div id="panArea"></div>
+			</div>
+		</div>
+	</div>
+	<!--勿動 -->
+
+	<script type="text/javascript" src="http://m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="http://m.vpadn.com/tpl/html5/vpadn-logo-728x90_mb.js"></script>
+	<script type="text/javascript" src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+	<script type="text/javascript" src="http://tw.img.adon.vpon.com/img/js/ad-0.2.js"></script>
+	<script type="text/javascript" src="http://tw.img.adon.vpon.com/img/js/gd-0.2.js?vpn=Light切水餃測試&vga=none&vlk=none&vcid=none" id="gd"></script>
+	<script>
+		//Function 亂數Float========================================================
+		var RndFloat = function(min, max) {
+			return Math.random()*(max - min) + min;
+		}
+
+		//Function 亂數Int==========================================================
+		var RndInt = function(min, max) {
+			return Math.floor(Math.random()*(max - min + 1) + min);
+		}
+
+		//各 Browsers 的 requestAnimationFrame() 處理==========================================================
+		window.requestAFrame = (function () {
+			return window.requestAnimationFrame ||
+					window.webkitRequestAnimationFrame ||
+					window.mozRequestAnimationFrame ||
+					window.oRequestAnimationFrame ||
+					// if all else fails, use setTimeout
+					function (callback) {
+						return window.setTimeout(callback, 1000 / 60); // shoot for 60 fps
+					};
+		})();
+
+		//各 Browsers 的 cancelAnimationFrame() 處理==========================================================
+		window.cancelAFrame = (function () {
+			return window.cancelAnimationFrame ||
+					window.webkitCancelAnimationFrame ||
+					window.mozCancelAnimationFrame ||
+					window.oCancelAnimationFrame ||
+					function (id) {
+						window.clearTimeout(id);
+					};
+		})();
+	</script>
+	<script>
+		var stage = document.getElementById('CVS_Stage');			//舞台Canvas
+		var stageCTX = stage.getContext('2d');
+
+		var stageW, stageH;
+
+		var dumplingImg = new Image();
+		var dumplingImgL = new Image();
+		var dumplingImgR = new Image();
+
+		var dumplingList = new Array();								//水餃集合
+		var dumpling = function(x, y, angle, scale, vx, vy, vr){	//水餃 object
+			this.x = x;
+			this.y = y;
+			this.angle = angle;
+			this.scale = scale;
+
+			this.vx = vx;
+			this.vy = vy;
+			this.vr = vr;
+
+			this.isCut = false;
+			this.cutInfo = {
+				v:0,
+				angle:0
+			};
+			this.crash = {
+				distance:0,
+				angle:0
+			};
+		
+
+			this.draw = function(ctx){
+				ctx.save();
+                ctx.translate(this.x,this.y);
+				ctx.rotate(this.angle*Math.PI/180);
+
+				if(this.isCut){
+					ctx.save();
+					ctx.translate(-this.crash.distance-(100*this.scale),0);
+					ctx.rotate(this.crash.angle*Math.PI/180);
+					ctx.drawImage(dumplingImgL, -100*this.scale, 255*this.scale*-.5, 250*this.scale, 255*this.scale);
+					ctx.restore();
+
+					ctx.save();
+					ctx.translate(this.crash.distance-(100*this.scale),0);
+					ctx.rotate(-this.crash.angle*Math.PI/180);
+					ctx.drawImage(dumplingImgR, 120*this.scale, 255*this.scale*-.5, 220*this.scale, 255*this.scale);
+					ctx.restore();
+				}else {
+					ctx.drawImage(dumplingImg, 400*this.scale*-.5, 255*this.scale*-.5, 400*this.scale, 255*this.scale);
+				}
+                      
+                ctx.restore();
+			}
+		}
+
+		var hammerTimer;
+		var mousePosList = new Array();		
+		var cutPosList = new Array();
+		
+		var Timer;
+
+		var init = function(){
+			stage.width = $('#customClick').width();
+			stage.height = $('#customClick').height();
+
+			dumplingImgL.src = 'images/dumplingL.png';
+			dumplingImgR.src = 'images/dumplingR.png';
+
+			dumplingImg.onload = enterFrame;
+			dumplingImg.src = 'images/dumpling.png';
+
+			hammerTimer = new Hammer(document.getElementById('panArea'), { preventDefault: true });
+            hammerTimer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+            hammerTimer.on('panmove', function (e) {
+				mousePosList.push({
+					x: e.center.x,
+					y: e.center.y,
+					life: 15,
+					angle: e.angle,
+					v: e.velocity
+				});
+			});
+		}
+
+		var enterFrame = function(){
+			if (Timer) window.cancelAFrame(Timer);
+
+			if(dumplingList.length < 1 || RndInt(100,1)==10) dumplingList.push(new dumpling(
+				stage.width*RndFloat(.4, .6),
+				stage.height+100,
+				RndFloat(180, -179),
+				RndFloat(.7, .5),
+				RndFloat(2, -2),
+				RndFloat(30, 25),
+				RndFloat(3, 1)
+			));				
+
+			//清除畫布
+			stageCTX.clearRect( 0, 0, stage.width, stage.height);
+
+			//更新各水餃內容
+			drawDumpling(stageCTX);
+			if(mousePosList.length>1) drawLine(stageCTX);
+
+			function drawDumpling(ctx){
+				var gravity = .3;	//地心引力
+				for(var i=dumplingList.length-1, dp; dp=dumplingList[i];i--){
+					dp.vy -= gravity;
+					dp.x += dp.vx;
+					dp.y -= dp.vy;
+
+
+					if(!dp.isCut){
+						dp.angle += dp.vr;
+						if(dp.angle > 180) dp.angle-=360;
+						for(var j=0, mouse;mouse=cutPosList[j];j++){
+							if(disOfPoints(dp, mouse) < dp.scale*180){
+								dp.isCut = true;
+								dp.angle = 
+								dp.cutInfo = {
+									v:Math.abs(mouse.v),
+									angle:-mouse.angle
+								};
+								break;
+							}
+						}
+						
+					}else{
+						if(dp.cutInfo.v>1) dp.cutInfo.v *= .95;
+
+						dp.x += Math.cos(dp.cutInfo.angle*Math.PI/180)*dp.cutInfo.v*.5;
+						dp.y -= Math.sin(dp.cutInfo.angle*Math.PI/180)*dp.cutInfo.v*.4;
+
+						dp.crash.distance += dp.cutInfo.v*.5;
+						dp.crash.angle += dp.cutInfo.v*.5;
+					}
+
+					if(dp.vy < 0 && dp.y > stage.height+100) dumplingList.splice(i, 1);
+					else dp.draw(ctx);
+				}
+
+				function disOfPoints(PA, PB) {//取兩點距離
+					var disX = PA.x - PB.x,
+						disY = PA.y - PB.y;
+					return Math.sqrt(disX*disX + disY*disY);
+				}
+			}
+
+			function drawLine(ctx){
+				var tempMouseList = new Array();
+				cutPosList = new Array();
+				for(var i=mousePosList.length-1, mouse; mouse=mousePosList[i]; i--){
+					if(--mouse.life < 0) {
+						mousePosList.splice(i,1);
+						continue;
+					}else if(mouse.life > 10 && mouse.v > 1){
+						cutPosList.push(mouse);
+					}
+
+					if(i>0){
+						tempMouseList.unshift({
+							x: mouse.x+mouse.life*.2,
+							y: mouse.y+mouse.life*.2
+						});
+
+						tempMouseList.push({
+							x: mouse.x-mouse.life*.2,
+							y: mouse.y-mouse.life*.2
+						});
+					}else{
+						tempMouseList.unshift({x: mouse.x,y: mouse.y});
+					}
+				}
+
+				if(tempMouseList.length>0){
+					ctx.beginPath();
+					ctx.moveTo(tempMouseList[0].x, tempMouseList[0].y);
+					for(var i=1, len=tempMouseList.length - 2; i<len; i++){
+						var c = (tempMouseList[i].x + tempMouseList[i+1].x)/2;
+						var d = (tempMouseList[i].y + tempMouseList[i+1].y)/2;
+						ctx.quadraticCurveTo(tempMouseList[i].x, tempMouseList[i].y, c, d);
+					}
+					ctx.quadraticCurveTo(
+						tempMouseList[tempMouseList.length-2].x,
+						tempMouseList[tempMouseList.length-2].y,
+						tempMouseList[tempMouseList.length-1].x,
+						tempMouseList[tempMouseList.length-1].y
+					);
+					ctx.closePath();
+					ctx.fillStyle = '#EEE';
+					ctx.fill();
+				}
+			}
+
+			Timer = window.requestAFrame(enterFrame);
+		}
+
+		window.onload = init;
+	</script>
+</body>
+</html>

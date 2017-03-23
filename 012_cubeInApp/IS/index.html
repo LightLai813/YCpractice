@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+    <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=640, initial-scale=0.5, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes" />
+    <!--以上勿動 -->
+    <title>Vpon</title>
+    <style type="text/css">
+        body {margin:0; padding:0;font-family:Arial,SimHei;font-size:63%;background :url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpiZGBgOMOABpgYsAAKBQECDABS8gDW/CaiEQAAAABJRU5ErkJggg==") ; background-size : 5px 5px;
+        }
+        #crazyad{} /*-勿動-*/ 
+        img { border:none ; vertical-align:top}
+
+        #camain {
+            width:580px;
+            height:860px;
+            position: absolute ;
+            left:50%;
+            top:50%;
+            margin-left:-290px;
+            margin-top:-430px;
+            z-index:5;
+            overflow:hidden;
+            background-color: #DDD;
+        }
+        #camain div{ 
+            position:absolute;
+        }
+        #click, #customClick{ width:580px; height:860px;} /*-勿動-*/
+
+        #DIV_3JSContainer{position:relative; width:580px; height:860px;} 
+    </style>
+    <script src="http://m.vpon.com/ad_pro/js/banner330.js"></script>
+    <script type="text/javascript">
+        var inApp=false;
+        var clickUrl='http://www.vpon.com.tw/zh-tw/index.html';
+    </script>
+    <script src="http://m.vpon.com/sdk/vpadn-sdk-util-v1.js"></script>
+</head>
+<body>
+    <script>
+        //測試站用vpsdk=====================================================================================
+        //if(vpsdk == undefined){
+            var vpsdk = {
+                addEventListener: function(e, callback){ callback(); },
+                removeEventListener: function(e){},
+                click: function(){},
+                openBrowser: function(success, fail, link) { location.href=link; }
+            }
+
+            var transformClickUrl = function(link){
+                return link;
+            }
+
+            var clickUrl = 'http://www.vpon.com.tw/zh-tw/index.html';
+        //}
+        //測試站用vpsdk=====================================================================================
+    </script>
+    <script>(function(){var e=function(){var e,t=document.getElementById("crazyad"),n=document.getElementById("camain"),i=navigator.userAgent.toLowerCase();if(n){if(i.indexOf("ipad")>-1){t.style.minHeight="initial"}if(document.documentElement.clientWidth>document.documentElement.clientHeight){if(window.orientation===-90){n.style.webkitTransform="rotate(90deg)"}else if(window.orientation===90||window.orientation===0){n.style.webkitTransform="rotate(-90deg)"}e=document.documentElement.clientHeight/639}else{n.style.webkitTransform="rotate(0deg)";e=document.documentElement.clientWidth/640}document.body.style.zoom=e}};if(vpsdk){document.addEventListener("DOMContentLoaded",setInterval(e,150));vpsdk.addEventListener("onshow",e)}})();</script>
+    <!--crazyad必留，用來包所有div -->
+    <div id="crazyad">
+        <!--必留-->
+        <div id="camain">
+            <!--若畫面區塊要讓使用者點選，click必留-->
+            <div id="customClick"> 
+                <div id="DIV_3JSContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="http://m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="http://m.vpadn.com/tpl/html5/vpadn-logo-728x90_mb.js"></script>
+    <script type="text/javascript" src="scripts/three.min.js"></script>
+    <script type="text/javascript" src="http://tw.img.adon.vpon.com/img/js/ad-0.2.js"></script>
+    <script type="text/javascript" src="http://tw.img.adon.vpon.com/img/js/gd-0.2.js?vpn=none&vga=none&vlk=none&vcid=none" id="gd"></script>
+    <script>
+        //各 Browsers 的 requestAnimationFrame() 處理==========================================================
+        window.requestAFrame = (function () {
+            return window.requestAnimationFrame ||
+                    window.webkitRequestAnimationFrame ||
+                    window.mozRequestAnimationFrame ||
+                    window.oRequestAnimationFrame ||
+                    // if all else fails, use setTimeout
+                    function (callback) {
+                        return window.setTimeout(callback, 1000 / 60); // shoot for 60 fps
+                    };
+        })();
+
+        //各 Browsers 的 cancelAnimationFrame() 處理==========================================================
+        window.cancelAFrame = (function () {
+            return window.cancelAnimationFrame ||
+                    window.webkitCancelAnimationFrame ||
+                    window.mozCancelAnimationFrame ||
+                    window.oCancelAnimationFrame ||
+                    function (id) {
+                        window.clearTimeout(id);
+                    };
+        })();
+    </script>
+    <script type="text/javascript">
+        var container = document.getElementById('DIV_3JSContainer');    //three.js 容器
+        var scene, camera, renderer;
+        var cube;
+        var Timer;
+
+        var rotate = 0;
+        
+
+        var init = function(){
+            scene = new THREE.Scene();
+            scene.add(new THREE.AmbientLight(0x888888));
+
+            camera = new THREE.PerspectiveCamera(50, 58/86, 1, 1000 );
+            camera.position.set(0, 0, 0);
+            camera.lookAt({x: 0, y: 0, z: -300});
+
+            renderer = new THREE.WebGLRenderer({alpha: true});
+            renderer.setSize(580, 860);
+            renderer.setClearColor(0x000000, 1);
+            container.appendChild(renderer.domElement);
+
+            var directionalLight = new THREE.DirectionalLight(0xffffff);
+	        directionalLight.position.set( 500, 200, 500 ).normalize();
+
+            scene.add(directionalLight);
+
+            var texture = THREE.ImageUtils.loadTexture('images/vponlogo.png', {}, function() {
+                var materials = [];
+                for ( var i = 0; i < 6; i ++ ) {
+                    materials.push(new THREE.MeshBasicMaterial({ 
+                        map: texture,
+                        transparent: true,
+                        side: THREE.DoubleSide,
+                        depthTest: false
+                    }));
+                }
+
+                cube = new THREE.Mesh( new THREE.CubeGeometry( 1, 1, 1, 10, 10, 10), new THREE.MeshFaceMaterial( materials));
+                cube.applyMatrix( new THREE.Matrix4().makeScale(50, 50, 50) );
+                cube.position.set(0,0,-300);
+
+                scene.add(cube);
+
+                var skytexture = THREE.ImageUtils.loadTexture('images/sky.jpg', {}, function() {
+                    var skymaterial = new THREE.MeshBasicMaterial({
+                        map: skytexture
+                    });
+                    var skyGeo = new THREE.PlaneGeometry(500, 500, 10, 10);
+
+                    var skyMesh = new THREE.Mesh(skyGeo, skymaterial);
+                    skyMesh.position.set(0,0,-350);
+                    scene.add(skyMesh);
+                    animateFun();
+                });
+
+                            
+            });
+        }
+
+        var animateFun = function(){
+            if (Timer) window.cancelAFrame(Timer);
+
+            rotate+=2;
+            cube.rotation.y = (Math.PI/180)*rotate*.5;
+            cube.rotation.z = (Math.PI/180)*rotate*.5;
+            cube.position.x += Math.cos((Math.PI/180)*rotate);
+            cube.position.y += Math.cos((Math.PI/180)*rotate*.5)*.5;
+            cube.position.z += Math.sin((Math.PI/180)*rotate*.5);
+            renderer.render(scene, camera);
+
+            Timer = window.requestAFrame(animateFun);
+        }
+
+        
+
+        window.onload = init;
+    </script>
+    <script>var parseParamsFromUrl = function() {var params = {};var url = window.location.toString();var key = "";var value="";if(url.indexOf("?")!=-1){var ary=url.split("?")[1].split("&");for(var i in ary){key=ary[i].split("=")[0];value = decodeURIComponent(ary[i].split("=")[1]);params[key] = value;}}return params;};window.addEventListener("load", function(){var params = parseParamsFromUrl();var vpimei = params["_vpimei"];var vpgaid = params["_vpgaid"];var vpmac = params["_vpmac"];var vpidfa = params["_vpidfa"];var adid = params["_vpadid"];var bid = params["_vpbid"];var cid = params["_vpcid"];clickUrl = clickUrl.replace(/{imei}/g,vpimei).replace(/{gaid}/g,vpgaid).replace(/{mac_md5_1}/g,vpmac).replace(/{idfa}/g,vpidfa).replace(/{ad_id}/g,adid).replace(/{banner_id}/g,bid).replace(/{campaign_id}/g,cid);});</script></body>
+</html>

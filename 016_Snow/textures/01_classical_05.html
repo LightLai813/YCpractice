@@ -1,0 +1,68 @@
+
+<!-- saved from url=(0058)file:///Users/vpon/WebSite/_studyClub/01_classical_05.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>
+    // 05. 暫時的建構式 a Temporary Constructor
+
+    // function inherit(C, P) {
+    //     var temp = function () {};
+    //     temp.prototype = P.prototype;
+    //     C.prototype = new temp();
+    // }
+
+
+    /* 新增一個參考，把父層的 prototype 保留下來 */
+    function inherit(C, P) {
+        var temp = function () {};
+        temp.prototype = P.prototype;
+        C.prototype = new temp();
+        C.baseClass = P.prototype;
+    }
+
+    /* 將 constructor 指向預期的建構式 */
+    // function inherit(C, P) {
+    //     var tempF = function () {};
+    //     tempF.prototype = P.prototype;
+    //     C.prototype = new tempF();
+    //     C.baseClass = P.prototype;
+    //     C.prototype.constructor = C;
+    // }
+
+    /* 避免每次繼承都要重複建立 tempF，建立一次，之後使用只是更改它的原型 */
+    // var inherit = (function(){
+    //     var tempF = function(){};
+    //     return function(C, P){
+    //         tempF.prototype = P.prototype;
+    //         C.prototype = new tempF();
+    //         C.baseClass = P.prototype;
+    //         C.prototype.constructor = C;
+    //     }
+    // }());
+
+    function Parent(name) {
+        this.name = name || 'Adam';
+    }
+    // adding functionality to the prototype
+    Parent.prototype.say = function () {
+        return this.name;
+    };
+
+    // empty child constructor
+    function Child() {
+        this.name = name || 'kid';
+    }
+
+    // inheritance magic happens here
+    inherit(Child, Parent);
+
+    //  Child.prototype.say = function () {
+    //     return this.nickName;
+    // };
+
+
+    // 
+    var kid = new Child();
+    console.log(kid);
+    console.log(kid.say()); // "Adam"
+    console.log(kid.name);
+    // console.log(kid.constructor.name);
+</script></head><body></body></html>

@@ -1,0 +1,61 @@
+.refer{
+    color: #DBDEDC;
+    color: #DAD1BE;
+    color: #C9A66B;
+    color: #303239;
+    color: #53575A;
+    color: #C5D4DB;
+}
+
+html, body{margin: 0; width: 100%; height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+.wrapper{position: relative; width: 100%; height: auto; min-height: 100%; background: #53575A;}
+header{position: relative; height: 50px; line-height: 50px; background: #303239; color: #C5D4DB; font-size: 1.1em; padding: 0 20px;}
+.content {position: relative; width: 640px; height: auto; margin: 0 auto; padding: 50px 0;}
+
+#PNL_Control {position: relative; width: 100%; height: 50px; margin-top: 10px;}
+#PNL_Control .step {position: absolute; display:none; color: #C5D4DB; font-size: 1em; cursor: pointer; padding: 5px;}
+#PNL_Control .step#BTN_Prev{ left:70px;}
+#PNL_Control .step#BTN_Next{ right:70px;}
+#PNL_Control .emotion {position: absolute; left: 50%; margin-top: -5px; margin-left: -80px; display: none;}
+#PNL_Control .emotion > div {display: inline-block; padding: 5px; height: 40px; width: 40px; cursor:pointer;}
+
+#step1 .userImg {position: relative; width: 500px; height: 500px; margin: 0 auto; border: #DBDEDC solid 2px;}
+#step1 .userImg #CVS_userFaceTemp {display:none;}
+#step1 .userImg #CVS_UserFace {position: absolute; z-index:10; width: 500px; height:500px;}
+#step1 .userImg .grid {position: absolute; z-index: 20; width: 100%; height: 100%;}
+#step1 .userImg .grid .top{border-bottom: #DBDEDC dashed 1px; width: 100%; height: 33%; position: absolute; top: 0; left: 0;}
+#step1 .userImg .grid .bottom{border-top: #DBDEDC dashed 1px; width: 100%; height: 33%; position: absolute; bottom: 0; left: 0;}
+#step1 .userImg .grid .left{border-right: #DBDEDC dashed 1px; width: 33%; height: 100%; position: absolute; top: 0; left: 0;}
+#step1 .userImg .grid .right{border-left: #DBDEDC dashed 1px; width: 33%; height: 100%; position: absolute; top: 0; right: 0;}
+#step1 .userImg .faceEdge{position: absolute; z-index: 30; opacity: 0.5;}
+#step1 .userImg .PNL_FaceControl {position: absolute; z-index: 90; width: 100%; height: 100%;}
+#step1 .userImg .PNL_FaceControl #panArea{position: absolute; width: 100%; height: 100%; /*background: rgba(0, 255,255,.5);*/}
+#step1 .userImg .PNL_FaceControl #BTN_Zoom { position: absolute; top: 100px; right: 100px; margin: -16px -14px; color: #DBDEDC; font-size: 2em; cursor: pointer;} 
+#step1 .userImg .PNL_FaceControl .Feature { position: absolute; display:none; opacity: 0.8; height: auto;}
+#step1 .userImg .PNL_FaceControl .Feature .zoom{ position: absolute; display:none; font-size: 1.5em; left: 100%; top:-100%;margin-top: -12px; margin-left:-12px; color: #FFF;}
+#step1 .userImg .PNL_FaceControl .Feature.on .zoom{ display:block; }
+#step1 .userImg .PNL_FaceControl .Feature img{width:100%; height:100%; margin-top:-100%; } 
+#step1 .userImg .PNL_FaceControl .Feature .tip{font-weight: 500; font-size:1em; color: #FFF; right: 0; top: 0; position: absolute;}
+#step1 .userImg .PNL_FaceControl .Feature#Eye_L, 
+#step1 .userImg .PNL_FaceControl .Feature#Eye_R  { width: 70px; height: 35px; top: 210px;}
+#step1 .userImg .PNL_FaceControl .Feature#Eye_L { left: 280px; }
+#step1 .userImg .PNL_FaceControl .Feature#Eye_R { left: 150px;}
+#step1 .userImg .PNL_FaceControl .Feature#Mouth { width: 140px; height: 70px; top: 355px; left: 180px;}
+#step1 .userImg #BTN_ReUpload {position: absolute; z-index: 100; cursor:pointer; right: 10px; bottom: 10px; color: #DBDEDC; font-size: 1em;}
+
+#step2 {display: none;}
+#step2 #DIV_3JSContainer{position: relative; width: 500px; height: 500px; margin: 0 auto; border: #DBDEDC solid 2px;}
+
+#step3 {display: none;}
+#step3 #IMG_Result { display: block; position: relative; width: 500px; height: 500px; margin: 0 auto; border:#DBDEDC solid 2px;}
+
+canvas.gifFrame{
+    position: absolute;
+    top: -2000px;
+    width: 500px;
+    height: 500px;
+}
+
+footer{position: relative; width: 100%; height: 33px; line-height:33px; margin-top: -33px; text-align: center; background: #C9A66B; color: #DAD1BE; font-size: 0.5em; }
+
+.shadow { text-shadow: 1px 1px 2px #000;}

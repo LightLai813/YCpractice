@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no" />
+	<!--以上勿動 -->
+	<title>Vpon</title>
+	<style type="text/css">
+		html, body{ 
+            overflow: hidden;
+            margin:0;
+        }
+        
+        body{
+            background: rgba(0, 0, 0, 0);
+            width: 100%;
+            height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            
+        }
+		#panoContainer{ width: 100%; height: 100% }
+		#orientInfo{
+			padding: 0 20px;
+			position: absolute; 
+			z-index: 9999999;
+			font-size: .5em;
+			background: rgba(255,255,255,.3);
+			width: 100%;
+		}
+
+		#arrow{
+			width: 100px;
+			height: 130px;
+			top:2%;
+			left: 50%;
+			margin-left: -50px;
+			background: url(sign.png);
+			background-size: 100% 100%;
+			position: absolute;
+			z-index: 9999999;
+		}
+	</style>
+</head>
+<body>
+	<div id="orientInfo">
+		<p>lat:<span id="lat"></span></p>
+		<p>lng:<span id="lng"></span></p>
+	</div>
+	<div id="arrow"></div>
+	<div id="panoContainer"></div>
+
+	<script type="text/javascript" src="http://m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.min.js"></script>
+	<script type="text/javascript" src="DeviceOrientationController.js"></script>
+	<script type="text/javascript">
+		var scene, camera, renderer, orientController;
+		var textureLoader = new THREE.TextureLoader();
+
+		var targetDiv = {
+			lat: 20,
+			lng: 150,
+			far: 200
+		}
+
+		
+		var init = function(){
+			//建立場景
+			scene = new THREE.Scene(); 	
+
+			//建立攝影機
+			camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 1000);	
+
+			//建立渲染器
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth,window.innerHeight);
+			document.getElementById('panoContainer').appendChild(renderer.domElement);
+
+			// 建立sphere geometry
+			var sphere = new THREE.SphereGeometry(100, 100, 40);
+			sphere.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
+
+			// 圖片
+			var viewImage = textureLoader.load('snow.jpg',function(e){
+				var viewMaterial = new THREE.MeshBasicMaterial({
+					map: viewImage, 
+					wireframe: false
+				});
+				// 建立sphere Mesh
+				var viewMesh = new THREE.Mesh(sphere, viewMaterial);
+				scene.add(viewMesh);
+			});
+
+			// 建立 orientController
+			orientController = new DeviceOrientationController(camera, renderer.domElement);
+			orientController.connect();
+			render();
+
+			window.addEventListener( 'resize', onWindowResize, false );
+		}
+
+		var render = function() {
+			orientController.update();
+			renderer.render(scene, camera);
+			requestAnimationFrame(render);
+
+
+			var lookAtVector = new THREE.Vector3(0,0,-1);
+			lookAtVector.applyQuaternion(camera.quaternion);
+			// document.getElementById('lx').innerHTML = lookAtVector.x;
+			// document.getElementById('ly').innerHTML = lookAtVector.y;
+			// document.getElementById('lz').innerHTML = lookAtVector.z;
+
+			var looAt = {
+				lat: lookAtVector.y*90,
+				lng: Math.atan2(lookAtVector.x, lookAtVector.z) * (180 / Math.PI), 
+			}
+
+			document.getElementById('lat').innerHTML = looAt.lat ;
+			document.getElementById('lng').innerHTML = looAt.lng ;
+		}
+
+		var onWindowResize = function(){
+			camera.aspect = window.innerWidth/window.innerHeight;
+    		camera.updateProjectionMatrix();
+    		renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+
+		window.onload = init;
+	</script>
+</body>
+</html>

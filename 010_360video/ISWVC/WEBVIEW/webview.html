@@ -1,0 +1,225 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script type="text/javascript" charset="utf-8" src="http://m.vpon.com/sdk/vpadn-sdk-util-v1.js"></script>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no" />
+    <title>ISVC｜WEBVIEW</title>
+    <style>
+        html, body{ 
+            overflow: hidden;
+            margin:0;
+        }
+        
+        body{
+            background: rgba(0, 0, 0, 0);
+            width: 100%;
+            height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            
+        }
+
+        #closeAD{
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 30px;
+            height: 30px;
+            padding: 5px;
+            z-index: 999999;
+        }
+
+        #closeAD img{ width: 100%;}
+
+        #panoContainer{
+			width: 100%;
+			height: 100%
+		}
+
+        #panArea{
+			position: absolute;
+			top:0;
+			left:0;
+			width: 100%;
+			height: 100%;
+			/*background: rgba(255,255,0,.2);*/
+			z-index: 99998;
+		}
+		#playBtn{
+			position: absolute;
+			top:0;
+			left:0;
+			width: 100%;
+			height: 100%;
+			/*background: rgba(0,255,255,.5);*/
+			z-index: 999999;
+		}
+		#video{
+			display: none;
+		}
+    </style>
+</head>
+<body>    
+    <div id="closeAD"><img src="images/icon_close.png" /></div>
+    <div id="panoContainer"></div>
+    <div id="panArea"></div>
+	<div id="playBtn"></div>
+	<video id="video" muted loop webkit-playsinline>
+        <source src="LIGHT_ISVC20160718.mp4" type="video/mp4">
+    </video>
+    <script type="text/javascript" src="http://m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+    <script  type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js"></script>
+    <script type="text/javascript">
+	//各 Browsers 的 requestAnimationFrame() 處理==========================================================
+	window.requestAFrame = (function () {
+		return window.requestAnimationFrame ||
+				window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame ||
+				window.oRequestAnimationFrame ||
+				// if all else fails, use setTimeout
+				function (callback) {
+					return window.setTimeout(callback, 1000 / 60); // shoot for 60 fps
+				};
+	})();
+
+	//各 Browsers 的 cancelAnimationFrame() 處理==========================================================
+	window.cancelAFrame = (function () {
+		return window.cancelAnimationFrame ||
+				window.webkitCancelAnimationFrame ||
+				window.mozCancelAnimationFrame ||
+				window.oCancelAnimationFrame ||
+				function (id) {
+					window.clearTimeout(id);
+				};
+	})();
+	</script>
+    <script>
+        var videoTime=0;
+
+        var scene, camera, renderer;
+		var Timer;
+		var original = { lat: 90, lng: 0 };
+		var userMove = { lat: 0, lng: 0 };
+		var video;
+
+		var hammerTimer;
+		var preHammer = { x: 0, y: 0};     //記錄上一刻的座標
+
+        var init = function(){
+			//建立場景
+			scene = new THREE.Scene(); 	
+
+			//建立攝影機
+			camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 1, 1000);	
+            
+			//建立渲染器
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			document.getElementById('panoContainer').appendChild(renderer.domElement);
+
+			// 建立sphere geometry
+			var sphere = new THREE.SphereGeometry(100, 100, 40);
+			sphere.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
+
+			// 建立sphere 材質
+            var sphereMaterial = new THREE.MeshBasicMaterial();
+            sphereMaterial.map = THREE.ImageUtils.loadTexture('images/snow.jpg');
+
+			// 建立sphere 材質
+            // video = document.getElementById('video');
+            // var texture = new THREE.VideoTexture(video);
+            // texture.minFilter = THREE.LinearFilter;
+            // texture.magFilter = THREE.LinearFilter;
+            // texture.format = THREE.RGBFormat;
+			// var sphereMaterial = new THREE.MeshBasicMaterial();
+			// sphereMaterial.map = texture;
+
+			// 建立sphere Mesh
+			var sphereMesh = new THREE.Mesh(sphere, sphereMaterial);
+			scene.add(sphereMesh);
+
+			render();
+			//window.addEventListener('resize', onWindowResize, false );
+
+			//設定Hammer
+			hammerTimer = new Hammer(document.getElementById('panArea'), { preventDefault: true }); 
+			hammerTimer.get('pan').set({ direction: Hammer.DIRECTION_ALL});
+			hammerTimer.on('panmove panstart', function(e) {
+				e.preventDefault();
+				if(e.type == 'panmove'){
+					var moveDist = {
+						x: e.deltaX - preHammer.x,
+						y: e.deltaY - preHammer.y
+					} ;
+					userMove.lng += moveDist.x*.1;
+					userMove.lat += moveDist.y*.1;
+				}
+
+				preHammer.x = e.type=='panstart'? 0: e.deltaX;
+				preHammer.y = e.type=='panstart'? 0: e.deltaY;
+			});
+
+            //vpsdk設定
+            vpsdk.addEventListener('video_timeupdate', onTimeUpdate);
+            vpsdk.addEventListener('video_play', onPlay);
+            vpsdk.addEventListener('video_ended', onEnded);
+            
+            document.getElementById('closeAD').addEventListener('click',function(){
+                vpsdk.close();
+            });
+
+			//播放設定
+            document.getElementById('playBtn').addEventListener("click", function(){
+               	remove(this); 
+                video.play();
+
+                function remove(element) { 
+                    element.parentNode.removeChild(element);
+                }
+            });
+		}
+
+        var render = function () {
+			if (Timer) window.cancelAFrame(Timer);
+
+			// 	if(orient.alpha-longitude > 180) longitude += 360;
+			// 	else if(orient.alpha-longitude < -180) longitude -= 360;
+			// 	longitude += (orient.alpha-longitude)*.2;
+			// 	latitude += (orient.beta-latitude)*.2;
+
+			original.lng += .1;
+			
+			if(original.lng > 360) original.lng -= 360;
+			else if(original.lng < 0) original.lng += 360;
+
+			var latitude = original.lat + userMove.lat;
+			if(latitude > 179) latitude = 179;
+			else if(latitude < 1) latitude = 1;
+
+			camera.lookAt({
+				x: 500 * Math.sin(THREE.Math.degToRad(180-latitude)) * Math.sin(THREE.Math.degToRad(original.lng+userMove.lng)),
+				y: 500 * Math.cos(THREE.Math.degToRad(180-latitude)),
+				z: 500 * Math.sin(THREE.Math.degToRad(180-latitude)) * Math.cos(THREE.Math.degToRad(original.lng+userMove.lng))
+			});
+
+			renderer.render(scene, camera);
+			Timer = window.requestAFrame(render);
+		}
+     
+        var onTimeUpdate = function(ret) {
+            videoTime = ret.current_time;
+        }
+
+        var onPlay = function(){
+         
+        }
+        
+        var onEnded = function(){
+
+        }
+        
+        vpsdk.addEventListener('ready', init);
+    </script>
+</body>
+</html>
