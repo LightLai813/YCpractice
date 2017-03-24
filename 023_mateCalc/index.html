@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html, body{
+            margin:0;
+            background: #F1F0F0;
+        }
+
+        #DIV_Result{
+            width: 800px;
+            position:relative;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #DIV_Result svg text{
+            fill: #555;
+            font-size: 30px;
+            text-align: center;
+            text-anchor:middle;
+        }
+
+        #DIV_Result svg text#Result{
+            fill: #F37;
+        }
+
+        #DIV_Result svg line{
+            stroke:#CCC;
+            stroke-width:2;
+            stroke-dasharray: 5;
+        }
+
+
+        .TYPE_Box{
+            font-size: 20px;
+            width: 50px;
+            text-align: center;
+            margin-left: -50px;
+        }
+
+        #TXT_BothName{
+            font-size: 20px;
+            padding: 10px;
+            width: 600px;
+            border: none;
+        }
+
+        #BTN_Calc{
+            width: 620px;
+            height: 40px;
+            line-height: 40px;
+            margin:0 auto;
+            text-align: center;
+            background: #F37;
+            color: #FFF;
+            cursor: pointer;
+        }
+
+        #BTN_Calc:hover{
+            background: #F69;
+        }
+    </style>
+</head>
+<body>
+    <div id="DIV_Result">
+        <input type="text" id="TXT_BothName" placeholder="請輸入雙方姓名(接著輸入不含空白)" />
+        <div id="BTN_Calc">計算</div>
+        <br/>
+        <br/>
+        <svg id="SVG_Result" width="800" height="600"></svg>
+    </div>
+    <script src="//code.jquery.com/jquery-3.2.0.min.js"></script>
+    <script>
+        document.getElementById('BTN_Calc').addEventListener('click',function(){
+            const bothName = document.getElementById('TXT_BothName').value;
+            const nameArr = bothName.replace(/\s+/g, '').split('');
+            const charCount = nameArr.length;
+            let doneCount = 0;
+            const calcArr = new Array(charCount);
+            calcArr[0] = new Array(charCount);
+            let resultStr = '';
+
+            for(var i=0,char;char=nameArr[i];i++){
+                $.ajax({
+                    url: 'getstrokes',
+                    method: 'POST',
+                    type: 'JSON',
+                    data:{
+                        word: char,
+                        index: i
+                    },
+                    success:(res)=>{
+                        var response = JSON.parse(res);
+                        console.log(response);
+                        if(response.state != 'error'){
+                            calcArr[0][response.index] = response.data;
+                            
+                            if(++doneCount >= charCount){
+                                setResult();
+                            }
+                        }else{
+                            alert('系統發生錯誤，請稍再試');
+                            location.reload();
+                        }
+                    }
+                })
+            }
+
+            function setResult(){
+                for(var i=0;i<charCount;i++){
+                    resultStr += '<text x="'+parseInt(50+(i*100))+'" y="30">'+calcArr[0][i]+'</text>';
+                }
+
+                for(var i=1; i<charCount;i++){
+                    calcArr[i] = new Array(charCount-i);
+                    for(var j=0;j<charCount-i;j++){
+                        calcArr[i][j]=Math.abs(calcArr[i-1][j]-calcArr[i-1][j+1]);
+
+                        const x = parseInt((50*(i+1))+(j*100));
+                        const y = parseInt(30+i*90)
+                        
+                        resultStr += '<line x1="'+parseInt(x-50)+'" y1="'+parseInt(y-90)+'" x2="'+x+'" y2="'+y+'"  />';
+                        resultStr += '<line x1="'+parseInt(x+50)+'" y1="'+parseInt(y-90)+'" x2="'+x+'" y2="'+y+'"  />';
+
+                        resultStr += '<text x="'+x+'" y="'+y+'" '+(i==(charCount-1)?'id="Result"':'')+'>'+calcArr[i][j]+'</text>';
+                    }
+                }
+
+                document.getElementById('SVG_Result').innerHTML = resultStr;
+            }
+            
+        });
+    </script>
+</body>
+</html>
