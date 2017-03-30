@@ -140,6 +140,21 @@ SwAK.getAngel = function(bp,ep){
     return (res>=0 && res <=180)?res+=90:((res<0 && res>=-90)? res+=90: res+=450);
 }
 
+// ========= 預載圖片============================================================================================
+SwAK.preloadImg = function(imgArr,callback){
+    var onloadCount = 0;
+    var image = [];
+
+    for(var i=0, imgUrl; imgUrl=imgArr[i];i++){
+        image[i] = new Image();
+        image[i].onload = function(){
+            if(++onloadCount >= imgArr.length && callback){
+                callback();
+            }
+        }
+        image[i].src = imgUrl;
+    }
+}
 
 
 /* ---------------------------------------- window 附加功能 ---------------------------------------- */

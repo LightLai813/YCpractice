@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=320, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>轉珠遊戲 ft. Pixi.js </title>
+    <style>
+        html,
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="main"></canvas>
+    <script src="http://pixijs.download/release/pixi.min.js"></script>
+    <script>
+        var app = new PIXI.Application(
+            window.innerWidth,                          // the width of the renderers view
+            window.innerHeight,                         // the height of the renderers view
+            { 
+                view: document.getElementById('main'),  // the canvas to use as a view, optional
+                transparent: false,                     // If the render view is transparent, default false，true為透明
+                antialias: false,                       // 去除文字鋸齒，這個屬性是基於 WebGL
+                preserveDrawingBuffer: false,           // enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
+                resolution: 1                           // 這個參數與瀏覽器的 pixel densities 相關，基本設為 1，retina 設為2
+            }
+        );
+
+        // 若是option的view參數沒設定，可由此加入 view
+        // document.body.appendChild(app.view);
+
+        PIXI.loader.add([
+            {name:'blue', url:'images/smile_b.svg'},
+            {name:'green', url:'images/smile_g.svg'},
+            {name:'red', url:'images/smile_r.svg'},
+            {name:'yellow', url:'images/smile_y.svg'},
+            {name:'gray', url:'images/smile_gray.svg'}
+        ]).on("progress", function(loader, resource){
+                // 顯示已載入的檔案路徑 resource.url
+                // 若是你在 add() 的時候有指定名稱
+                // 可以使用 resource.name 來確認你指定的檔案已經載入完畢
+                console.log("loading: " + resource.name+':'+resource.url); 
+
+                // 顯示已載入資源百分比
+                console.log("progress: " + loader.progress + "%"); 
+
+                // resource.error loading 發生錯誤時的資訊
+                // resource.data lets you access the file's raw binary data
+        }).load(function(){
+            var blue = new PIXI.Sprite(
+                PIXI.utils.TextureCache['images/smile_b.svg']
+            );
+
+            // 以指定名稱的方式去取用 Texture Cache
+            var red = new PIXI.Sprite(PIXI.loader.resources.red.texture);
+
+            // center the sprite's anchor point
+            red.anchor.set(0.5, 0);
+
+            // move the sprite to the center of the screen
+            red.x = app.renderer.width / 2;
+            red.y = app.renderer.height / 2;
+            red.width =red.height = 200;
+
+            // Opt-in to interactivity
+            red.interactive = true;
+
+            // Shows hand cursor
+            red.buttonMode = true;
+
+            // Pointers normalize touch and mouse
+            red.on('pointerdown', function(e){
+                console.log(e);
+                alert('oh!');
+            });
+
+            app.stage.addChild(red);
+
+            // Listen for animate update
+            app.ticker.add(function(delta) {
+                // just for fun, let's rotate mr rabbit a little
+                // delta is 1 if running at 100% performance
+                // creates frame-independent tranformation
+                red.rotation += 0.01 * delta;
+            });
+        });
+
+
+        window.onresize = function(e) {
+            renderer.autoResize = true;
+            renderer.resize(window.innerWidth, window.innerHeight);
+        };
+    </script>
+</body>
+</html>
