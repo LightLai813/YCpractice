@@ -205,6 +205,17 @@ String.prototype.mid = function(begin, len) { return this.substring(begin, begin
 String.prototype.right = function(len) { return this.substring(this.length - len, this.length); };
 String.prototype.reverse = function() { return this.split('').reverse().join(''); }
 
+//  ========== Array prototype ==========================================================================
+Array.prototype.move = function (old_index, new_index) {
+    if (new_index >= this.length) {
+        var k = new_index - this.length;
+        while ((k--) + 1) {
+            this.push(undefined);
+        }
+    }
+    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+    return this; // for testing purposes
+};
 
 /* ---------------------------------------- jQuery 附加功能 ---------------------------------------- */
 if (typeof(jQuery) != 'undefined') {

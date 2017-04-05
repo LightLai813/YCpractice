@@ -9,19 +9,77 @@
         html,
         body {
             margin: 0;
+            background: #eee;
+            width: 100%;
+        }
+
+        #content{
+            position: relative;
+            width: 480px;
+            margin: 50px auto;
+        }
+
+        #panArea{
+            position: absolute;
+            width: 480px;
+            height: 400px;
+            z-index: 9999;
+            top: 0;
+            left: 0;
         }
     </style>
 </head>
 <body>
-    <canvas id="main"></canvas>
+    <div id="content">
+        <canvas id="main"></canvas>
+        <div id="panArea"></div>
+    </div>
+    <script src="https://rawgit.com/LightLai813/YCpractice/master/SwAK.Lai.js"></script>
+    <script src="//hammerjs.github.io/dist/hammer.min.js"></script>
     <script src="http://pixijs.download/release/pixi.min.js"></script>
     <script>
+        var checkerboard = new Array(5);
+        var target = {i: -1, j: -1};
+
+        var hammer = new Hammer(document.getElementById('panArea'), {
+            preventDefault: true
+        });
+        hammer.get('pan').set({
+            direction: Hammer.DIRECTION_ALL
+        });
+        hammer.on('panmove panstart panend', function(e) {
+            e.preventDefault();
+
+            switch (e.type) {
+                case 'panstart':
+                    target = {
+                        i: Math.floor(e.changedPointers[0].offsetY/80),
+                        j: Math.floor(e.changedPointers[0].offsetX/80)
+                    };
+                    // console.log(checkerboard[target.i][target.j]);
+                    console.log(app.stage);
+                   
+                    break;
+                case 'panmove':
+                    checkerboard[target.i][target.j].x = (target.j*80+40)+e.deltaX;
+                    checkerboard[target.i][target.j].y = (target.i*80+40)+e.deltaY;
+                    break;
+                case 'panend':
+                    target = {i: -1, j: -1};
+                    break;
+            }
+        });
+
+
+       
         var app = new PIXI.Application(
-            window.innerWidth,                          // the width of the renderers view
-            window.innerHeight,                         // the height of the renderers view
+            // window.innerWidth,                          // the width of the renderers view
+            // window.innerHeight,                         // the height of the renderers view
+            480,                          // the width of the renderers view
+            400,                         // the height of the renderers view
             { 
                 view: document.getElementById('main'),  // the canvas to use as a view, optional
-                transparent: false,                     // If the render view is transparent, default false，true為透明
+                transparent: true,                     // If the render view is transparent, default false，true為透明
                 antialias: false,                       // 去除文字鋸齒，這個屬性是基於 WebGL
                 preserveDrawingBuffer: false,           // enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
                 resolution: 1                           // 這個參數與瀏覽器的 pixel densities 相關，基本設為 1，retina 設為2
@@ -49,42 +107,61 @@
                 // resource.error loading 發生錯誤時的資訊
                 // resource.data lets you access the file's raw binary data
         }).load(function(){
-            var blue = new PIXI.Sprite(
-                PIXI.utils.TextureCache['images/smile_b.svg']
-            );
+            for(var i=0;i<5;i++){
+                checkerboard[i] = new Array(6);
+                for(var j=0;j<6;j++){
+                    switch(SwAK.rndInt(0,4)){
+                        case 0:
+                            checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources.red.texture);
+                            break;
+                        case 1:
+                            checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources.green.texture);
+                            break;
+                        case 2:
+                            checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources.blue.texture);
+                            break;
+                        case 3:
+                            checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources.yellow.texture);
+                            break;
+                        case 4:
+                            checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources.gray.texture);
+                            break;
+                    }
 
-            // 以指定名稱的方式去取用 Texture Cache
-            var red = new PIXI.Sprite(PIXI.loader.resources.red.texture);
+                    checkerboard[i][j].anchor.set(0.5);              // 設定元素變形中心點
+                    checkerboard[i][j].width =checkerboard[i][j].height = 70; // 設定元素大小
 
-            // center the sprite's anchor point
-            red.anchor.set(0.5, 0);
+                    // Opt-in to interactivity
+                    // checkerboard[i][j].interactive = true;
 
-            // move the sprite to the center of the screen
-            red.x = app.renderer.width / 2;
-            red.y = app.renderer.height / 2;
-            red.width =red.height = 200;
+                    // // Shows hand cursor
+                    // checkerboard[i][j].buttonMode = true;
 
-            // Opt-in to interactivity
-            red.interactive = true;
+                    // // Pointers normalize touch and mouse
+                    // checkerboard[i][j].on('pointerdown', function(e){
+                    //     console.log(e);
+                    //     alert('oh!');
+                    // });
 
-            // Shows hand cursor
-            red.buttonMode = true;
-
-            // Pointers normalize touch and mouse
-            red.on('pointerdown', function(e){
-                console.log(e);
-                alert('oh!');
-            });
-
-            app.stage.addChild(red);
+                    checkerboard[i][j].x = j*80+40;
+                    checkerboard[i][j].y = i*80+40;
+                    checkerboard[i][j].rotation += 0.1 * (i*10+j);
+                    app.stage.addChild(checkerboard[i][j]);
+                }
+            }
 
             // Listen for animate update
             app.ticker.add(function(delta) {
                 // just for fun, let's rotate mr rabbit a little
                 // delta is 1 if running at 100% performance
                 // creates frame-independent tranformation
-                red.rotation += 0.01 * delta;
+                for(var i=0;i<5;i++){
+                    for(var j=0;j<6;j++){
+                        checkerboard[i][j].rotation += 0.005 * delta;
+                    }
+                }
             });
+         
         });
 
 
