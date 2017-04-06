@@ -2,21 +2,31 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=320, initial-scale=1.0">
+    <meta name="viewport" content="width=480, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>轉珠遊戲 ft. Pixi.js </title>
     <style>
         html,
         body {
+            position: relative;
             margin: 0;
             background: #eee;
             width: 100%;
+            height: 100%;
         }
 
         #content{
             position: relative;
             width: 480px;
-            margin: 50px auto;
+            margin: 0 auto;
+        }
+
+        #main{
+            position: absolute;
+            width: 480px;
+            height: 400px;
+            top: 100px;
+            left: 0;
         }
 
         #panArea{
@@ -24,22 +34,32 @@
             width: 480px;
             height: 400px;
             z-index: 9999;
-            top: 0;
+            top: 100px;
             left: 0;
+        }
+
+        #info{
+            font-size: 12px;
+            position:absolute;
+            
         }
     </style>
 </head>
 <body>
     <div id="content">
+        <div id="info"></div>
         <canvas id="main"></canvas>
         <div id="panArea"></div>
     </div>
-    <script src="https://rawgit.com/LightLai813/YCpractice/master/SwAK.Lai.js"></script>
+    <script src="//code.jquery.com/jquery-3.2.0.min.js"></script>
     <script src="//hammerjs.github.io/dist/hammer.min.js"></script>
-    <script src="http://pixijs.download/release/pixi.min.js"></script>
+    <script src="//rawgit.com/LightLai813/YCpractice/master/SwAK.Lai.js"></script>
+    <script src="//pixijs.download/release/pixi.min.js"></script>
     <script>
         var checkerboard = new Array(5);
-        var target = {i: -1, j: -1};
+        var dragPos = {i: -1, j: -1};
+        var hoverPos = {i: -1, j: -1};
+        var dragItem;
 
         var hammer = new Hammer(document.getElementById('panArea'), {
             preventDefault: true
@@ -49,28 +69,74 @@
         });
         hammer.on('panmove panstart panend', function(e) {
             e.preventDefault();
-
+           
             switch (e.type) {
                 case 'panstart':
-                    target = {
-                        i: Math.floor(e.changedPointers[0].offsetY/80),
-                        j: Math.floor(e.changedPointers[0].offsetX/80)
+                    dragPos = hoverPos = {
+                        i: Math.floor((e.changedPointers[0].offsetY || (e.changedPointers[0].pageY-$(e.target).offset().top))/80),
+                        j: Math.floor((e.changedPointers[0].offsetX || (e.changedPointers[0].pageX-$(e.target).offset().left))/80),
                     };
-                    // console.log(checkerboard[target.i][target.j]);
-                    console.log(app.stage);
-                   
+
+                    checkerboard[dragPos.i][dragPos.j].alpha = 0;
+                    createDragItem(dragPos);
                     break;
                 case 'panmove':
-                    checkerboard[target.i][target.j].x = (target.j*80+40)+e.deltaX;
-                    checkerboard[target.i][target.j].y = (target.i*80+40)+e.deltaY;
+                    var x = (dragPos.j*80+40)+e.deltaX;
+                    var y = (dragPos.i*80+40)+e.deltaY;
+
+                    if(x<40) x=40;
+                    else if(x>440) x=440;
+                    if(y<40) y=40;
+                    else if(y>360) y=360;
+
+                    dragItem.x = x;
+                    dragItem.y = y;
+                    
+                    if((Math.abs((hoverPos.j*80+40)-x) > 40) || (Math.abs((hoverPos.i*80+40)-y) > 40)){
+                        var oldPos = hoverPos;
+                        hoverPos = {
+                            i: Math.floor(y/80),
+                            j: Math.floor(x/80),
+                        };
+
+                        swapItems(hoverPos, oldPos);
+                    }
                     break;
                 case 'panend':
-                    target = {i: -1, j: -1};
+                    app.stage.removeChild(dragItem);
+                    dragPos = {i: -1, j: -1};
+                    checkerboard[hoverPos.i][hoverPos.j].alpha = 1;
+
+                    checkMatch();
                     break;
             }
         });
 
+        function checkMatch(){
 
+        }
+
+        function createDragItem(pos){
+            dragItem = new PIXI.Sprite(PIXI.loader.resources[checkerboard[pos.i][pos.j].color].texture);
+            dragItem.anchor.set(0.5);              // 設定元素變形中心點
+            dragItem.width =dragItem.height = 70; // 設定元素大小
+
+            dragItem.x = pos.j*80+40;
+            dragItem.y = pos.i*80+40;
+            app.stage.addChild(dragItem);
+        }
+
+        function swapItems(a, b){
+            var temp = checkerboard[a.i][a.j];
+            checkerboard[a.i][a.j] = checkerboard[b.i][b.j];
+            checkerboard[b.i][b.j] = temp;
+
+            checkerboard[a.i][a.j].x = a.j*80+40;
+            checkerboard[a.i][a.j].y = a.i*80+40;
+
+            checkerboard[b.i][b.j].x = b.j*80+40;
+            checkerboard[b.i][b.j].y = b.i*80+40;
+        }
        
         var app = new PIXI.Application(
             // window.innerWidth,                          // the width of the renderers view
@@ -85,6 +151,16 @@
                 resolution: 1                           // 這個參數與瀏覽器的 pixel densities 相關，基本設為 1，retina 設為2
             }
         );
+
+        app.stage.updateLayersOrder = function () {
+            app.stage.children.sort(function(a,b) {
+                a.zIndex = a.zIndex || 0;
+                b.zIndex = b.zIndex || 0;
+                return a.zIndex - b.zIndex;
+            });
+        };
+
+        
 
         // 若是option的view參數沒設定，可由此加入 view
         // document.body.appendChild(app.view);
@@ -110,23 +186,9 @@
             for(var i=0;i<5;i++){
                 checkerboard[i] = new Array(6);
                 for(var j=0;j<6;j++){
-                    switch(SwAK.rndInt(0,4)){
-                        case 0:
-                            checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources.red.texture);
-                            break;
-                        case 1:
-                            checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources.green.texture);
-                            break;
-                        case 2:
-                            checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources.blue.texture);
-                            break;
-                        case 3:
-                            checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources.yellow.texture);
-                            break;
-                        case 4:
-                            checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources.gray.texture);
-                            break;
-                    }
+                    var color = randomColor(['red','green','blue','yellow','gray']);
+                    checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources[color].texture);
+                    checkerboard[i][j].color = color;
 
                     checkerboard[i][j].anchor.set(0.5);              // 設定元素變形中心點
                     checkerboard[i][j].width =checkerboard[i][j].height = 70; // 設定元素大小
@@ -145,30 +207,30 @@
 
                     checkerboard[i][j].x = j*80+40;
                     checkerboard[i][j].y = i*80+40;
-                    checkerboard[i][j].rotation += 0.1 * (i*10+j);
+                    // checkerboard[i][j].rotation += 0.1 * (i*10+j*1.6);
                     app.stage.addChild(checkerboard[i][j]);
                 }
             }
 
-            // Listen for animate update
-            app.ticker.add(function(delta) {
-                // just for fun, let's rotate mr rabbit a little
-                // delta is 1 if running at 100% performance
-                // creates frame-independent tranformation
-                for(var i=0;i<5;i++){
-                    for(var j=0;j<6;j++){
-                        checkerboard[i][j].rotation += 0.005 * delta;
-                    }
-                }
-            });
+            // // Listen for animate update
+            // app.ticker.add(function(delta) {
+            //     // just for fun, let's rotate mr rabbit a little
+            //     // delta is 1 if running at 100% performance
+            //     // creates frame-independent tranformation
+            //     for(var i=0;i<5;i++){
+            //         for(var j=0;j<6;j++){
+            //             checkerboard[i][j].rotation += 0.005 * delta;
+            //         }
+            //     }
+            // });
          
         });
 
+        function randomColor(colorArray){
+            function rndInt(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); };
+            return colorArray[rndInt(0, colorArray.length-1)];;
+        }
 
-        window.onresize = function(e) {
-            renderer.autoResize = true;
-            renderer.resize(window.innerWidth, window.innerHeight);
-        };
     </script>
 </body>
 </html>
