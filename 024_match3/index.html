@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=480, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes" />
+    <meta name="viewport" content="width=640, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>轉珠遊戲 ft. Pixi.js </title>
     <style>
@@ -17,31 +17,25 @@
 
         #content{
             position: relative;
-            width: 480px;
+            width: 640px;
             margin: 0 auto;
         }
 
-        #main{
+        #main, #panArea{
             position: absolute;
-            width: 480px;
-            height: 400px;
+            width: 600px;
+            height: 500px;
             top: 100px;
-            left: 0;
+            left: 20px;
         }
 
         #panArea{
-            position: absolute;
-            width: 480px;
-            height: 400px;
             z-index: 9999;
-            top: 100px;
-            left: 0;
         }
 
         #info{
             font-size: 12px;
             position:absolute;
-            
         }
     </style>
 </head>
@@ -51,15 +45,25 @@
         <canvas id="main"></canvas>
         <div id="panArea"></div>
     </div>
+
+    <script src="//m.vpadn.com/tpl/html5/vpadn-logo-728x90_mb.js"></script>
+    <script src="//tw-img.vpon.com/img/js/ad-0.2.js"></script>
+    <script src="//tw-img.vpon.com/img/js/gd-0.3.js?vpn=EventName&vtype=IS&vga=none&vlk=none&vcid=none" id="gd"></script>
     <script src="//code.jquery.com/jquery-3.2.0.min.js"></script>
     <script src="//hammerjs.github.io/dist/hammer.min.js"></script>
-    <script src="//rawgit.com/LightLai813/YCpractice/master/SwAK.Lai.js"></script>
     <script src="//pixijs.download/release/pixi.min.js"></script>
     <script>
         var checkerboard = new Array(5);
         var dragPos = {i: -1, j: -1};
         var hoverPos = {i: -1, j: -1};
         var dragItem;
+
+        var panAreaPos = {
+            top: $('#panArea').offset().top,
+            left: $('#panArea').offset().left
+        }
+
+        var needCheck = false;
 
         var hammer = new Hammer(document.getElementById('panArea'), {
             preventDefault: true
@@ -73,30 +77,30 @@
             switch (e.type) {
                 case 'panstart':
                     dragPos = hoverPos = {
-                        i: Math.floor((e.changedPointers[0].offsetY || (e.changedPointers[0].pageY-$(e.target).offset().top))/80),
-                        j: Math.floor((e.changedPointers[0].offsetX || (e.changedPointers[0].pageX-$(e.target).offset().left))/80),
+                        i: Math.floor((e.changedPointers[0].pageY-panAreaPos.top)/100),
+                        j: Math.floor((e.changedPointers[0].pageX-panAreaPos.left)/100),
                     };
 
                     checkerboard[dragPos.i][dragPos.j].alpha = 0;
                     createDragItem(dragPos);
                     break;
                 case 'panmove':
-                    var x = (dragPos.j*80+40)+e.deltaX;
-                    var y = (dragPos.i*80+40)+e.deltaY;
+                    var x = Math.floor(e.changedPointers[0].pageX-panAreaPos.left);
+                    var y = Math.floor(e.changedPointers[0].pageY-panAreaPos.top);
 
-                    if(x<40) x=40;
-                    else if(x>440) x=440;
-                    if(y<40) y=40;
-                    else if(y>360) y=360;
+                    if(x<50) x=50;
+                    else if(x>550) x=550;
+                    if(y<50) y=50;
+                    else if(y>450) y=450;
 
                     dragItem.x = x;
                     dragItem.y = y;
                     
-                    if((Math.abs((hoverPos.j*80+40)-x) > 40) || (Math.abs((hoverPos.i*80+40)-y) > 40)){
+                    if((Math.abs((hoverPos.j*100+50)-x) > 50) || (Math.abs((hoverPos.i*100+50)-y) > 50)){
                         var oldPos = hoverPos;
                         hoverPos = {
-                            i: Math.floor(y/80),
-                            j: Math.floor(x/80),
+                            i: Math.floor(y/100),
+                            j: Math.floor(x/100),
                         };
 
                         swapItems(hoverPos, oldPos);
@@ -106,14 +110,25 @@
                     app.stage.removeChild(dragItem);
                     dragPos = {i: -1, j: -1};
                     checkerboard[hoverPos.i][hoverPos.j].alpha = 1;
-
                     checkMatch();
                     break;
             }
         });
 
         function checkMatch(){
+            for(var i=0;i<5;i++){
+                for(var j=0;j<6;j++){
+                    // Check horizontal
+                    if(j>1 && (checkerboard[i][j-2].color == checkerboard[i][j-1].color) && (checkerboard[i][j].color == checkerboard[i][j-1].color)){
+                        checkerboard[i][j-2].state = checkerboard[i][j-1].state = checkerboard[i][j].state = 'clear';
+                    }
 
+                    // Check vertical
+                    if(i>1 && (checkerboard[i-2][j].color == checkerboard[i-1][j].color) && (checkerboard[i][j].color == checkerboard[i-1][j].color)){
+                        checkerboard[i-2][j].state = checkerboard[i-1][j].state = checkerboard[i][j].state = 'clear';
+                    }
+                }
+            }
         }
 
         function createDragItem(pos){
@@ -121,28 +136,34 @@
             dragItem.anchor.set(0.5);              // 設定元素變形中心點
             dragItem.width =dragItem.height = 70; // 設定元素大小
 
-            dragItem.x = pos.j*80+40;
-            dragItem.y = pos.i*80+40;
+            dragItem.x = pos.j*100+50;
+            dragItem.y = pos.i*100+50;
             app.stage.addChild(dragItem);
         }
 
-        function swapItems(a, b){
+        function swapItems(a, b, isInsert){
             var temp = checkerboard[a.i][a.j];
             checkerboard[a.i][a.j] = checkerboard[b.i][b.j];
             checkerboard[b.i][b.j] = temp;
 
-            checkerboard[a.i][a.j].x = a.j*80+40;
-            checkerboard[a.i][a.j].y = a.i*80+40;
+            checkerboard[a.i][a.j].x = a.j*100+50;
+            checkerboard[a.i][a.j].ty = a.i*100+50;
 
-            checkerboard[b.i][b.j].x = b.j*80+40;
-            checkerboard[b.i][b.j].y = b.i*80+40;
+            checkerboard[b.i][b.j].x = b.j*100+50;
+            checkerboard[b.i][b.j].y = checkerboard[b.i][b.j].ty = b.i*100+50;
+
+            if(!isInsert) {
+                checkerboard[a.i][a.j].y = checkerboard[a.i][a.j].ty;
+                checkerboard[b.i][b.j].y = checkerboard[b.i][b.j].ty;
+            }
+
         }
        
         var app = new PIXI.Application(
             // window.innerWidth,                          // the width of the renderers view
             // window.innerHeight,                         // the height of the renderers view
-            480,                          // the width of the renderers view
-            400,                         // the height of the renderers view
+            600,                          // the width of the renderers view
+            500,                         // the height of the renderers view
             { 
                 view: document.getElementById('main'),  // the canvas to use as a view, optional
                 transparent: true,                     // If the render view is transparent, default false，true為透明
@@ -186,48 +207,109 @@
             for(var i=0;i<5;i++){
                 checkerboard[i] = new Array(6);
                 for(var j=0;j<6;j++){
-                    var color = randomColor(['red','green','blue','yellow','gray']);
-                    checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources[color].texture);
-                    checkerboard[i][j].color = color;
-
-                    checkerboard[i][j].anchor.set(0.5);              // 設定元素變形中心點
-                    checkerboard[i][j].width =checkerboard[i][j].height = 70; // 設定元素大小
-
-                    // Opt-in to interactivity
-                    // checkerboard[i][j].interactive = true;
-
-                    // // Shows hand cursor
-                    // checkerboard[i][j].buttonMode = true;
-
-                    // // Pointers normalize touch and mouse
-                    // checkerboard[i][j].on('pointerdown', function(e){
-                    //     console.log(e);
-                    //     alert('oh!');
-                    // });
-
-                    checkerboard[i][j].x = j*80+40;
-                    checkerboard[i][j].y = i*80+40;
-                    // checkerboard[i][j].rotation += 0.1 * (i*10+j*1.6);
-                    app.stage.addChild(checkerboard[i][j]);
+                    createItem('begin',{i: i, j: j});
                 }
             }
 
             // // Listen for animate update
-            // app.ticker.add(function(delta) {
-            //     // just for fun, let's rotate mr rabbit a little
-            //     // delta is 1 if running at 100% performance
-            //     // creates frame-independent tranformation
-            //     for(var i=0;i<5;i++){
-            //         for(var j=0;j<6;j++){
-            //             checkerboard[i][j].rotation += 0.005 * delta;
-            //         }
-            //     }
-            // });
-         
+            app.ticker.add(function(delta) {
+                // just for fun, let's rotate mr rabbit a little
+                // delta is 1 if running at 100% performance
+                // creates frame-independent tranformation
+                var needInsert = false;
+                var isFall = false;
+                for(var i=0;i<5;i++){
+                    for(var j=0;j<6;j++){
+                        if(checkerboard[i][j].state == 'clear'){
+                            checkerboard[i][j].width = checkerboard[i][j].height -= 5;
+                            if(Math.round(checkerboard[i][j].width) <= 10){
+                                app.stage.removeChild(checkerboard[i][j]);
+                                needInsert = true;
+                            }
+                        }else{
+                            if(checkerboard[i][j].y < checkerboard[i][j].ty){
+                                checkerboard[i][j].y += 25;
+                                isFall = true;
+                            }
+                        }
+                    }
+                }
+
+                if(needCheck && !isFall){
+                    checkMatch();
+                    needCheck = false;
+                }
+
+                if(needInsert){
+                    needCheck = true;
+                    for(var j=0;j<6 ;j++){
+                        var insertCount = 0;
+                        var emptyPos = [];
+                        for(var i=4;i>=0;i--){
+                            if(checkerboard[i][j].state == 'clear'){
+                                insertCount++;
+                                checkerboard[i][j] = {};
+                                emptyPos.push({i:i, j:j});
+                            }else{
+                                if(emptyPos.length > 0){
+                                    swapItems(emptyPos[0], {i:i, j:j}, true);
+                                    emptyPos.push({i:i, j:j});
+                                    emptyPos.shift();
+                                }
+                            }
+                        }  
+                        while(insertCount--){
+                            createItem('insert', {i: insertCount, j: j});
+                        }
+                    }   
+                }
+            });
+
+            function createItem(type, pos){
+                var i = pos.i, j = pos.j;
+                var colorArr = ['red','green','blue','yellow','gray'];
+
+                if(type == 'begin'){
+                    // Check horizontal
+                    if(j>1 && (checkerboard[i][j-2].color == checkerboard[i][j-1].color)){
+                        removeElmFromArr(colorArr, [checkerboard[i][j-1].color]);
+                    }
+
+                    // Check vertical
+                    if(i>1 && (checkerboard[i-2][j].color == checkerboard[i-1][j].color)){
+                        removeElmFromArr(colorArr, [checkerboard[i-1][j].color]);
+                    }
+                }
+                
+                var color = randomColor(colorArr);
+                checkerboard[i][j] = new PIXI.Sprite(PIXI.loader.resources[color].texture);
+                checkerboard[i][j].color = color;
+                checkerboard[i][j].state = 'live';
+
+                checkerboard[i][j].anchor.set(0.5);              // 設定元素變形中心點
+                checkerboard[i][j].width =checkerboard[i][j].height = 90; // 設定元素大小
+
+                checkerboard[i][j].x = j*100+50;
+                checkerboard[i][j].y = i*100+50-100*5;
+                checkerboard[i][j].ty = i*100+50;
+                app.stage.addChild(checkerboard[i][j]);
+
+                function removeElmFromArr(arr, value) {
+                    var what, a = value, L = a.length, ax;
+                    while (L && arr.length) {
+                        what = a[--L];
+                        while ((ax = arr.indexOf(what)) !== -1) {
+                            arr.splice(ax, 1);
+                        }
+                    }
+                    return arr;
+                }
+            }
         });
 
+
         function randomColor(colorArray){
-            function rndInt(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); };
+            function rndInt(min, max) { return Math.floor(Math.random()*(max - min + 1) + min); };
             return colorArray[rndInt(0, colorArray.length-1)];;
         }
 
