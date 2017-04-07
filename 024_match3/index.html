@@ -134,7 +134,7 @@
         function createDragItem(pos){
             dragItem = new PIXI.Sprite(PIXI.loader.resources[checkerboard[pos.i][pos.j].color].texture);
             dragItem.anchor.set(0.5);              // 設定元素變形中心點
-            dragItem.width =dragItem.height = 70; // 設定元素大小
+            dragItem.width =dragItem.height = 86; // 設定元素大小
 
             dragItem.x = pos.j*100+50;
             dragItem.y = pos.i*100+50;
@@ -287,7 +287,7 @@
                 checkerboard[i][j].state = 'live';
 
                 checkerboard[i][j].anchor.set(0.5);              // 設定元素變形中心點
-                checkerboard[i][j].width =checkerboard[i][j].height = 90; // 設定元素大小
+                checkerboard[i][j].width =checkerboard[i][j].height = 86; // 設定元素大小
 
                 checkerboard[i][j].x = j*100+50;
                 checkerboard[i][j].y = i*100+50-100*5;
