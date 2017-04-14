@@ -24,7 +24,7 @@
         #main, #panArea{
             position: absolute;
             width: 600px;
-            height: 500px;
+            height: 550px;
             top: 100px;
             left: 20px;
         }
@@ -57,6 +57,8 @@
         var dragPos = {i: -1, j: -1};
         var hoverPos = {i: -1, j: -1};
         var dragItem;
+        var timeCount = -1;
+        var canDrag = true;
 
         var panAreaPos = {
             top: $('#panArea').offset().top,
@@ -73,9 +75,14 @@
         });
         hammer.on('panmove panstart panend', function(e) {
             e.preventDefault();
+
+            if(!canDrag) {
+                return false;
+            }
            
             switch (e.type) {
                 case 'panstart':
+                    timeCount = 0;
                     dragPos = hoverPos = {
                         i: Math.floor((e.changedPointers[0].pageY-panAreaPos.top)/100),
                         j: Math.floor((e.changedPointers[0].pageX-panAreaPos.left)/100),
@@ -85,47 +92,61 @@
                     createDragItem(dragPos);
                     break;
                 case 'panmove':
-                    var x = Math.floor(e.changedPointers[0].pageX-panAreaPos.left);
-                    var y = Math.floor(e.changedPointers[0].pageY-panAreaPos.top);
+                    if(timeCount >= 0){
+                        var x = Math.floor(e.changedPointers[0].pageX-panAreaPos.left);
+                        var y = Math.floor(e.changedPointers[0].pageY-panAreaPos.top);
 
-                    if(x<50) x=50;
-                    else if(x>550) x=550;
-                    if(y<50) y=50;
-                    else if(y>450) y=450;
+                        if(x<50) x=50;
+                        else if(x>550) x=550;
+                        if(y<50) y=50;
+                        else if(y>450) y=450;
 
-                    dragItem.x = x;
-                    dragItem.y = y;
-                    
-                    if((Math.abs((hoverPos.j*100+50)-x) > 50) || (Math.abs((hoverPos.i*100+50)-y) > 50)){
-                        var oldPos = hoverPos;
-                        hoverPos = {
-                            i: Math.floor(y/100),
-                            j: Math.floor(x/100),
-                        };
+                        dragItem.x = x;
+                        dragItem.y = y;
+                        
+                        if((Math.abs((hoverPos.j*100+50)-x) > 50) || (Math.abs((hoverPos.i*100+50)-y) > 50)){
+                            var oldPos = hoverPos;
+                            hoverPos = {
+                                i: Math.floor(y/100),
+                                j: Math.floor(x/100),
+                            };
 
-                        swapItems(hoverPos, oldPos);
+                            swapItems(hoverPos, oldPos);
+                        }
                     }
+                    
                     break;
                 case 'panend':
-                    app.stage.removeChild(dragItem);
-                    dragPos = {i: -1, j: -1};
-                    checkerboard[hoverPos.i][hoverPos.j].alpha = 1;
-                    checkMatch();
+                    if(timeCount >= 0){
+                        dragEnd();
+                    }
                     break;
             }
         });
 
+        function dragEnd(){
+            timeCount = -1;
+            canDrag = false;
+            app.stage.removeChild(dragItem);
+            dragPos = {i: -1, j: -1};
+            checkerboard[hoverPos.i][hoverPos.j].alpha = 1;
+            checkMatch();
+        }
+
         function checkMatch(){
+            canDrag = true;
             for(var i=0;i<5;i++){
                 for(var j=0;j<6;j++){
                     // Check horizontal
                     if(j>1 && (checkerboard[i][j-2].color == checkerboard[i][j-1].color) && (checkerboard[i][j].color == checkerboard[i][j-1].color)){
                         checkerboard[i][j-2].state = checkerboard[i][j-1].state = checkerboard[i][j].state = 'clear';
+                        canDrag = false;
                     }
 
                     // Check vertical
                     if(i>1 && (checkerboard[i-2][j].color == checkerboard[i-1][j].color) && (checkerboard[i][j].color == checkerboard[i-1][j].color)){
                         checkerboard[i-2][j].state = checkerboard[i-1][j].state = checkerboard[i][j].state = 'clear';
+                        canDrag = false;
                     }
                 }
             }
@@ -163,7 +184,7 @@
             // window.innerWidth,                          // the width of the renderers view
             // window.innerHeight,                         // the height of the renderers view
             600,                          // the width of the renderers view
-            500,                         // the height of the renderers view
+            550,                         // the height of the renderers view
             { 
                 view: document.getElementById('main'),  // the canvas to use as a view, optional
                 transparent: true,                     // If the render view is transparent, default false，true為透明
@@ -211,8 +232,27 @@
                 }
             }
 
+            var timeRectBG = new PIXI.Graphics();
+            timeRectBG.beginFill(0xBBBBBB);
+            timeRectBG.drawRect(0, 520, 600, 10);
+            app.stage.addChild(timeRectBG);
+
+            var timeRect = new PIXI.Graphics();
+            timeRect.beginFill(0xCC0000);
+            timeRect.drawRect(0, 520, 30, 10);
+            app.stage.addChild(timeRect);
+
             // // Listen for animate update
             app.ticker.add(function(delta) {
+                if(timeCount >= 0){
+                    timeCount += Math.round(delta);
+                    
+                    if(timeCount > 190){
+                        dragEnd();
+                    }
+                }
+                timeRect.width = 30+timeCount*3;
+
                 // just for fun, let's rotate mr rabbit a little
                 // delta is 1 if running at 100% performance
                 // creates frame-independent tranformation
@@ -307,12 +347,10 @@
             }
         });
 
-
         function randomColor(colorArray){
             function rndInt(min, max) { return Math.floor(Math.random()*(max - min + 1) + min); };
             return colorArray[rndInt(0, colorArray.length-1)];;
         }
-
     </script>
 </body>
 </html>
