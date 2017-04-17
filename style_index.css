@@ -145,13 +145,25 @@ footer .notice { width:60%; margin:0 auto; font-size:.8em; color:#95989e; text-a
 .pc { display:flex;}
 .mobile { display:none;}
 
-/*=================================平版+手機=======================================*/
-@media screen and (min-width: 1400px) {
-	
+
+/*=================================
+大螢幕電腦
+=======================================*/
+@media screen and (min-width: 1901px) {	
+/*上方主視覺*/
+.topbanner { height:980px;}
+}
+
+@media screen and (min-width: 1400px) and (max-width: 1900px) {	
 /*上方主視覺*/
 .topbanner { height:820px;}
-
 }
+
+
+/*=================================
+平版
+=======================================*/
+
 /* 平板版型 */ 
 @media screen and (min-width: 600px) and (max-width: 1024px) {
 	
@@ -234,6 +246,9 @@ footer ul.link li:nth-child(5) { margin-left:0px;}
 }
 
 
+/*=================================
+手機
+=======================================*/
 
 /* 手機版型 */ 
 @media screen and (max-width: 599px) {
@@ -370,13 +385,7 @@ footer .notice { width:100%;}
 
 
 
-/*================================手機===========================================*/
-/* 手機版型 */
-@media screen and (max-width: 640px) {
-	
-/* 放入手機版型的CSS */	
 
-}
 
 /*================================其他CSS範本=====================================*/
 /*----css 清除浮動技巧------*/
