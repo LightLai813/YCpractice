@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SHAKE MUSIC｜Y.C. works</title>
+    <style>
+        html, body{
+            background: #222;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #BTN_Music{
+            font-family: Helvetica, sans-serif;
+            cursor: pointer;
+            position: relative;
+            top: 50%;
+            margin: -25vw auto;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+            width: 50vw;
+            height: 50vw;
+            background: #ABC871;
+            border: 3vw solid #648F52;
+
+            text-align: center;
+            color: #FFF;
+            line-height: 50vw;
+            font-size: 6vw;
+        }
+
+        #BTN_Music.on{
+            background: #FE8342;
+            border: 3vw solid #C93928;
+        }
+
+        .circle{
+            display: none;
+            position: absolute;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            border: 3vw dotted rgba(256,256,256,.2);
+        }
+
+        #C1{
+            width: 50vw;
+            height: 50vw;
+            margin: -28vw;
+        }
+
+        #C2{
+            width: 44vw;
+            height: 44vw;
+            margin: -25vw;
+        }
+    </style>
+</head>
+<body>
+    <div id="BTN_Music">
+        Touch to Play
+        
+    </div>
+    <audio id="runSound" loop style="display: none;">
+        <source src="run.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="//m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+    <script>
+        var SHAKE_THRESHOLD = 1000; //晃動閥值
+        var lastUpdate = 0, updateTime = 100;
+        var stopCount = 0;
+        var move, preMove;
+        var runSound = document.getElementById('runSound');
+        var BTN_Music = document.getElementById('BTN_Music');
+        var degree = 0, ds=0;
+
+        function init() {
+            window.addEventListener('devicemotion', shakeHandle, false);
+            BTN_Music.addEventListener('click',function(e){
+                runSound.play();
+                BTN_Music.className = 'on';
+                BTN_Music.innerHTML = 'Move to Play<div id="C1" class="circle"></div><div id="C2" class="circle"></div>';
+                $('.circle').fadeIn(1000);
+
+                BTN_Music.removeEventListener('click');
+            });
+        }
+
+        function shakeHandle(e) {
+            // 獲取含重力的加速度
+            var acceleration = e.accelerationIncludingGravity;
+
+            // 獲取當前時間
+            var curTime = Date.now();
+            var diffTime = curTime-lastUpdate;
+
+            if (diffTime > updateTime) {
+                lastUpdate = curTime;
+                move = acceleration.x+acceleration.y+acceleration.z;
+                var speed = Math.abs(move - preMove) / diffTime * 10000;
+
+                if (speed > SHAKE_THRESHOLD) {
+                    runSound.play();
+                    stopCount = 0;
+                    ds++;
+                }else{
+                    if(++stopCount > 5){
+                        runSound.pause(); 
+                        ds--;
+                    }
+                }
+
+                if(ds>10){
+                    ds = 10;
+                }else if(ds < 1){
+                    ds = 1;
+                }
+
+                degree+=ds;
+                $('#C1').css({
+                    '-webkit-transform':'rotate('+degree+'deg)',
+                    '-moz-transform':'rotate('+degree+'deg)',
+                    'transform':'rotate('+degree+'deg)',
+                });
+
+                $('#C2').css({
+                    '-webkit-transform':'rotate('+ -degree+'deg)',
+                    '-moz-transform':'rotate('+ -degree+'deg)',
+                    'transform':'rotate('+ -degree+'deg)',
+                });
+
+
+                preMove = move;
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

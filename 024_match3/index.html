@@ -187,7 +187,7 @@
             550,                         // the height of the renderers view
             { 
                 view: document.getElementById('main'),  // the canvas to use as a view, optional
-                transparent: true,                     // If the render view is transparent, default false，true為透明
+                transparent: true,                      // If the render view is transparent, default false，true為透明
                 antialias: false,                       // 去除文字鋸齒，這個屬性是基於 WebGL
                 preserveDrawingBuffer: false,           // enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
                 resolution: 1                           // 這個參數與瀏覽器的 pixel densities 相關，基本設為 1，retina 設為2
@@ -242,7 +242,7 @@
             timeRect.drawRect(0, 520, 30, 10);
             app.stage.addChild(timeRect);
 
-            // // Listen for animate update
+            // Listen for animate update
             app.ticker.add(function(delta) {
                 if(timeCount >= 0){
                     timeCount += Math.round(delta);
@@ -268,7 +268,7 @@
                             }
                         }else{
                             if(checkerboard[i][j].y < checkerboard[i][j].ty){
-                                checkerboard[i][j].y += 25;
+                                checkerboard[i][j].y += 25 * delta;
                                 isFall = true;
                             }
                         }
