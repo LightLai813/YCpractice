@@ -13,6 +13,13 @@
             overflow: hidden;
         }
 
+        #main{
+            width: 100%;
+            height: 100%;
+        }
+
+
+        /*---------------*/
         #BTN_Music{
             font-family: Helvetica, sans-serif;
             cursor: pointer;
@@ -60,39 +67,106 @@
             height: 44vw;
             margin: -25vw;
         }
+    
     </style>
 </head>
 <body>
-    <div id="BTN_Music">
-        Touch to Play
-        
-    </div>
+    <canvas id="main"></canvas>
     <audio id="runSound" loop style="display: none;">
         <source src="run.mp3" type="audio/mpeg">
     </audio>
 
-    <script src="//m.vpon.com/ad_pro/js/jquery-latest.min.js"></script>
+    <script src="//pixijs.download/release/pixi.min.js"></script>
     <script>
+        var degree = 0, dSpeed = 0;
+        var win = {W: window.innerWidth, H:  window.innerHeight };
+        var app = new PIXI.Application(
+            window.innerWidth,                          // the width of the renderers view
+            window.innerHeight,                         // the height of the renderers view
+            { 
+                view: document.getElementById('main'),  // the canvas to use as a view, optional
+                transparent: false,                      // If the render view is transparent, default false，true為透明
+                antialias: true,                        // 去除文字鋸齒，這個屬性是基於 WebGL
+                preserveDrawingBuffer: false,           // enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
+                resolution: 1                           // 這個參數與瀏覽器的 pixel densities 相關，基本設為 1，retina 設為2
+            }
+        );
+
+        var backCircle = [];
+        for(var i=0;i<12;i++){
+            backCircle[i] = new PIXI.Graphics();
+            backCircle[i].beginFill(0xC93928);
+            backCircle[i].arc(0, 0, win.W*(.35+i*.05), 0, Math.PI); // cx, cy, radius, startAngle, endAngle
+            backCircle[i].x = win.W*.5;
+            backCircle[i].y = win.H*.5;
+            backCircle[i].alpha =0;
+            app.stage.addChild(backCircle[i]);
+        }
+       
+        var fontStyle= new PIXI.TextStyle({
+            fontFamily: 'Helvetica',
+            fontSize: win.W*.07,
+            fontWeight: 'bold',
+            fill: 0xFFFFFF // gradient
+        });
+
+        var BTN_play = new PIXI.Graphics();
+        BTN_play.beginFill(0xCCCCCC);
+        BTN_play.lineStyle(win.W*.05, 0x999999);
+        BTN_play.drawCircle(0, 0, win.W*.3); // cx, cy, radius, startAngle, endAngle
+        BTN_play.x = win.W*.5;
+        BTN_play.y = win.H*.5;
+        BTN_play.interactive = true;
+        BTN_play.buttonMode = true;
+        var TapMsg = new PIXI.Text('Tap to Play', fontStyle);
+        TapMsg.anchor.set(0.5); 
+        TapMsg.x = 0;
+        TapMsg.y = 0;
+        BTN_play.addChild(TapMsg);
+        BTN_play.on('pointerdown', playMusic);
+        function playMusic(){
+            BTN_play.removeChild(TapMsg);
+            BTN_play.clear();
+            BTN_play.beginFill(0xFE8342);
+            BTN_play.lineStyle(win.W*.05, 0xC93928);
+            BTN_play.drawCircle(0, 0, win.W*.3); // cx, cy, radius, startAngle, endAngle
+            BTN_play.x = win.W*.5;
+            BTN_play.y = win.H*.5;
+
+            var ShakeMsg = new PIXI.Text('Shake to Play', fontStyle);
+            ShakeMsg.x = 0;
+            ShakeMsg.y = 0;
+            ShakeMsg.anchor.set(0.5); 
+            BTN_play.addChild(ShakeMsg);
+            runSound.play();
+
+            window.addEventListener('devicemotion', shakeHandle, false);
+
+            BTN_play.removeListener('pointerdown', playMusic);
+        }
+
+        app.stage.addChild(BTN_play);
+
+        app.ticker.add(function(delta) {
+            degree+=delta*dSpeed*.001;
+            if(degree > 360){ degree -= 360; }
+
+            for(var i=0;i<backCircle.length;i++){
+                if(degree > 0 && backCircle[i].alpha < .2){
+                    backCircle[i].alpha += .05;
+                }
+
+                backCircle[i].rotation = degree*(i+1);
+            }
+        });
+        
+
+        // 搖晃偵測
         var SHAKE_THRESHOLD = 1000; //晃動閥值
         var lastUpdate = 0, updateTime = 100;
         var stopCount = 0;
         var move, preMove;
         var runSound = document.getElementById('runSound');
-        var BTN_Music = document.getElementById('BTN_Music');
-        var degree = 0, ds=0;
-
-        function init() {
-            window.addEventListener('devicemotion', shakeHandle, false);
-            BTN_Music.addEventListener('click',function(e){
-                runSound.play();
-                BTN_Music.className = 'on';
-                BTN_Music.innerHTML = 'Move to Play<div id="C1" class="circle"></div><div id="C2" class="circle"></div>';
-                $('.circle').fadeIn(1000);
-
-                BTN_Music.removeEventListener('click');
-            });
-        }
-
         function shakeHandle(e) {
             // 獲取含重力的加速度
             var acceleration = e.accelerationIncludingGravity;
@@ -109,39 +183,20 @@
                 if (speed > SHAKE_THRESHOLD) {
                     runSound.play();
                     stopCount = 0;
-                    ds++;
+                    dSpeed+=5;
+                    if(dSpeed > 50) dSpeed = 50;
                 }else{
                     if(++stopCount > 5){
                         runSound.pause(); 
-                        ds--;
+                        dSpeed-=5;
+                        if(dSpeed < 1) dSpeed = 1;
                     }
                 }
-
-                if(ds>10){
-                    ds = 10;
-                }else if(ds < 1){
-                    ds = 1;
-                }
-
-                degree+=ds;
-                $('#C1').css({
-                    '-webkit-transform':'rotate('+degree+'deg)',
-                    '-moz-transform':'rotate('+degree+'deg)',
-                    'transform':'rotate('+degree+'deg)',
-                });
-
-                $('#C2').css({
-                    '-webkit-transform':'rotate('+ -degree+'deg)',
-                    '-moz-transform':'rotate('+ -degree+'deg)',
-                    'transform':'rotate('+ -degree+'deg)',
-                });
-
-
                 preMove = move;
             }
         }
 
-        window.onload = init;
+        function rndFloat(min, max) { return Math.random() * (max - min) + min; };
     </script>
 </body>
 </html>
