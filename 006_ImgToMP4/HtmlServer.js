@@ -267,6 +267,9 @@ io.sockets.on('connection', function (socket) {
             socket.emit('MP4Complete', { videoID: data.videoID });
             //socket.disconnect();
         });
+
+        // speed up:    ffmpeg -i input.mp4 -vf "setpts=0.5*PTS" output.mp4
+        // speed down:  ffmpeg -i input.mp4 -vf "setpts=2.0*PTS" output.mp4
     });
 
     //sendMail
