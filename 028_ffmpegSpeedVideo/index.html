@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Control Video</title>
+    <style>
+        .btn{
+            display: inline-block;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+
+            padding: 20px 50px;
+            border:1px solid #CCC;
+            background-color: #EEE;
+
+            cursor: pointer;
+        }
+
+        .btn:hover{
+            background-color: #444;
+            color: #FFF
+        }
+    </style>
+</head>
+<body>
+    <div id="BTN_Translate" class="btn">轉換</div>
+    <a id="LNK_Video" target="_blank" href="javacript: void(0);"></a>
+    <script type="text/javascript" src="socket.io/socket.io.js"></script>
+    <script>
+        var socketClient = {
+            socket: undefined,
+            selfId: undefined,
+            server: '192.168.168.107:20012',
+            init: function(callback){
+                var self = this;
+
+                self.socket = io.connect(self.server,{'force new connection':true, 'reconnect':true});
+                // self.socket = io('https://cmp.vpadn.com', {
+                //     secure: true,
+                //     path: '/coldstone201612/socket.io',
+                //     upgrade: false,
+                //     transports: ['websocket']
+                // });
+
+                self.socket.on('welcome', function (data) {
+                    self.selfId = data.socketId;
+                    console.log('Hello, ' + self.selfId);
+                });
+
+
+                self.socket.on('MP4Complete', function (data) {
+                    alert('success');
+                    document.getElementById('LNK_Video').href='result/' + data.videoID + '.mp4';
+                    document.getElementById('LNK_Video').innerHTML = data.videoID + '.mp4';
+                });
+                
+            },
+            mp4Render: function(vid){
+                var self = this;
+                self.socket.emit('mp4Render', {
+                    videoID: vid,
+                    speed: .5
+                });
+            },
+        }
+
+        window.onload = function(){
+            socketClient.init();
+
+            document.getElementById('BTN_Translate').addEventListener('click', function(e){
+                socketClient.mp4Render('video')
+            });
+        }
+    </script>
+</body>
+</html>
