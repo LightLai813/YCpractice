@@ -2,34 +2,109 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=320, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Control Video</title>
     <style>
+        html, body{
+            margin: 0;
+            background-color: #EEE;
+        }
+
+        .content{
+            position: relative;
+            width: 320px;
+            margin: 0 auto;
+            padding-top: 100px;
+            text-align: center;
+        }
+        
         .btn{
             display: inline-block;
             -webkit-border-radius: 10px;
             -moz-border-radius: 10px;
             border-radius: 10px;
 
-            padding: 20px 50px;
-            border:1px solid #CCC;
+            padding: 10px 50px;
+            border:1px solid #AAA;
             background-color: #EEE;
+            font-size: 12pt;
 
             cursor: pointer;
+            
+            color: #000;
+            text-decoration: none;
         }
 
         .btn:hover{
             background-color: #444;
             color: #FFF
         }
+
+        .percentBorder{
+            position: relative;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+
+            width: 300px;
+            height: 40px;
+            padding: 5px;
+            margin: 0 auto;
+            border: 1px solid #AAA;
+        }
+
+        .percentBorder .bar{
+            position: absolute;
+            -webkit-border-radius: 7px;
+            -moz-border-radius: 7px;
+            border-radius: 7px;
+
+            width: 200px;
+            height: 40px;
+            background: #f7951f;
+            
+        }
+
+        .percentBorder .percent{
+            position: absolute;
+            width: 300px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            color: #FFF;
+            font-size: 14pt;
+            
+        }
+
+        #LBL_UploadStep{
+            width: 310px;
+            text-align: left;
+            margin: 5px;
+            color: #444;
+        }
     </style>
 </head>
 <body>
-    <div id="BTN_Translate" class="btn">轉換</div>
-    <a id="LNK_Video" target="_blank" href="javacript: void(0);"></a>
+    <div id="DIV_Upload" class="content">
+        <label for="FIL_Video">
+            <div class="btn">上傳檔案</div>
+        </label>
+        <input type="file" id="FIL_Video" style="display: none;" />
+        <div id="BTN_Translate" class="btn">轉換</div>
+    </div>
+    <div id="DIV_Process" class="content">
+        <div id="LBL_UploadStep">STEP 1. 上傳影片</div>
+        <div class="percentBorder">
+            <div class="bar"></div>
+            <div class="percent">66%</div>
+        </div>
+    </div>
+
     <script type="text/javascript" src="socket.io/socket.io.js"></script>
     <script>
+        var selectedFile, fileReader;
+        
         var socketClient = {
             socket: undefined,
             selfId: undefined,
@@ -45,23 +120,40 @@
                 //     transports: ['websocket']
                 // });
 
-                self.socket.on('welcome', function (data) {
+                self.socket.on('WELCOME', function (data) {
                     self.selfId = data.socketId;
                     console.log('Hello, ' + self.selfId);
                 });
 
+                socket.on('KEEP_UPLOAD', function (data){
+                    updatePercentBar(data.Percent);
 
-                self.socket.on('MP4Complete', function (data) {
+                    var beginFlag = data.CutFlag * 524288;
+                    var endFlag = beginFlag + Math.min(524288, (selectedFile.size-beginFlag));
+
+                    var fileSlice;
+                    if(selectedFile.webkitSlice){
+                        fileSlice = selectedFile.webkitSlice(beginFlag, endFlag);
+                    }else{
+                        fileSlice = selectedFile.mozSlice(beginFlag, endFlag);
+                    }
+                    fileReader.readAsBinaryString(fileSlice);
+                });
+
+                socket.on('UPLOAD_COMPLETE', function (data){
+                    socket.emit('TRANSLATE_VIDEO',{Speed: .5});
+                });
+
+                self.socket.on('RENDRE_COMPLETE', function (data) {
                     alert('success');
                     document.getElementById('LNK_Video').href='result/' + data.videoID + '.mp4';
                     document.getElementById('LNK_Video').innerHTML = data.videoID + '.mp4';
                 });
-                
             },
-            mp4Render: function(vid){
+            mp4Uploader: function(vStream){
                 var self = this;
                 self.socket.emit('mp4Render', {
-                    videoID: vid,
+                    vStream: vStream,
                     speed: .5
                 });
             },
@@ -71,8 +163,30 @@
             socketClient.init();
 
             document.getElementById('BTN_Translate').addEventListener('click', function(e){
-                socketClient.mp4Render('video')
+                submitMP4();
             });
+        }
+
+        function submitMP4(){
+            if (document.getElementById('FIL_Video').files.length > 0) {
+                selectedFile = document.getElementById('FIL_Video').files[0];
+                fileReader = new FileReader();
+
+                fileReader.onload = function(e){
+                    socket.emit('UPLOADING', { Data : e.target.result });
+                }
+                socket.emit('START_UPLOAD', { 'Size' : selectedFile.size });
+            } else {
+                alert('請選擇 .mp4 檔上傳');
+            }
+        }
+
+        // 更新下載Bar
+        function updatePercentBar(percent){
+            document.getElementById('ProgressBar').style.width = percent + '%';
+            document.getElementById('percent').innerHTML = (Math.round(percent*100)/100) + '%';
+            var MBDone = Math.round(((percent/100.0) * SelectedFile.size) / 1048576);
+            document.getElementById('MB').innerHTML = MBDone;
         }
     </script>
 </body>

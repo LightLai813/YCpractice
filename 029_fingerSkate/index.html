@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=580">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Finger Skate ft. pixi.js</title>
+    <style>
+        html, body{
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            background: #5392fb;
+        }
+
+        #main{
+            position: absolute;
+            width: 580px;
+            height: 860px;
+            bottom: 0;
+        }
+        #panArea{
+            position: absolute;
+             width: 580px;
+            height: 860px;
+            background: rgba(0, 255, 255, 0);
+                bottom: 0;
+        }
+
+        #getcoin{
+            position: absolute;
+            top:20px;
+            right:20px;
+        }
+
+        #getcoin span{
+            vertical-align: top; /* here */
+            font-weight: 900;
+            font-family: Helvetica;
+            font-size: 25pt;
+            color: #FFF;
+            
+        }
+
+        #info{
+            position: absolute;
+            top:0;
+            left:0;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <canvas id="main"></canvas>
+    <div id="panArea"></div>
+    <div id="info"></div>
+    <div id="getcoin">
+        <img src="images/coin.png" width="40"/>
+        <span>x</span> <span id="coinNum">0</span>
+    </div>
+    <script src="//hammerjs.github.io/dist/hammer.min.js"></script>
+    <script src="//pixijs.download/release/pixi.min.js"></script>
+    <script>
+        var winW = 580;
+        var winH = 860;
+
+
+        var info =  document.getElementById('info');
+        var coinNum = document.getElementById('coinNum');
+
+        var isEnerge = false;   // 兩隻手指頭是否按著
+        var isKaka = false; //
+
+        var canJump = true; // 是否可以啟動跳躍
+        var isJump = false;
+        var jumpVS = 0;     // 滑板跳躍垂直速度
+        var jumpLimit = .02;     // 滑板跳躍水平速度
+
+        var speed = 0;
+        var jumpTurbo = 1;
+
+        var skateBoy; // 滑板男孩
+        var grass =[];
+        var cloud =[];
+        var coin = [];
+        var coinCount = 0;
+
+        /* hammer 設定 */
+        var hammer = new Hammer(document.getElementById('panArea'), {
+            preventDefault: true
+        });
+
+        hammer.get('rotate').set({ enable: true });
+        hammer.on('rotatestart rotatemove rotateend', function(e) {
+            e.preventDefault();
+            switch(e.type){
+                case 'rotatestart':
+                    isEnerge = true;
+                    break;
+                case 'rotatemove':
+                    var rotate = e.rotation*(Math.PI/180);
+                    if(rotate < 0){
+                        rotate += Math.PI*2;
+                    }
+
+                    isKaka = false;
+                    if(rotate < Math.PI*.5){
+                        rotate = Math.PI*2;
+                    }else if(rotate < Math.PI*1.65){
+                        rotate = Math.PI*1.65;
+                        isKaka = true;
+                    }else 
+
+                    if(!isJump && rotate > Math.PI*1.9){
+                        canJump = true;
+                    }
+
+                    if(canJump && rotate < Math.PI*1.9 && rotate > Math.PI*1.5){
+                        jumpVS = winH*jumpLimit;
+                        isJump = true;
+                        canJump = false;
+                    }
+
+                    skateBoy.rotation = rotate;
+                    break;
+                case 'rotateend':
+                    isEnerge = false;
+                    skateBoy.rotation  = Math.PI*2;
+                    break; 
+                    
+            }
+        });
+
+        /* pixi.js 設定 */
+        var app = new PIXI.Application(
+            winW,                          // the width of the renderers view
+            winH,                         // the height of the renderers view
+            { 
+                backgroundColor: 0x5392fb,
+                view: document.getElementById('main'),  // the canvas to use as a view, optional
+                antialias: false,                       // 去除文字鋸齒，這個屬性是基於 WebGL
+                preserveDrawingBuffer: false,           // enables drawing buffer preservation, enable this if you need to call toDataUrl on
+            }
+        );
+        // app.renderer.backgroundColor = 0xFF0000;
+
+        PIXI.loader.add([
+            {name:'skateBoy', url:'images/skateboy.png'},
+            {name:'grass', url:'images/grass.png'},
+            {name:'cloud', url:'images/cloud.png'},
+            {name:'coin', url:'images/coin.png'},
+        ]).on("progress", function(loader, resource){
+                // 顯示已載入的檔案路徑 resource.url
+                // 若是你在 add() 的時候有指定名稱
+                // 可以使用 resource.name 來確認你指定的檔案已經載入完畢
+                console.log("loading: " + resource.name+':'+resource.url); 
+
+                // 顯示已載入資源百分比
+                console.log("progress: " + loader.progress + "%"); 
+
+                // resource.error loading 發生錯誤時的資訊
+                // resource.data lets you access the file's raw binary data
+        }).load(function(){
+            for(var i=0;i<6;i++){
+                setGrass(i);
+            }
+            function setGrass(index){
+                grass[index] = new PIXI.Sprite(PIXI.loader.resources['grass'].texture);
+                grass[index].width = winW;
+                grass[index].height = winW*(300/640);
+                grass[index].x = (index%2)*winW;
+                grass[index].y = winH*(.66+Math.floor(index/2)*.1);
+                app.stage.addChild(grass[index]);
+            }
+
+            for(var i=0;i<6;i++){
+                setCloud(i);
+            }
+            function setCloud(index){
+                cloud[index] = new PIXI.Sprite(PIXI.loader.resources['cloud'].texture);
+                cloud[index].anchor.set(0,.5);
+                cloud[index].width = winW*(index<3?.2:.3);
+                cloud[index].height = winW*(index<3?.2:.3)*(99/124);
+                cloud[index].x = (index*.6+.2)*winW;
+                cloud[index].y = winH*rndInt(1,3)*(index<3?.05:.1);
+                app.stage.addChild(cloud[index]);
+            }
+
+            for(var i=0;i<10;i++){
+                setCoin(i);
+            }
+            function setCoin(index){
+                coin[index] = new PIXI.Sprite(PIXI.loader.resources['coin'].texture);
+                coin[index].anchor.set(0, .5);
+                coin[index].width = winW*.1;
+                coin[index].height = winW*.1*(100/76);
+                coin[index].x = (index*.25+1)*winW;
+                coin[index].y = winH*.65;
+                app.stage.addChild(coin[index]);
+            }
+
+            skateBoy = new PIXI.Sprite(PIXI.loader.resources['skateBoy'].texture);
+
+            skateBoy.anchor.set(.21, .92);    // 設定元素變形中心點
+            skateBoy.width =skateBoy.height = winW*.3; // 設定元素大小
+
+            skateBoy.x = winW*.15;
+            skateBoy.y = winH*.75;
+            app.stage.addChild(skateBoy);
+        });
+
+
+        app.ticker.add(function(delta) {
+            if(isEnerge && speed < 2){
+                speed += delta*.02;
+                if(speed > 2){
+                    speed = 2;
+                }
+            }else if(!isEnerge && speed > 0 && jumpVS==0){
+                speed -= delta*.05;
+                if(speed < 0){
+                    speed = 0;
+                }
+            }
+
+            if(isKaka && speed > 1){
+                speed -= delta*.05;
+            }
+
+            for(var i=0, g;g=grass[i];i++){
+                g.x -= delta*(4+Math.floor(i/2))*speed*jumpTurbo;
+                if(g.x < winW*-1){
+                    g.x += winW*2;
+                }
+            }
+
+            for(var i=0, c;c=cloud[i];i++){
+                c.x -= delta*(i<3?1:2)*speed*jumpTurbo;
+                if(c.x < winW*-1){
+                    c.x += winW*2;
+                    c.y = winH*rndInt(1,3)*(i<3?.05:.1);
+                }
+                
+            }
+
+            for(var i=0, co;co=coin[i];i++){
+                co.x -= delta*5*speed*jumpTurbo;
+
+                if(co.alpha == 1 && pDist(co, {x:skateBoy.x,y:skateBoy.y-winW*.15}) < winW*.15){
+                    co.alpha = 0;
+                    coinCount++;
+                    coinNum.innerHTML = coinCount;
+                }
+            }
+
+            if(coin[9] && coin[9].x < winW*-.1){
+                var type = rndInt(0,2)==0? 's':'r';
+                for(var i=0, co;co=coin[i];i++){
+                    co.x += winW*4;
+                    if(type == 'r'){
+                        co.y=winH*(.3+Math.abs(5-i)*.07);
+                    }else{
+                        co.y=winH*.65;
+                    }
+                    co.alpha = 1;
+                }
+            }
+
+            if(skateBoy){
+                if(isJump){
+                    jumpVS -= delta*.5;
+
+                    skateBoy.y -= jumpVS*delta;
+                    skateBoy.x += jumpVS*.5*delta;
+                    if(skateBoy.y > winH*.75){
+                        skateBoy.y = winH*.75;
+                    }
+
+                    if(skateBoy.x < winW*.15){
+                        skateBoy.x = winW*.15;
+                    }
+
+                    if(jumpVS < -winH*jumpLimit){
+                        jumpVS = 0;
+                        isJump = false;
+                        skateBoy.x = winW*.15;
+                        skateBoy.y = winH*.75;
+                    }
+
+                    
+
+                    jumpTurbo = ((jumpVS+winH*jumpLimit)/(winH*jumpLimit*2))*2+1;
+                }else{
+                    jumpTurbo = 1;
+                }
+            }
+        });
+
+        function rndInt(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); };
+        function pDist(p1, p2){
+            return Math.sqrt(Math.pow((p1.x-p2.x),2) + Math.pow((p1.y-p2.y),2));
+        }
+    </script>
+</body>
+</html>
