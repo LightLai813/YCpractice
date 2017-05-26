@@ -1,0 +1,25 @@
+{
+  "name": "YCpractice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "SwAK.Lai.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LightLai813/YCpractice.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LightLai813/YCpractice/issues"
+  },
+  "homepage": "https://github.com/LightLai813/YCpractice#readme",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "fs": "0.0.1-security",
+    "web-audio-api": "^0.2.2"
+  }
+}

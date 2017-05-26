@@ -245,13 +245,13 @@
             // Listen for animate update
             app.ticker.add(function(delta) {
                 if(timeCount >= 0){
-                    timeCount += Math.round(delta);
+                    timeCount += delta;
                     
                     if(timeCount > 190){
                         dragEnd();
                     }
                 }
-                timeRect.width = 30+timeCount*3;
+                timeRect.width = 30+Math.round(timeCount)*3;
 
                 // just for fun, let's rotate mr rabbit a little
                 // delta is 1 if running at 100% performance
@@ -261,15 +261,19 @@
                 for(var i=0;i<5;i++){
                     for(var j=0;j<6;j++){
                         if(checkerboard[i][j].state == 'clear'){
-                            checkerboard[i][j].width = checkerboard[i][j].height -= 5;
+                            checkerboard[i][j].width = checkerboard[i][j].height -= 5*delta;
                             if(Math.round(checkerboard[i][j].width) <= 10){
                                 app.stage.removeChild(checkerboard[i][j]);
                                 needInsert = true;
                             }
                         }else{
                             if(checkerboard[i][j].y < checkerboard[i][j].ty){
-                                checkerboard[i][j].y += 25 * delta;
+                                checkerboard[i][j].y += 25*delta;
                                 isFall = true;
+                            }
+
+                            if (checkerboard[i][j].y > i * 100 + 50) {
+                                checkerboard[i][j].y = i * 100 + 50;
                             }
                         }
                     }
@@ -282,7 +286,7 @@
 
                 if(needInsert){
                     needCheck = true;
-                    for(var j=0;j<6 ;j++){
+                    for(var j=0;j<6;j++){
                         var insertCount = 0;
                         var emptyPos = [];
                         for(var i=4;i>=0;i--){

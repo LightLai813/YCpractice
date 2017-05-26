@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>太鼓達人</title>
+    <style>
+        html, body{
+            margin: 0;
+            overflow: hidden;
+            background: #1099bb;
+        }
+
+        #DIV_score{
+            position: absolute;
+            z-index: 99999;
+            left: 10px;
+            bottom: 10px;
+            font-size: 1.8em;
+            font-weight: bold;
+            font-family: 'Helvetica';
+            color: #FFFFFF;
+        }
+
+        #DIV_score.final{
+            z-index: 99999;
+            left: 0;
+            bottom: 50%;
+            font-size: 2.2em;
+            color: #FFFFFF;
+            width: 100%;
+            max-width: 640px;
+            text-align: center;
+            opacity: 0;
+
+            animation: 1s linear forwards fadeIn;
+			-webkit-animation: 1s linear forwards fadeIn;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0}
+            to {opacity: 1}
+        }
+        @-webkit-keyframes fadeIn {
+            from {opacity: 0}
+            to {opacity: 1}
+        }
+    </style>
+</head>
+<body>
+    <!--<canvas id="main"></canvas>-->
+    <audio id="SUD_main">
+        <source src="BlameItOntheBoogie.mp3" type="video/mp4">
+        <!--<source src="BlameItOntheBoogieDrum-drum.mp3" type="video/mp4">-->
+    </audio>
+
+    <div id="DIV_score">0</div>
+
+    <script src="//pixijs.download/release/pixi.min.js"></script>
+    <script src="//pixijs.github.io/examples/required/plugins/pixi-display.js"></script>
+    <script>
+        /* 正常音樂-正常節拍 */
+        // var dotArray = [{"time":28,"strong":0.5},{"time":49,"strong":0.8},{"time":57,"strong":0.4},{"time":65,"strong":0.9},{"time":74,"strong":0.6},{"time":81,"strong":0.7},{"time":97,"strong":0.7},{"time":105,"strong":0.4},{"time":113,"strong":0.7},{"time":121,"strong":0.7},{"time":129,"strong":0.8},{"time":137,"strong":0.4},{"time":142,"strong":0.7},{"time":145,"strong":0.6},{"time":150,"strong":0.7},{"time":158,"strong":0.8},{"time":161,"strong":0.8},{"time":166,"strong":0.5},{"time":174,"strong":0.7},{"time":193,"strong":0.6},{"time":194,"strong":0.9},{"time":201,"strong":0.5},{"time":209,"strong":0.6},{"time":225,"strong":0.5},{"time":226,"strong":0.9},{"time":234,"strong":0.7},{"time":242,"strong":0.8},{"time":250,"strong":0.7},{"time":257,"strong":0.6},{"time":266,"strong":0.7},{"time":270,"strong":0.4},{"time":286,"strong":0.6},{"time":289,"strong":0.8},{"time":294,"strong":0.6},{"time":306,"strong":0.8},{"time":314,"strong":0.5},{"time":321,"strong":0.7},{"time":330,"strong":0.9},{"time":337,"strong":0.4},{"time":353,"strong":0.5},{"time":354,"strong":0.9},{"time":362,"strong":0.5},{"time":370,"strong":0.9},{"time":378,"strong":0.6},{"time":386,"strong":0.8},{"time":394,"strong":0.6},{"time":398,"strong":0.6},{"time":402,"strong":0.8},{"time":406,"strong":0.6},{"time":414,"strong":0.6},{"time":418,"strong":0.9},{"time":422,"strong":0.6},{"time":450,"strong":0.9},{"time":458,"strong":0.7},{"time":466,"strong":0.8},{"time":474,"strong":0.4},{"time":483,"strong":0.9},{"time":490,"strong":0.8},{"time":498,"strong":0.7},{"time":506,"strong":0.7},{"time":513,"strong":0.6},{"time":522,"strong":0.8},{"time":526,"strong":0.7},{"time":534,"strong":0.4},{"time":542,"strong":0.6},{"time":545,"strong":0.8},{"time":549,"strong":0.6},{"time":550,"strong":0.9},{"time":561,"strong":0.7},{"time":590,"strong":0.8},{"time":594,"strong":0.9},{"time":610,"strong":0.5},{"time":626,"strong":0.5},{"time":642,"strong":0.7},{"time":655,"strong":0.8},{"time":659,"strong":0.9},{"time":691,"strong":0.9},{"time":707,"strong":0.8},{"time":723,"strong":0.8},{"time":740,"strong":0.8},{"time":756,"strong":0.8},{"time":764,"strong":0.8},{"time":768,"strong":1},{"time":780,"strong":0.9},{"time":808,"strong":0.5},{"time":849,"strong":0.8},{"time":853,"strong":0.8},{"time":885,"strong":0.8},{"time":901,"strong":0.8},{"time":917,"strong":0.8},{"time":933,"strong":0.7},{"time":954,"strong":0.6},{"time":982,"strong":0.9},{"time":1009,"strong":0.4},{"time":1013,"strong":0.8},{"time":1037,"strong":0.6},{"time":1053,"strong":0.7},{"time":1061,"strong":0.8},{"time":1069,"strong":0.8},{"time":1077,"strong":1},{"time":1109,"strong":0.8},{"time":1125,"strong":0.8},{"time":1133,"strong":0.8},{"time":1141,"strong":0.9},{"time":1154,"strong":0.9},{"time":1170,"strong":0.4},{"time":1173,"strong":0.6},{"time":1188,"strong":0.8},{"time":1196,"strong":0.7},{"time":1205,"strong":0.8},{"time":1237,"strong":0.8},{"time":1249,"strong":0.6},{"time":1252,"strong":0.8},{"time":1260,"strong":0.8},{"time":1268,"strong":0.9},{"time":1292,"strong":0.5},{"time":1300,"strong":0.7},{"time":1308,"strong":0.7},{"time":1315,"strong":0.8},{"time":1323,"strong":0.8},{"time":1345,"strong":0.9},{"time":1363,"strong":0.7},{"time":1379,"strong":0.9},{"time":1383,"strong":0.8},{"time":1387,"strong":0.8},{"time":1427,"strong":0.5},{"time":1428,"strong":0.8},{"time":1443,"strong":0.9},{"time":1451,"strong":0.9},{"time":1459,"strong":0.6},{"time":1492,"strong":0.9},{"time":1504,"strong":0.5},{"time":1507,"strong":0.9},{"time":1515,"strong":0.8},{"time":1523,"strong":0.5},{"time":1524,"strong":0.9},{"time":1547,"strong":0.5},{"time":1559,"strong":0.4},{"time":1560,"strong":0.8},{"time":1579,"strong":0.9},{"time":1587,"strong":0.7},{"time":1600,"strong":0.5},{"time":1603,"strong":0.8},{"time":1620,"strong":0.7},{"time":1636,"strong":0.8},{"time":1648,"strong":0.4},{"time":1652,"strong":0.9},{"time":1668,"strong":0.9},{"time":1680,"strong":0.7},{"time":1684,"strong":0.9},{"time":1700,"strong":0.6},{"time":1716,"strong":0.9},{"time":1732,"strong":0.8},{"time":1749,"strong":0.8},{"time":1765,"strong":1},{"time":1773,"strong":0.5},{"time":1780,"strong":0.6},{"time":1781,"strong":0.9},{"time":1793,"strong":0.9},{"time":1804,"strong":0.4},{"time":1805,"strong":0.9},{"time":1819,"strong":0.8},{"time":1832,"strong":0.6},{"time":1861,"strong":0.8},{"time":1893,"strong":0.6},{"time":1905,"strong":0.6},{"time":1909,"strong":0.7},{"time":1917,"strong":0.6},{"time":1922,"strong":0.7},{"time":1925,"strong":0.8},{"time":1938,"strong":0.9},{"time":1942,"strong":0.7},{"time":1946,"strong":0.7},{"time":1958,"strong":0.7},{"time":1963,"strong":0.9},{"time":1990,"strong":0.8},{"time":2018,"strong":0.7},{"time":2022,"strong":0.5},{"time":2031,"strong":0.7},{"time":2063,"strong":0.8},{"time":2079,"strong":0.7},{"time":2087,"strong":0.9},{"time":2119,"strong":0.9},{"time":2136,"strong":0.7},{"time":2144,"strong":0.9},{"time":2152,"strong":0.8},{"time":2168,"strong":0.8},{"time":2200,"strong":0.6},{"time":2208,"strong":0.7},{"time":2216,"strong":0.9},{"time":2224,"strong":0.8},{"time":2232,"strong":0.9},{"time":2249,"strong":1},{"time":2264,"strong":0.6},{"time":2280,"strong":0.9},{"time":2288,"strong":0.8},{"time":2296,"strong":0.8},{"time":2329,"strong":0.8},{"time":2340,"strong":0.7},{"time":2357,"strong":0.9},{"time":2393,"strong":0.6},{"time":2408,"strong":0.9},{"time":2416,"strong":0.7},{"time":2424,"strong":0.8},{"time":2437,"strong":0.9},{"time":2456,"strong":0.8},{"time":2464,"strong":0.5},{"time":2471,"strong":0.5},{"time":2472,"strong":0.8},{"time":2480,"strong":0.8},{"time":2488,"strong":0.8},{"time":2517,"strong":0.8},{"time":2520,"strong":0.6},{"time":2524,"strong":0.7},{"time":2532,"strong":0.5},{"time":2535,"strong":0.7},{"time":2543,"strong":0.8},{"time":2551,"strong":0.9},{"time":2567,"strong":0.8},{"time":2576,"strong":0.8},{"time":2583,"strong":0.8},{"time":2598,"strong":0.8},{"time":2607,"strong":0.6},{"time":2611,"strong":0.5},{"time":2614,"strong":0.7},{"time":2642,"strong":0.4},{"time":2646,"strong":0.8},{"time":2659,"strong":0.5},{"time":2662,"strong":0.8},{"time":2678,"strong":0.9},{"time":2694,"strong":0.7},{"time":2707,"strong":0.9},{"time":2713,"strong":0.8},{"time":2718,"strong":0.8},{"time":2730,"strong":0.8},{"time":2741,"strong":0.8},{"time":2757,"strong":0.8},{"time":2773,"strong":0.9},{"time":2802,"strong":0.6},{"time":2805,"strong":1},{"time":2818,"strong":0.5},{"time":2820,"strong":0.8},{"time":2829,"strong":0.5},{"time":2833,"strong":0.9},{"time":2841,"strong":0.9},{"time":2845,"strong":0.8},{"time":2852,"strong":0.8},{"time":2857,"strong":0.8},{"time":2869,"strong":1},{"time":2881,"strong":0.6},{"time":2897,"strong":0.5},{"time":2900,"strong":0.7},{"time":2916,"strong":0.9},{"time":2932,"strong":0.9},{"time":2944,"strong":0.5},{"time":2947,"strong":0.7},{"time":2967,"strong":0.8},{"time":2983,"strong":0.8},{"time":2995,"strong":1},{"time":3007,"strong":0.5},{"time":3023,"strong":0.6},{"time":3026,"strong":1},{"time":3039,"strong":0.5},{"time":3053,"strong":0.7},{"time":3058,"strong":0.9},{"time":3066,"strong":0.8},{"time":3084,"strong":0.6},{"time":3093,"strong":0.9},{"time":3098,"strong":0.9},{"time":3109,"strong":0.6},{"time":3121,"strong":0.9},{"time":3134,"strong":0.8},{"time":3153,"strong":0.7},{"time":3162,"strong":0.8},{"time":3169,"strong":0.8},{"time":3185,"strong":0.8},{"time":3218,"strong":0.7},{"time":3225,"strong":0.6},{"time":3233,"strong":0.9},{"time":3249,"strong":0.8},{"time":3282,"strong":0.6},{"time":3296,"strong":0.5},{"time":3297,"strong":0.9},{"time":3313,"strong":0.9},{"time":3329,"strong":0.9},{"time":3337,"strong":0.6},{"time":3345,"strong":0.8},{"time":3349,"strong":0.4},{"time":3353,"strong":0.5},{"time":3360,"strong":0.7},{"time":3361,"strong":1},{"time":3369,"strong":0.8},{"time":3377,"strong":0.8},{"time":3389,"strong":0.8},{"time":3400,"strong":0.8},{"time":3409,"strong":0.9},{"time":3425,"strong":1},{"time":3441,"strong":0.9},{"time":3474,"strong":0.7},{"time":3481,"strong":0.8},{"time":3489,"strong":0.9},{"time":3493,"strong":0.7},{"time":3494,"strong":1},{"time":3505,"strong":0.5},{"time":3506,"strong":0.9},{"time":3538,"strong":0.8},{"time":3550,"strong":0.6},{"time":3553,"strong":0.5},{"time":3554,"strong":1},{"time":3562,"strong":0.8},{"time":3570,"strong":0.7},{"time":3582,"strong":0.6},{"time":3586,"strong":0.9},{"time":3594,"strong":0.6},{"time":3602,"strong":0.6},{"time":3606,"strong":0.7},{"time":3617,"strong":0.8},{"time":3625,"strong":0.5},{"time":3633,"strong":0.7},{"time":3642,"strong":0.8},{"time":3646,"strong":0.8},{"time":3650,"strong":0.9},{"time":3658,"strong":0.5},{"time":3659,"strong":0.8},{"time":3665,"strong":0.4},{"time":3674,"strong":0.5},{"time":3682,"strong":0.8},{"time":3690,"strong":0.8},{"time":3698,"strong":0.9},{"time":3706,"strong":0.7},{"time":3713,"strong":0.5},{"time":3714,"strong":0.9},{"time":3722,"strong":0.8},{"time":3726,"strong":0.8},{"time":3734,"strong":0.8},{"time":3741,"strong":0.5},{"time":3745,"strong":0.9},{"time":3750,"strong":0.8},{"time":3761,"strong":0.6},{"time":3770,"strong":0.8},{"time":3777,"strong":0.9},{"time":3785,"strong":0.5},{"time":3793,"strong":0.8},{"time":3808,"strong":0.7},{"time":3817,"strong":0.7},{"time":3825,"strong":0.8},{"time":3833,"strong":0.9},{"time":3840,"strong":0.8},{"time":3849,"strong":0.9},{"time":3853,"strong":0.8},{"time":3856,"strong":0.9},{"time":3868,"strong":0.5},{"time":3872,"strong":0.9},{"time":3876,"strong":0.9},{"time":3880,"strong":1},{"time":3901,"strong":0.5},{"time":3904,"strong":0.9},{"time":3916,"strong":0.5},{"time":3936,"strong":0.6},{"time":3953,"strong":0.9},{"time":3968,"strong":0.6},{"time":3969,"strong":0.9},{"time":3981,"strong":0.8},{"time":3986,"strong":0.9},{"time":4001,"strong":1},{"time":4017,"strong":0.7},{"time":4029,"strong":0.4},{"time":4046,"strong":0.7},{"time":4049,"strong":0.6},{"time":4064,"strong":0.6},{"time":4066,"strong":0.8},{"time":4074,"strong":0.7},{"time":4081,"strong":0.5},{"time":4082,"strong":0.9},{"time":4089,"strong":0.6},{"time":4104,"strong":0.6},{"time":4105,"strong":0.9},{"time":4157,"strong":0.6},{"time":4161,"strong":0.8},{"time":4206,"strong":0.7},{"time":4210,"strong":0.7},{"time":4219,"strong":0.7},{"time":4226,"strong":0.6},{"time":4227,"strong":0.9},{"time":4235,"strong":0.8},{"time":4242,"strong":0.6},{"time":4243,"strong":0.9},{"time":4252,"strong":0.7},{"time":4276,"strong":0.9},{"time":4292,"strong":0.9},{"time":4304,"strong":0.6},{"time":4308,"strong":0.8},{"time":4324,"strong":0.6},{"time":4332,"strong":0.7},{"time":4340,"strong":0.8},{"time":4363,"strong":0.7},{"time":4375,"strong":0.5},{"time":4378,"strong":0.8},{"time":4386,"strong":0.9},{"time":4390,"strong":0.8},{"time":4402,"strong":0.9},{"time":4418,"strong":0.9},{"time":4434,"strong":0.5},{"time":4435,"strong":0.9},{"time":4450,"strong":0.9},{"time":4458,"strong":0.8},{"time":4466,"strong":0.8},{"time":4478,"strong":0.8},{"time":4498,"strong":0.7},{"time":4506,"strong":0.5},{"time":4513,"strong":0.5},{"time":4514,"strong":0.9},{"time":4522,"strong":0.7},{"time":4530,"strong":0.8},{"time":4562,"strong":0.6},{"time":4574,"strong":0.5},{"time":4578,"strong":0.8},{"time":4586,"strong":0.9},{"time":4594,"strong":0.9},{"time":4610,"strong":0.8},{"time":4618,"strong":0.7},{"time":4630,"strong":0.7},{"time":4638,"strong":0.8},{"time":4642,"strong":0.9},{"time":4650,"strong":0.7},{"time":4690,"strong":0.6},{"time":4702,"strong":0.8},{"time":4706,"strong":0.9},{"time":4714,"strong":0.7},{"time":4722,"strong":0.8},{"time":4734,"strong":0.8},{"time":4758,"strong":0.5},{"time":4759,"strong":0.8},{"time":4767,"strong":0.8},{"time":4778,"strong":0.8},{"time":4818,"strong":0.7},{"time":4823,"strong":0.5},{"time":4830,"strong":0.6},{"time":4834,"strong":0.9},{"time":4842,"strong":0.9},{"time":4850,"strong":0.9},{"time":4866,"strong":0.8},{"time":4882,"strong":0.9},{"time":4896,"strong":0.8},{"time":4906,"strong":0.7},{"time":4914,"strong":0.9},{"time":4926,"strong":0.9},{"time":4929,"strong":0.9},{"time":4946,"strong":0.7},{"time":4961,"strong":0.4},{"time":4978,"strong":0.7},{"time":4986,"strong":0.6},{"time":5010,"strong":0.7},{"time":5026,"strong":0.9},{"time":5042,"strong":0.6},{"time":5089,"strong":0.6},{"time":5106,"strong":0.5},{"time":5122,"strong":0.7},{"time":5134,"strong":0.4},{"time":5142,"strong":0.6},{"time":5146,"strong":0.7},{"time":5154,"strong":0.8},{"time":5161,"strong":0.8},{"time":5197,"strong":0.6},{"time":5217,"strong":0.5},{"time":5218,"strong":0.9},{"time":5233,"strong":0.6},{"time":5246,"strong":0.8},{"time":5281,"strong":0.8},{"time":5297,"strong":0.8},{"time":5326,"strong":0.6},{"time":5344,"strong":0.7},{"time":5360,"strong":0.8},{"time":5369,"strong":0.8},{"time":5375,"strong":0.5},{"time":5380,"strong":0.7},{"time":5388,"strong":0.4},{"time":5399,"strong":0.8},{"time":5411,"strong":0.8},{"time":5422,"strong":0.9},{"time":5452,"strong":0.8},{"time":5466,"strong":0.6},{"time":5486,"strong":0.9},{"time":5531,"strong":0.8},{"time":5534,"strong":0.8},{"time":5550,"strong":0.8},{"time":5562,"strong":0.7},{"time":5582,"strong":0.8},{"time":5590,"strong":0.8},{"time":5597,"strong":0.5},{"time":5598,"strong":0.9},{"time":5606,"strong":0.8},{"time":5637,"strong":0.6},{"time":5657,"strong":0.8},{"time":5660,"strong":0.8},{"time":5668,"strong":0.7},{"time":5673,"strong":0.8},{"time":5708,"strong":0.9},{"time":5723,"strong":0.9},{"time":5751,"strong":0.8},{"time":5784,"strong":0.8},{"time":5796,"strong":0.8},{"time":5804,"strong":0.8},{"time":5820,"strong":0.9},{"time":5848,"strong":0.8},{"time":5852,"strong":0.8},{"time":5856,"strong":0.7},{"time":5860,"strong":0.7},{"time":5868,"strong":0.8},{"time":5880,"strong":0.7},{"time":5883,"strong":0.9},{"time":5891,"strong":0.5},{"time":5892,"strong":0.8},{"time":5899,"strong":0.8},{"time":5907,"strong":0.8},{"time":5911,"strong":0.8},{"time":5923,"strong":0.7},{"time":5927,"strong":0.8},{"time":5930,"strong":0.9},{"time":5960,"strong":0.9},{"time":6051,"strong":0.8},{"time":6070,"strong":0.6},{"time":6074,"strong":0.9},{"time":6114,"strong":0.5},{"time":6122,"strong":0.6}];
+ 
+        /* 正常音樂-鼓節拍 */
+        var dotArray = [{"time":32,"strong":0.5},{"time":33,"strong":0.6},{"time":50,"strong":0.7},{"time":51,"strong":0.5},{"time":65,"strong":0.7},{"time":66,"strong":1},{"time":67,"strong":0.5},{"time":81,"strong":0.8},{"time":89,"strong":0.8},{"time":97,"strong":0.7},{"time":98,"strong":0.6},{"time":113,"strong":0.7},{"time":114,"strong":0.7},{"time":122,"strong":0.7},{"time":130,"strong":0.7},{"time":142,"strong":0.7},{"time":143,"strong":0.5},{"time":154,"strong":0.7},{"time":162,"strong":0.6},{"time":163,"strong":0.5},{"time":167,"strong":0.7},{"time":178,"strong":0.8},{"time":186,"strong":0.8},{"time":194,"strong":0.5},{"time":195,"strong":0.8},{"time":196,"strong":0.5},{"time":210,"strong":0.9},{"time":218,"strong":0.8},{"time":226,"strong":0.7},{"time":227,"strong":0.5},{"time":242,"strong":0.8},{"time":250,"strong":0.8},{"time":258,"strong":0.8},{"time":259,"strong":0.5},{"time":271,"strong":0.8},{"time":282,"strong":0.7},{"time":290,"strong":0.7},{"time":294,"strong":0.7},{"time":306,"strong":0.8},{"time":314,"strong":0.7},{"time":322,"strong":0.6},{"time":338,"strong":0.8},{"time":346,"strong":0.7},{"time":354,"strong":0.7},{"time":355,"strong":0.8},{"time":371,"strong":0.7},{"time":372,"strong":0.6},{"time":379,"strong":0.7},{"time":380,"strong":0.5},{"time":387,"strong":0.6},{"time":410,"strong":0.7},{"time":418,"strong":0.7},{"time":419,"strong":0.6},{"time":422,"strong":0.8},{"time":434,"strong":0.8},{"time":441,"strong":0.7},{"time":450,"strong":0.7},{"time":466,"strong":0.8},{"time":473,"strong":0.7},{"time":481,"strong":0.8},{"time":482,"strong":0.6},{"time":494,"strong":0.5},{"time":498,"strong":0.8},{"time":506,"strong":0.5},{"time":507,"strong":0.7},{"time":514,"strong":0.5},{"time":515,"strong":0.6},{"time":539,"strong":0.7},{"time":546,"strong":0.7},{"time":550,"strong":0.8},{"time":562,"strong":0.9},{"time":563,"strong":0.6},{"time":578,"strong":1},{"time":579,"strong":0.7},{"time":594,"strong":0.8},{"time":611,"strong":0.8},{"time":626,"strong":0.8},{"time":643,"strong":0.8},{"time":658,"strong":0.9},{"time":659,"strong":0.5},{"time":667,"strong":0.7},{"time":674,"strong":0.6},{"time":675,"strong":0.5},{"time":690,"strong":0.8},{"time":691,"strong":0.5},{"time":707,"strong":0.8},{"time":708,"strong":0.9},{"time":724,"strong":0.6},{"time":740,"strong":0.6},{"time":741,"strong":0.5},{"time":756,"strong":0.8},{"time":764,"strong":0.7},{"time":768,"strong":0.7},{"time":780,"strong":0.8},{"time":792,"strong":0.7},{"time":793,"strong":0.5},{"time":796,"strong":0.7},{"time":804,"strong":0.6},{"time":805,"strong":0.5},{"time":820,"strong":0.8},{"time":836,"strong":0.8},{"time":837,"strong":0.7},{"time":852,"strong":0.8},{"time":853,"strong":0.5},{"time":868,"strong":0.6},{"time":884,"strong":0.9},{"time":885,"strong":0.5},{"time":900,"strong":0.8},{"time":901,"strong":0.6},{"time":917,"strong":0.7},{"time":934,"strong":0.6},{"time":949,"strong":0.7},{"time":950,"strong":0.5},{"time":966,"strong":0.9},{"time":981,"strong":0.7},{"time":989,"strong":0.7},{"time":990,"strong":0.7},{"time":997,"strong":1},{"time":998,"strong":0.9},{"time":1013,"strong":0.8},{"time":1014,"strong":0.5},{"time":1022,"strong":0.7},{"time":1026,"strong":0.8},{"time":1037,"strong":0.9},{"time":1038,"strong":0.5},{"time":1049,"strong":0.6},{"time":1052,"strong":1},{"time":1053,"strong":0.7},{"time":1060,"strong":0.7},{"time":1061,"strong":0.7},{"time":1076,"strong":0.8},{"time":1077,"strong":0.5},{"time":1092,"strong":0.8},{"time":1093,"strong":0.5},{"time":1109,"strong":0.7},{"time":1110,"strong":0.5},{"time":1125,"strong":0.8},{"time":1126,"strong":0.6},{"time":1141,"strong":0.6},{"time":1157,"strong":0.6},{"time":1158,"strong":0.5},{"time":1180,"strong":0.7},{"time":1188,"strong":0.9},{"time":1189,"strong":0.5},{"time":1204,"strong":0.7},{"time":1220,"strong":0.7},{"time":1243,"strong":0.8},{"time":1252,"strong":0.8},{"time":1268,"strong":0.8},{"time":1269,"strong":0.5},{"time":1283,"strong":0.8},{"time":1284,"strong":0.5},{"time":1308,"strong":0.8},{"time":1316,"strong":1},{"time":1317,"strong":0.6},{"time":1328,"strong":0.7},{"time":1329,"strong":0.5},{"time":1332,"strong":0.9},{"time":1347,"strong":0.7},{"time":1371,"strong":0.8},{"time":1379,"strong":0.6},{"time":1394,"strong":0.8},{"time":1395,"strong":0.5},{"time":1410,"strong":0.7},{"time":1411,"strong":0.5},{"time":1434,"strong":0.7},{"time":1443,"strong":0.9},{"time":1447,"strong":0.8},{"time":1458,"strong":0.8},{"time":1459,"strong":0.5},{"time":1475,"strong":0.7},{"time":1476,"strong":0.5},{"time":1498,"strong":0.7},{"time":1506,"strong":0.8},{"time":1507,"strong":0.6},{"time":1512,"strong":0.8},{"time":1523,"strong":0.8},{"time":1524,"strong":0.6},{"time":1540,"strong":0.5},{"time":1563,"strong":0.8},{"time":1571,"strong":0.6},{"time":1575,"strong":0.7},{"time":1587,"strong":0.7},{"time":1588,"strong":0.6},{"time":1603,"strong":0.7},{"time":1619,"strong":0.7},{"time":1635,"strong":0.7},{"time":1636,"strong":0.5},{"time":1650,"strong":0.8},{"time":1651,"strong":0.8},{"time":1667,"strong":0.7},{"time":1678,"strong":0.7},{"time":1682,"strong":0.8},{"time":1683,"strong":0.6},{"time":1698,"strong":0.6},{"time":1715,"strong":0.8},{"time":1716,"strong":0.6},{"time":1732,"strong":0.7},{"time":1733,"strong":0.5},{"time":1756,"strong":0.7},{"time":1764,"strong":0.6},{"time":1780,"strong":0.6},{"time":1781,"strong":0.5},{"time":1788,"strong":0.6},{"time":1792,"strong":0.8},{"time":1793,"strong":0.5},{"time":1803,"strong":0.7},{"time":1804,"strong":0.5},{"time":1842,"strong":0.7},{"time":1843,"strong":0.8},{"time":1859,"strong":0.7},{"time":1875,"strong":0.8},{"time":1876,"strong":0.5},{"time":1891,"strong":0.7},{"time":1892,"strong":0.5},{"time":1907,"strong":0.5},{"time":1908,"strong":0.9},{"time":1925,"strong":0.5},{"time":1926,"strong":0.6},{"time":1948,"strong":0.7},{"time":1957,"strong":0.7},{"time":1973,"strong":0.8},{"time":1989,"strong":0.6},{"time":2004,"strong":0.5},{"time":2005,"strong":0.8},{"time":2020,"strong":0.7},{"time":2021,"strong":0.5},{"time":2036,"strong":0.6},{"time":2037,"strong":0.7},{"time":2044,"strong":0.6},{"time":2049,"strong":0.7},{"time":2061,"strong":0.8},{"time":2073,"strong":0.6},{"time":2076,"strong":0.6},{"time":2085,"strong":0.7},{"time":2101,"strong":0.8},{"time":2118,"strong":0.6},{"time":2119,"strong":0.5},{"time":2134,"strong":0.8},{"time":2151,"strong":1},{"time":2167,"strong":0.7},{"time":2183,"strong":0.7},{"time":2207,"strong":0.7},{"time":2215,"strong":0.7},{"time":2230,"strong":0.8},{"time":2231,"strong":0.5},{"time":2246,"strong":0.8},{"time":2247,"strong":0.5},{"time":2271,"strong":0.7},{"time":2279,"strong":0.7},{"time":2294,"strong":0.9},{"time":2295,"strong":0.9},{"time":2306,"strong":0.7},{"time":2310,"strong":0.6},{"time":2311,"strong":0.5},{"time":2336,"strong":0.7},{"time":2343,"strong":0.6},{"time":2344,"strong":0.7},{"time":2355,"strong":0.5},{"time":2356,"strong":0.5},{"time":2359,"strong":0.9},{"time":2360,"strong":0.5},{"time":2375,"strong":0.6},{"time":2399,"strong":0.8},{"time":2400,"strong":0.7},{"time":2407,"strong":0.6},{"time":2408,"strong":0.7},{"time":2423,"strong":0.7},{"time":2424,"strong":0.6},{"time":2439,"strong":0.7},{"time":2462,"strong":0.7},{"time":2470,"strong":0.8},{"time":2471,"strong":0.5},{"time":2486,"strong":0.6},{"time":2502,"strong":0.6},{"time":2503,"strong":0.6},{"time":2527,"strong":0.8},{"time":2535,"strong":0.8},{"time":2536,"strong":0.5},{"time":2550,"strong":0.8},{"time":2551,"strong":0.5},{"time":2566,"strong":0.8},{"time":2567,"strong":0.6},{"time":2578,"strong":0.7},{"time":2579,"strong":0.5},{"time":2582,"strong":0.8},{"time":2590,"strong":1},{"time":2594,"strong":0.7},{"time":2598,"strong":0.8},{"time":2613,"strong":0.9},{"time":2614,"strong":0.6},{"time":2628,"strong":0.6},{"time":2629,"strong":0.8},{"time":2644,"strong":0.9},{"time":2645,"strong":0.6},{"time":2660,"strong":0.7},{"time":2675,"strong":0.7},{"time":2676,"strong":0.7},{"time":2692,"strong":0.7},{"time":2717,"strong":0.9},{"time":2718,"strong":0.5},{"time":2724,"strong":0.7},{"time":2728,"strong":0.7},{"time":2729,"strong":0.6},{"time":2740,"strong":0.8},{"time":2741,"strong":0.6},{"time":2756,"strong":0.6},{"time":2772,"strong":0.9},{"time":2773,"strong":0.6},{"time":2788,"strong":0.8},{"time":2811,"strong":0.6},{"time":2812,"strong":0.7},{"time":2820,"strong":0.7},{"time":2843,"strong":0.7},{"time":2844,"strong":0.8},{"time":2851,"strong":0.7},{"time":2855,"strong":0.8},{"time":2856,"strong":0.5},{"time":2867,"strong":0.9},{"time":2868,"strong":0.5},{"time":2883,"strong":1},{"time":2884,"strong":1},{"time":2899,"strong":0.9},{"time":2900,"strong":0.5},{"time":2916,"strong":0.8},{"time":2927,"strong":0.7},{"time":2931,"strong":0.9},{"time":2932,"strong":0.6},{"time":2947,"strong":0.6},{"time":2948,"strong":0.5},{"time":2970,"strong":0.8},{"time":2977,"strong":0.6},{"time":2978,"strong":0.6},{"time":2981,"strong":0.8},{"time":2982,"strong":0.6},{"time":2993,"strong":0.8},{"time":2994,"strong":0.6},{"time":3009,"strong":0.7},{"time":3025,"strong":1},{"time":3026,"strong":0.6},{"time":3041,"strong":0.8},{"time":3052,"strong":0.8},{"time":3056,"strong":0.9},{"time":3057,"strong":0.6},{"time":3071,"strong":0.6},{"time":3072,"strong":0.8},{"time":3075,"strong":0.7},{"time":3076,"strong":0.6},{"time":3083,"strong":0.7},{"time":3084,"strong":0.6},{"time":3099,"strong":0.8},{"time":3103,"strong":0.7},{"time":3114,"strong":0.8},{"time":3115,"strong":0.5},{"time":3119,"strong":0.8},{"time":3120,"strong":0.5},{"time":3135,"strong":0.7},{"time":3136,"strong":0.5},{"time":3151,"strong":0.8},{"time":3152,"strong":0.7},{"time":3167,"strong":0.6},{"time":3168,"strong":0.8},{"time":3183,"strong":0.8},{"time":3199,"strong":0.7},{"time":3200,"strong":0.6},{"time":3222,"strong":0.8},{"time":3223,"strong":0.5},{"time":3231,"strong":0.6},{"time":3232,"strong":0.5},{"time":3242,"strong":0.8},{"time":3246,"strong":0.7},{"time":3247,"strong":0.5},{"time":3262,"strong":0.8},{"time":3263,"strong":0.6},{"time":3286,"strong":0.7},{"time":3294,"strong":0.9},{"time":3310,"strong":0.8},{"time":3327,"strong":0.7},{"time":3328,"strong":0.5},{"time":3351,"strong":0.7},{"time":3359,"strong":0.7},{"time":3370,"strong":0.8},{"time":3374,"strong":0.5},{"time":3375,"strong":0.7},{"time":3391,"strong":0.7},{"time":3415,"strong":0.8},{"time":3422,"strong":0.6},{"time":3423,"strong":0.7},{"time":3438,"strong":0.7},{"time":3439,"strong":0.6},{"time":3454,"strong":0.7},{"time":3455,"strong":0.5},{"time":3478,"strong":0.7},{"time":3479,"strong":0.5},{"time":3486,"strong":0.7},{"time":3501,"strong":0.7},{"time":3519,"strong":0.7},{"time":3543,"strong":0.7},{"time":3551,"strong":0.8},{"time":3552,"strong":0.5},{"time":3567,"strong":0.7},{"time":3583,"strong":0.7},{"time":3584,"strong":0.7},{"time":3599,"strong":0.6},{"time":3600,"strong":0.7},{"time":3613,"strong":0.6},{"time":3615,"strong":0.6},{"time":3616,"strong":0.6},{"time":3619,"strong":0.5},{"time":3631,"strong":0.7},{"time":3647,"strong":0.8},{"time":3663,"strong":0.8},{"time":3675,"strong":0.7},{"time":3679,"strong":0.8},{"time":3680,"strong":0.7},{"time":3703,"strong":0.9},{"time":3711,"strong":0.7},{"time":3736,"strong":0.8},{"time":3744,"strong":0.8},{"time":3759,"strong":0.7},{"time":3760,"strong":0.5},{"time":3767,"strong":0.8},{"time":3768,"strong":0.5},{"time":3775,"strong":0.7},{"time":3776,"strong":0.5},{"time":3791,"strong":0.7},{"time":3799,"strong":0.7},{"time":3807,"strong":0.6},{"time":3830,"strong":0.6},{"time":3831,"strong":0.7},{"time":3838,"strong":0.7},{"time":3839,"strong":0.8},{"time":3869,"strong":0.6},{"time":3873,"strong":0.8},{"time":3874,"strong":0.5},{"time":3885,"strong":0.8},{"time":3886,"strong":0.5},{"time":3901,"strong":0.9},{"time":3902,"strong":0.7},{"time":3917,"strong":0.8},{"time":3918,"strong":0.5},{"time":3934,"strong":0.7},{"time":3935,"strong":0.6},{"time":3945,"strong":0.7},{"time":3950,"strong":0.7},{"time":3966,"strong":0.8},{"time":3967,"strong":0.5},{"time":3982,"strong":0.9},{"time":3983,"strong":0.5},{"time":3998,"strong":0.7},{"time":3999,"strong":0.5},{"time":4010,"strong":0.5},{"time":4011,"strong":0.7},{"time":4014,"strong":0.6},{"time":4015,"strong":0.5},{"time":4030,"strong":0.6},{"time":4031,"strong":0.6},{"time":4039,"strong":0.7},{"time":4046,"strong":0.9},{"time":4047,"strong":0.7},{"time":4063,"strong":0.7},{"time":4064,"strong":0.5},{"time":4079,"strong":0.7},{"time":4087,"strong":0.7},{"time":4091,"strong":0.9},{"time":4092,"strong":0.5},{"time":4102,"strong":0.8},{"time":4103,"strong":0.5},{"time":4114,"strong":0.7},{"time":4117,"strong":0.6},{"time":4118,"strong":0.7},{"time":4127,"strong":0.7},{"time":4128,"strong":0.5},{"time":4143,"strong":0.8},{"time":4159,"strong":0.7},{"time":4175,"strong":0.7},{"time":4191,"strong":0.7},{"time":4202,"strong":0.5},{"time":4203,"strong":0.7},{"time":4207,"strong":0.8},{"time":4208,"strong":0.5},{"time":4223,"strong":0.6},{"time":4239,"strong":0.8},{"time":4240,"strong":0.7},{"time":4248,"strong":0.8},{"time":4256,"strong":0.7},{"time":4272,"strong":0.9},{"time":4273,"strong":0.6},{"time":4289,"strong":0.8},{"time":4305,"strong":0.9},{"time":4306,"strong":0.5},{"time":4321,"strong":0.7},{"time":4337,"strong":0.8},{"time":4338,"strong":0.9},{"time":4346,"strong":0.6},{"time":4350,"strong":0.8},{"time":4361,"strong":0.9},{"time":4373,"strong":0.7},{"time":4376,"strong":0.6},{"time":4377,"strong":0.5},{"time":4384,"strong":0.5},{"time":4399,"strong":0.7},{"time":4415,"strong":0.9},{"time":4416,"strong":0.6},{"time":4431,"strong":0.7},{"time":4447,"strong":0.7},{"time":4463,"strong":0.7},{"time":4479,"strong":0.8},{"time":4480,"strong":0.5},{"time":4502,"strong":0.7},{"time":4511,"strong":0.8},{"time":4522,"strong":0.7},{"time":4527,"strong":0.7},{"time":4528,"strong":0.5},{"time":4543,"strong":0.7},{"time":4544,"strong":0.5},{"time":4567,"strong":0.8},{"time":4575,"strong":0.7},{"time":4590,"strong":0.7},{"time":4591,"strong":0.6},{"time":4607,"strong":0.9},{"time":4608,"strong":0.8},{"time":4630,"strong":0.8},{"time":4638,"strong":0.8},{"time":4649,"strong":0.7},{"time":4654,"strong":0.9},{"time":4655,"strong":0.6},{"time":4670,"strong":0.8},{"time":4694,"strong":0.7},{"time":4702,"strong":0.8},{"time":4718,"strong":0.8},{"time":4735,"strong":0.8},{"time":4759,"strong":0.7},{"time":4767,"strong":0.7},{"time":4782,"strong":0.8},{"time":4783,"strong":0.6},{"time":4799,"strong":0.6},{"time":4800,"strong":0.5},{"time":4822,"strong":0.7},{"time":4831,"strong":0.7},{"time":4846,"strong":0.7},{"time":4862,"strong":0.7},{"time":4878,"strong":0.8},{"time":4879,"strong":0.6},{"time":4890,"strong":0.6},{"time":4891,"strong":0.7},{"time":4894,"strong":0.7},{"time":4905,"strong":0.7},{"time":4906,"strong":0.8},{"time":4909,"strong":0.7},{"time":4927,"strong":0.8},{"time":4959,"strong":0.8},{"time":4990,"strong":0.7},{"time":4991,"strong":0.6},{"time":5023,"strong":0.7},{"time":5055,"strong":0.6},{"time":5086,"strong":0.7},{"time":5102,"strong":0.7},{"time":5118,"strong":0.8},{"time":5142,"strong":0.5},{"time":5147,"strong":0.8},{"time":5161,"strong":0.6},{"time":5162,"strong":0.8},{"time":5177,"strong":0.8},{"time":5182,"strong":0.7},{"time":5215,"strong":0.8},{"time":5245,"strong":0.7},{"time":5277,"strong":0.7},{"time":5307,"strong":0.7},{"time":5308,"strong":0.7},{"time":5340,"strong":0.6},{"time":5341,"strong":0.5},{"time":5356,"strong":0.7},{"time":5368,"strong":0.7},{"time":5369,"strong":0.5},{"time":5372,"strong":0.6},{"time":5392,"strong":0.7},{"time":5396,"strong":0.7},{"time":5399,"strong":0.6},{"time":5404,"strong":0.7},{"time":5407,"strong":0.7},{"time":5408,"strong":0.6},{"time":5419,"strong":0.8},{"time":5420,"strong":0.6},{"time":5432,"strong":0.8},{"time":5436,"strong":0.7},{"time":5450,"strong":0.8},{"time":5466,"strong":0.8},{"time":5482,"strong":0.8},{"time":5498,"strong":0.6},{"time":5513,"strong":0.8},{"time":5531,"strong":0.6},{"time":5546,"strong":0.6},{"time":5547,"strong":0.5},{"time":5563,"strong":0.8},{"time":5578,"strong":0.7},{"time":5595,"strong":0.5},{"time":5610,"strong":0.9},{"time":5611,"strong":0.5},{"time":5626,"strong":0.7},{"time":5641,"strong":0.8},{"time":5642,"strong":0.5},{"time":5657,"strong":0.6},{"time":5673,"strong":0.7},{"time":5688,"strong":0.6},{"time":5689,"strong":0.5},{"time":5704,"strong":0.8},{"time":5705,"strong":0.5},{"time":5720,"strong":0.7},{"time":5736,"strong":0.8},{"time":5737,"strong":0.5},{"time":5752,"strong":0.8},{"time":5753,"strong":0.6},{"time":5767,"strong":0.8},{"time":5783,"strong":0.6},{"time":5784,"strong":0.7},{"time":5799,"strong":0.8},{"time":5800,"strong":0.5},{"time":5815,"strong":0.8},{"time":5816,"strong":0.5},{"time":5831,"strong":0.8},{"time":5848,"strong":0.8},{"time":5863,"strong":0.8},{"time":5879,"strong":0.7},{"time":5880,"strong":0.5},{"time":5895,"strong":0.8},{"time":5911,"strong":0.6},{"time":5926,"strong":0.8},{"time":5927,"strong":0.5},{"time":5943,"strong":0.5},{"time":5958,"strong":0.8},{"time":5959,"strong":0.5},{"time":5975,"strong":0.7},{"time":5991,"strong":0.8},{"time":5992,"strong":0.6},{"time":6007,"strong":0.8},{"time":6022,"strong":0.8},{"time":6038,"strong":0.6},{"time":6039,"strong":0.5},{"time":6054,"strong":0.8},{"time":6070,"strong":0.7},{"time":6085,"strong":0.8},{"time":6117,"strong":0.5}];
+        
+        /* 鼓音樂-鼓節拍 */
+        // var dotArray = [{"time":199,"strong":0.5},{"time":200,"strong":0.6},{"time":217,"strong":0.7},{"time":218,"strong":0.5},{"time":232,"strong":0.7},{"time":233,"strong":1},{"time":234,"strong":0.5},{"time":248,"strong":0.8},{"time":256,"strong":0.8},{"time":264,"strong":0.7},{"time":265,"strong":0.6},{"time":279,"strong":0.7},{"time":280,"strong":0.7},{"time":288,"strong":0.7},{"time":296,"strong":0.7},{"time":308,"strong":0.7},{"time":309,"strong":0.5},{"time":320,"strong":0.7},{"time":328,"strong":0.6},{"time":329,"strong":0.5},{"time":333,"strong":0.7},{"time":344,"strong":0.8},{"time":352,"strong":0.8},{"time":360,"strong":0.5},{"time":361,"strong":0.8},{"time":362,"strong":0.5},{"time":376,"strong":0.9},{"time":384,"strong":0.8},{"time":392,"strong":0.7},{"time":393,"strong":0.5},{"time":408,"strong":0.8},{"time":416,"strong":0.8},{"time":424,"strong":0.8},{"time":425,"strong":0.5},{"time":437,"strong":0.8},{"time":448,"strong":0.7},{"time":456,"strong":0.7},{"time":460,"strong":0.7},{"time":471,"strong":0.8},{"time":479,"strong":0.7},{"time":487,"strong":0.6},{"time":503,"strong":0.8},{"time":511,"strong":0.7},{"time":519,"strong":0.7},{"time":520,"strong":0.8},{"time":536,"strong":0.7},{"time":537,"strong":0.6},{"time":544,"strong":0.7},{"time":545,"strong":0.5},{"time":552,"strong":0.6},{"time":575,"strong":0.7},{"time":583,"strong":0.7},{"time":584,"strong":0.6},{"time":587,"strong":0.8},{"time":599,"strong":0.8},{"time":606,"strong":0.7},{"time":615,"strong":0.7},{"time":631,"strong":0.8},{"time":638,"strong":0.7},{"time":646,"strong":0.8},{"time":647,"strong":0.6},{"time":659,"strong":0.5},{"time":663,"strong":0.8},{"time":670,"strong":0.5},{"time":671,"strong":0.7},{"time":678,"strong":0.5},{"time":679,"strong":0.6},{"time":703,"strong":0.7},{"time":710,"strong":0.7},{"time":714,"strong":0.8},{"time":726,"strong":0.9},{"time":727,"strong":0.6},{"time":742,"strong":1},{"time":743,"strong":0.7},{"time":758,"strong":0.8},{"time":775,"strong":0.8},{"time":790,"strong":0.8},{"time":807,"strong":0.8},{"time":822,"strong":0.9},{"time":823,"strong":0.5},{"time":831,"strong":0.7},{"time":838,"strong":0.6},{"time":839,"strong":0.5},{"time":854,"strong":0.8},{"time":855,"strong":0.5},{"time":870,"strong":0.8},{"time":871,"strong":0.9},{"time":887,"strong":0.6},{"time":903,"strong":0.6},{"time":904,"strong":0.5},{"time":919,"strong":0.8},{"time":927,"strong":0.7},{"time":931,"strong":0.7},{"time":943,"strong":0.8},{"time":955,"strong":0.7},{"time":956,"strong":0.5},{"time":959,"strong":0.7},{"time":967,"strong":0.6},{"time":968,"strong":0.5},{"time":983,"strong":0.8},{"time":999,"strong":0.8},{"time":1000,"strong":0.7},{"time":1015,"strong":0.8},{"time":1016,"strong":0.5},{"time":1031,"strong":0.6},{"time":1047,"strong":0.9},{"time":1048,"strong":0.5},{"time":1063,"strong":0.8},{"time":1064,"strong":0.6},{"time":1079,"strong":0.7},{"time":1096,"strong":0.6},{"time":1111,"strong":0.7},{"time":1112,"strong":0.5},{"time":1128,"strong":0.9},{"time":1143,"strong":0.7},{"time":1151,"strong":0.7},{"time":1152,"strong":0.7},{"time":1159,"strong":1},{"time":1160,"strong":0.9},{"time":1175,"strong":0.8},{"time":1176,"strong":0.5},{"time":1184,"strong":0.7},{"time":1188,"strong":0.8},{"time":1199,"strong":0.9},{"time":1200,"strong":0.5},{"time":1211,"strong":0.6},{"time":1214,"strong":1},{"time":1215,"strong":0.7},{"time":1222,"strong":0.7},{"time":1223,"strong":0.7},{"time":1238,"strong":0.8},{"time":1239,"strong":0.5},{"time":1254,"strong":0.8},{"time":1255,"strong":0.5},{"time":1270,"strong":0.7},{"time":1271,"strong":0.5},{"time":1286,"strong":0.8},{"time":1287,"strong":0.6},{"time":1302,"strong":0.6},{"time":1318,"strong":0.6},{"time":1319,"strong":0.5},{"time":1341,"strong":0.7},{"time":1349,"strong":0.9},{"time":1350,"strong":0.5},{"time":1365,"strong":0.7},{"time":1381,"strong":0.7},{"time":1404,"strong":0.8},{"time":1413,"strong":0.8},{"time":1429,"strong":0.8},{"time":1430,"strong":0.5},{"time":1444,"strong":0.8},{"time":1445,"strong":0.5},{"time":1468,"strong":0.8},{"time":1476,"strong":1},{"time":1477,"strong":0.6},{"time":1488,"strong":0.7},{"time":1489,"strong":0.5},{"time":1492,"strong":0.9},{"time":1507,"strong":0.7},{"time":1531,"strong":0.8},{"time":1539,"strong":0.6},{"time":1554,"strong":0.8},{"time":1555,"strong":0.5},{"time":1570,"strong":0.7},{"time":1571,"strong":0.5},{"time":1594,"strong":0.7},{"time":1603,"strong":0.9},{"time":1607,"strong":0.8},{"time":1618,"strong":0.8},{"time":1619,"strong":0.5},{"time":1635,"strong":0.7},{"time":1636,"strong":0.5},{"time":1658,"strong":0.7},{"time":1666,"strong":0.8},{"time":1667,"strong":0.6},{"time":1671,"strong":0.8},{"time":1682,"strong":0.8},{"time":1683,"strong":0.6},{"time":1699,"strong":0.5},{"time":1722,"strong":0.8},{"time":1730,"strong":0.6},{"time":1734,"strong":0.7},{"time":1746,"strong":0.7},{"time":1747,"strong":0.6},{"time":1762,"strong":0.7},{"time":1778,"strong":0.7},{"time":1794,"strong":0.7},{"time":1795,"strong":0.5},{"time":1809,"strong":0.8},{"time":1810,"strong":0.8},{"time":1826,"strong":0.7},{"time":1837,"strong":0.7},{"time":1841,"strong":0.8},{"time":1842,"strong":0.6},{"time":1857,"strong":0.6},{"time":1873,"strong":0.8},{"time":1874,"strong":0.6},{"time":1890,"strong":0.7},{"time":1891,"strong":0.5},{"time":1914,"strong":0.7},{"time":1922,"strong":0.6},{"time":1938,"strong":0.6},{"time":1939,"strong":0.5},{"time":1946,"strong":0.6},{"time":1950,"strong":0.8},{"time":1951,"strong":0.5},{"time":1961,"strong":0.7},{"time":1962,"strong":0.5},{"time":2000,"strong":0.7},{"time":2001,"strong":0.8},{"time":2017,"strong":0.7},{"time":2033,"strong":0.8},{"time":2034,"strong":0.5},{"time":2049,"strong":0.7},{"time":2050,"strong":0.5},{"time":2065,"strong":0.5},{"time":2066,"strong":0.9},{"time":2082,"strong":0.5},{"time":2083,"strong":0.6},{"time":2105,"strong":0.7},{"time":2114,"strong":0.7},{"time":2130,"strong":0.8},{"time":2146,"strong":0.6},{"time":2161,"strong":0.5},{"time":2162,"strong":0.8},{"time":2177,"strong":0.7},{"time":2178,"strong":0.5},{"time":2193,"strong":0.6},{"time":2194,"strong":0.7},{"time":2201,"strong":0.6},{"time":2206,"strong":0.7},{"time":2218,"strong":0.8},{"time":2230,"strong":0.6},{"time":2233,"strong":0.6},{"time":2242,"strong":0.7},{"time":2258,"strong":0.8},{"time":2274,"strong":0.6},{"time":2275,"strong":0.5},{"time":2290,"strong":0.8},{"time":2307,"strong":1},{"time":2323,"strong":0.7},{"time":2339,"strong":0.7},{"time":2363,"strong":0.7},{"time":2371,"strong":0.7},{"time":2386,"strong":0.8},{"time":2387,"strong":0.5},{"time":2402,"strong":0.8},{"time":2403,"strong":0.5},{"time":2427,"strong":0.7},{"time":2435,"strong":0.7},{"time":2450,"strong":0.9},{"time":2451,"strong":0.9},{"time":2462,"strong":0.7},{"time":2466,"strong":0.6},{"time":2467,"strong":0.5},{"time":2491,"strong":0.7},{"time":2498,"strong":0.6},{"time":2499,"strong":0.7},{"time":2510,"strong":0.5},{"time":2511,"strong":0.5},{"time":2514,"strong":0.9},{"time":2515,"strong":0.5},{"time":2530,"strong":0.6},{"time":2554,"strong":0.8},{"time":2555,"strong":0.7},{"time":2562,"strong":0.6},{"time":2563,"strong":0.7},{"time":2578,"strong":0.7},{"time":2579,"strong":0.6},{"time":2594,"strong":0.7},{"time":2617,"strong":0.7},{"time":2625,"strong":0.8},{"time":2626,"strong":0.5},{"time":2641,"strong":0.6},{"time":2657,"strong":0.6},{"time":2658,"strong":0.6},{"time":2681,"strong":0.8},{"time":2689,"strong":0.8},{"time":2690,"strong":0.5},{"time":2704,"strong":0.8},{"time":2705,"strong":0.5},{"time":2720,"strong":0.8},{"time":2721,"strong":0.6},{"time":2732,"strong":0.7},{"time":2733,"strong":0.5},{"time":2736,"strong":0.8},{"time":2744,"strong":1},{"time":2748,"strong":0.7},{"time":2752,"strong":0.8},{"time":2767,"strong":0.9},{"time":2768,"strong":0.6},{"time":2782,"strong":0.6},{"time":2783,"strong":0.8},{"time":2798,"strong":0.9},{"time":2799,"strong":0.6},{"time":2814,"strong":0.7},{"time":2829,"strong":0.7},{"time":2830,"strong":0.7},{"time":2846,"strong":0.7},{"time":2870,"strong":0.9},{"time":2871,"strong":0.5},{"time":2877,"strong":0.7},{"time":2881,"strong":0.7},{"time":2882,"strong":0.6},{"time":2893,"strong":0.8},{"time":2894,"strong":0.6},{"time":2909,"strong":0.6},{"time":2925,"strong":0.9},{"time":2926,"strong":0.6},{"time":2941,"strong":0.8},{"time":2964,"strong":0.6},{"time":2965,"strong":0.7},{"time":2973,"strong":0.7},{"time":2996,"strong":0.7},{"time":2997,"strong":0.8},{"time":3004,"strong":0.7},{"time":3008,"strong":0.8},{"time":3009,"strong":0.5},{"time":3020,"strong":0.9},{"time":3021,"strong":0.5},{"time":3036,"strong":1},{"time":3037,"strong":1},{"time":3052,"strong":0.9},{"time":3053,"strong":0.5},{"time":3068,"strong":0.8},{"time":3079,"strong":0.7},{"time":3083,"strong":0.9},{"time":3084,"strong":0.6},{"time":3099,"strong":0.6},{"time":3100,"strong":0.5},{"time":3122,"strong":0.8},{"time":3129,"strong":0.6},{"time":3130,"strong":0.6},{"time":3133,"strong":0.8},{"time":3134,"strong":0.6},{"time":3145,"strong":0.8},{"time":3146,"strong":0.6},{"time":3161,"strong":0.7},{"time":3177,"strong":1},{"time":3178,"strong":0.6},{"time":3193,"strong":0.8},{"time":3204,"strong":0.8},{"time":3208,"strong":0.9},{"time":3209,"strong":0.6},{"time":3223,"strong":0.6},{"time":3224,"strong":0.8},{"time":3227,"strong":0.7},{"time":3228,"strong":0.6},{"time":3235,"strong":0.7},{"time":3236,"strong":0.6},{"time":3251,"strong":0.8},{"time":3255,"strong":0.7},{"time":3266,"strong":0.8},{"time":3267,"strong":0.5},{"time":3270,"strong":0.8},{"time":3271,"strong":0.5},{"time":3286,"strong":0.7},{"time":3287,"strong":0.5},{"time":3302,"strong":0.8},{"time":3303,"strong":0.7},{"time":3318,"strong":0.6},{"time":3319,"strong":0.8},{"time":3334,"strong":0.8},{"time":3350,"strong":0.7},{"time":3351,"strong":0.6},{"time":3373,"strong":0.8},{"time":3374,"strong":0.5},{"time":3382,"strong":0.6},{"time":3383,"strong":0.5},{"time":3393,"strong":0.8},{"time":3397,"strong":0.7},{"time":3398,"strong":0.5},{"time":3413,"strong":0.8},{"time":3414,"strong":0.6},{"time":3437,"strong":0.7},{"time":3445,"strong":0.9},{"time":3461,"strong":0.8},{"time":3477,"strong":0.7},{"time":3478,"strong":0.5},{"time":3501,"strong":0.7},{"time":3509,"strong":0.7},{"time":3520,"strong":0.8},{"time":3524,"strong":0.5},{"time":3525,"strong":0.7},{"time":3541,"strong":0.7},{"time":3565,"strong":0.8},{"time":3572,"strong":0.6},{"time":3573,"strong":0.7},{"time":3588,"strong":0.7},{"time":3589,"strong":0.6},{"time":3604,"strong":0.7},{"time":3605,"strong":0.5},{"time":3628,"strong":0.7},{"time":3629,"strong":0.5},{"time":3636,"strong":0.7},{"time":3651,"strong":0.7},{"time":3668,"strong":0.7},{"time":3692,"strong":0.7},{"time":3700,"strong":0.8},{"time":3701,"strong":0.5},{"time":3716,"strong":0.7},{"time":3732,"strong":0.7},{"time":3733,"strong":0.7},{"time":3748,"strong":0.6},{"time":3749,"strong":0.7},{"time":3762,"strong":0.6},{"time":3764,"strong":0.6},{"time":3765,"strong":0.6},{"time":3768,"strong":0.5},{"time":3780,"strong":0.7},{"time":3796,"strong":0.8},{"time":3812,"strong":0.8},{"time":3824,"strong":0.7},{"time":3828,"strong":0.8},{"time":3829,"strong":0.7},{"time":3852,"strong":0.9},{"time":3860,"strong":0.7},{"time":3884,"strong":0.8},{"time":3892,"strong":0.8},{"time":3907,"strong":0.7},{"time":3908,"strong":0.5},{"time":3915,"strong":0.8},{"time":3916,"strong":0.5},{"time":3923,"strong":0.7},{"time":3924,"strong":0.5},{"time":3939,"strong":0.7},{"time":3947,"strong":0.7},{"time":3955,"strong":0.6},{"time":3978,"strong":0.6},{"time":3979,"strong":0.7},{"time":3986,"strong":0.7},{"time":3987,"strong":0.8},{"time":4017,"strong":0.6},{"time":4021,"strong":0.8},{"time":4022,"strong":0.5},{"time":4033,"strong":0.8},{"time":4034,"strong":0.5},{"time":4049,"strong":0.9},{"time":4050,"strong":0.7},{"time":4065,"strong":0.8},{"time":4066,"strong":0.5},{"time":4081,"strong":0.7},{"time":4082,"strong":0.6},{"time":4092,"strong":0.7},{"time":4097,"strong":0.7},{"time":4113,"strong":0.8},{"time":4114,"strong":0.5},{"time":4129,"strong":0.9},{"time":4130,"strong":0.5},{"time":4145,"strong":0.7},{"time":4146,"strong":0.5},{"time":4157,"strong":0.5},{"time":4158,"strong":0.7},{"time":4161,"strong":0.6},{"time":4162,"strong":0.5},{"time":4177,"strong":0.6},{"time":4178,"strong":0.6},{"time":4186,"strong":0.7},{"time":4193,"strong":0.9},{"time":4194,"strong":0.7},{"time":4210,"strong":0.7},{"time":4211,"strong":0.5},{"time":4226,"strong":0.7},{"time":4234,"strong":0.7},{"time":4238,"strong":0.9},{"time":4239,"strong":0.5},{"time":4249,"strong":0.8},{"time":4250,"strong":0.5},{"time":4261,"strong":0.7},{"time":4264,"strong":0.6},{"time":4265,"strong":0.7},{"time":4273,"strong":0.7},{"time":4274,"strong":0.5},{"time":4289,"strong":0.8},{"time":4305,"strong":0.7},{"time":4321,"strong":0.7},{"time":4337,"strong":0.7},{"time":4348,"strong":0.5},{"time":4349,"strong":0.7},{"time":4353,"strong":0.8},{"time":4354,"strong":0.5},{"time":4369,"strong":0.6},{"time":4385,"strong":0.8},{"time":4386,"strong":0.7},{"time":4394,"strong":0.8},{"time":4402,"strong":0.7},{"time":4418,"strong":0.9},{"time":4419,"strong":0.6},{"time":4435,"strong":0.8},{"time":4451,"strong":0.9},{"time":4452,"strong":0.5},{"time":4467,"strong":0.7},{"time":4482,"strong":0.8},{"time":4483,"strong":0.9},{"time":4491,"strong":0.6},{"time":4495,"strong":0.8},{"time":4506,"strong":0.9},{"time":4518,"strong":0.7},{"time":4521,"strong":0.6},{"time":4522,"strong":0.5},{"time":4529,"strong":0.5},{"time":4544,"strong":0.7},{"time":4560,"strong":0.9},{"time":4561,"strong":0.6},{"time":4576,"strong":0.7},{"time":4592,"strong":0.7},{"time":4608,"strong":0.7},{"time":4624,"strong":0.8},{"time":4625,"strong":0.5},{"time":4647,"strong":0.7},{"time":4656,"strong":0.8},{"time":4667,"strong":0.7},{"time":4671,"strong":0.7},{"time":4672,"strong":0.5},{"time":4687,"strong":0.7},{"time":4688,"strong":0.5},{"time":4711,"strong":0.8},{"time":4719,"strong":0.7},{"time":4734,"strong":0.7},{"time":4735,"strong":0.6},{"time":4751,"strong":0.9},{"time":4752,"strong":0.8},{"time":4774,"strong":0.8},{"time":4782,"strong":0.8},{"time":4793,"strong":0.7},{"time":4798,"strong":0.9},{"time":4799,"strong":0.6},{"time":4814,"strong":0.8},{"time":4838,"strong":0.7},{"time":4846,"strong":0.8},{"time":4862,"strong":0.8},{"time":4878,"strong":0.8},{"time":4902,"strong":0.7},{"time":4910,"strong":0.7},{"time":4925,"strong":0.8},{"time":4926,"strong":0.6},{"time":4942,"strong":0.6},{"time":4943,"strong":0.5},{"time":4965,"strong":0.7},{"time":4974,"strong":0.7},{"time":4989,"strong":0.7},{"time":5005,"strong":0.7},{"time":5021,"strong":0.8},{"time":5022,"strong":0.6},{"time":5033,"strong":0.6},{"time":5034,"strong":0.7},{"time":5037,"strong":0.7},{"time":5048,"strong":0.7},{"time":5049,"strong":0.8},{"time":5052,"strong":0.7},{"time":5069,"strong":0.8},{"time":5101,"strong":0.8},{"time":5132,"strong":0.7},{"time":5133,"strong":0.6},{"time":5165,"strong":0.7},{"time":5197,"strong":0.6},{"time":5228,"strong":0.7},{"time":5244,"strong":0.7},{"time":5260,"strong":0.8},{"time":5283,"strong":0.5},{"time":5288,"strong":0.8},{"time":5302,"strong":0.6},{"time":5303,"strong":0.8},{"time":5318,"strong":0.8},{"time":5323,"strong":0.7},{"time":5356,"strong":0.8},{"time":5386,"strong":0.7},{"time":5418,"strong":0.7},{"time":5448,"strong":0.7},{"time":5449,"strong":0.7},{"time":5480,"strong":0.6},{"time":5481,"strong":0.5},{"time":5496,"strong":0.7},{"time":5508,"strong":0.7},{"time":5509,"strong":0.5},{"time":5512,"strong":0.6},{"time":5532,"strong":0.7},{"time":5536,"strong":0.7},{"time":5539,"strong":0.6},{"time":5544,"strong":0.7},{"time":5547,"strong":0.7},{"time":5548,"strong":0.6},{"time":5559,"strong":0.8},{"time":5560,"strong":0.6},{"time":5572,"strong":0.8},{"time":5576,"strong":0.7},{"time":5590,"strong":0.8},{"time":5606,"strong":0.8},{"time":5622,"strong":0.8},{"time":5638,"strong":0.6},{"time":5653,"strong":0.8},{"time":5670,"strong":0.6},{"time":5685,"strong":0.6},{"time":5686,"strong":0.5},{"time":5702,"strong":0.8},{"time":5717,"strong":0.7},{"time":5734,"strong":0.5},{"time":5749,"strong":0.9},{"time":5750,"strong":0.5},{"time":5765,"strong":0.7},{"time":5780,"strong":0.8},{"time":5781,"strong":0.5},{"time":5796,"strong":0.6},{"time":5812,"strong":0.7},{"time":5827,"strong":0.6},{"time":5828,"strong":0.5},{"time":5843,"strong":0.8},{"time":5844,"strong":0.5},{"time":5859,"strong":0.7},{"time":5874,"strong":0.8},{"time":5875,"strong":0.5},{"time":5890,"strong":0.8},{"time":5891,"strong":0.6},{"time":5905,"strong":0.8},{"time":5921,"strong":0.6},{"time":5922,"strong":0.7},{"time":5937,"strong":0.8},{"time":5938,"strong":0.5},{"time":5953,"strong":0.8},{"time":5954,"strong":0.5},{"time":5969,"strong":0.8},{"time":5986,"strong":0.8},{"time":6001,"strong":0.8},{"time":6017,"strong":0.7},{"time":6018,"strong":0.5},{"time":6033,"strong":0.8},{"time":6049,"strong":0.6},{"time":6064,"strong":0.8},{"time":6065,"strong":0.5},{"time":6080,"strong":0.5},{"time":6095,"strong":0.8},{"time":6096,"strong":0.5},{"time":6112,"strong":0.7},{"time":6128,"strong":0.8},{"time":6129,"strong":0.6},{"time":6144,"strong":0.8},{"time":6159,"strong":0.8},{"time":6175,"strong":0.6},{"time":6176,"strong":0.5},{"time":6191,"strong":0.8},{"time":6207,"strong":0.7},{"time":6222,"strong":0.8},{"time":6254,"strong":0.5}];
+        
+        var drum = [];
+        var music = document.getElementById('SUD_main');
+        var scoreInfo = document.getElementById('DIV_score');
+        var isMusicPlay = false;
+        var isClick = false;
+        var timeStamp = -1000/30;
+        var win = {W: window.innerWidth, H:window.innerHeight};
+        var unit = .015;
+        var nextBegin = 0;
+        var goalLineY = .8;
+        var score = 0;
+        var targetScore = 0;
+
+        if(win.W > 640){
+            win.W = 640;
+        }
+        
+
+        var app = new PIXI.Application(
+            win.W, 
+            win.H, 
+            {
+                backgroundColor: 0x1099bb,
+                antialias: true,                        // 去除文字鋸齒，這個屬性是基於 WebGL
+            }
+        );
+        document.body.appendChild(app.view);
+        app.stage.displayList = new PIXI.DisplayList();
+        
+
+        PIXI.loader.add([
+            {name:'drum', url:'images/drum.png'},
+            {name:'drum-b', url:'images/drum-b.png'},
+        ]).on("progress", function(loader, resource){
+                // 顯示已載入的檔案路徑 resource.url
+                // 若是你在 add() 的時候有指定名稱
+                // 可以使用 resource.name 來確認你指定的檔案已經載入完畢
+                console.log("loading: " + resource.name+':'+resource.url); 
+
+                // 顯示已載入資源百分比
+                console.log("progress: " + loader.progress + "%"); 
+
+                // resource.error loading 發生錯誤時的資訊
+                // resource.data lets you access the file's raw binary data
+        }).load(function(){
+            // 節奏點
+            var drumLayer = new PIXI.DisplayGroup(0, true);
+
+            for(var i=0;dotArray[i];i++){
+                if(i>0 && dotArray[i].time-dotArray[i-1].time < 5) { continue; }
+                if(dotArray[i].strong < 0.5) { continue; }
+                var index = drum.length;
+                drum[index] = new PIXI.Sprite(PIXI.loader.resources[(dotArray[i].strong >= 0.8 ? 'drum-b':'drum')].texture);
+                drum[index].anchor.set(.5);
+                drum[index].width = drum[index].height = win.H*.2; 
+                drum[index].x = win.W*.5;
+                drum[index].y = win.H*-.2;
+                drum[index].time = dotArray[i].time;
+                drum[index].displayGroup = drumLayer;
+                app.stage.addChild(drum[index]);
+            }
+            app.stage.children.reverse();
+            
+        });
+
+        var clickLayer = new PIXI.DisplayGroup(1, true);
+
+        // 觸碰線
+        // let BTN_playLine = new PIXI.Graphics();
+        // goalLine.lineStyle(10, 0x75d2e9).moveTo(0, win.H*.5).lineTo(win.W,  win.H*.5);
+        // app.stage.addChild(goalLine);
+        // 點擊按鈕
+        let BTN_play = new PIXI.Graphics();
+        BTN_play.lineStyle(10, 0x75d2e9).moveTo(win.W*-.5, 0).lineTo(win.W*.5, 0);
+        BTN_play.beginFill(0x75d2e9);
+        BTN_play.lineStyle(win.W*.05, 0x4e7a8a);
+        BTN_play.drawCircle(0, 0, win.W*.3); // cx, cy, radius, startAngle, endAngle
+        
+        BTN_play.x = win.W*.5;
+        BTN_play.y = win.H*.5;
+        BTN_play.interactive = true;
+        BTN_play.buttonMode = true;
+        var TapMsg = new PIXI.Text('Tap to Play', new PIXI.TextStyle({
+            fontFamily: 'Helvetica',
+            fontSize: win.W*.07,
+            fontWeight: 'bold',
+            fill: 0xFFFFFF // gradient
+        }));
+        TapMsg.anchor.set(0.5); 
+        TapMsg.x = 0;
+        TapMsg.y = 0;
+        BTN_play.addChild(TapMsg);
+        BTN_play.on('pointerup', playMusic);
+        function playMusic(){
+            BTN_play.removeListener('pointerup', playMusic);
+            app.stage.removeChild(BTN_play);
+            music.play();
+            isMusicPlay = true;
+
+            // 觸碰線
+            let goalLine = new PIXI.Graphics();
+            goalLine.lineStyle(10, 0x75d2e9).moveTo(0, win.H*goalLineY).lineTo(win.W,  win.H*goalLineY);
+            app.stage.addChild(goalLine);
+
+            // 對齊圓
+            let goalCircle = new PIXI.Graphics();
+            goalCircle.beginFill(0x75d2e9);
+            goalCircle.lineStyle(win.W*.03, 0x4e7a8a);
+            goalCircle.drawCircle(win.W*.5, win.H*.8, win.H*.11); // cx, cy, radius, startAngle, endAngle
+            app.stage.addChild(goalCircle);
+
+            // 讓點擊事件晚點觸發
+            setTimeout(function(){
+                document.body.addEventListener(('ontouchend' in document ? 'touchend' : 'click'),function(e){
+                    isClick = true;
+                    makeClickDot(e.layerX, e.layerY);
+                });
+            }, 200);
+
+
+        }
+        app.stage.addChild(BTN_play);
+
+        var msgLayer = new PIXI.DisplayGroup(2, true);
+        var outLayer = new PIXI.DisplayGroup(3, true);
+
+        function makeClickDot(x, y){
+            var clickDot = new PIXI.Graphics();
+            clickDot.beginFill(0xFFFFFF);
+            clickDot.drawCircle(0, 0, win.W*.2); 
+            clickDot.x = x;
+            clickDot.y = y;
+            clickDot.scale.set(0);
+            clickDot.displayGroup = clickLayer;
+            app.stage.addChild(clickDot);
+        }
+
+        function makeCallback(type){
+            var msg;
+
+            switch(type){
+                case 'perfect':
+                    msg = new PIXI.Text('PERFECT!!!', new PIXI.TextStyle({
+                        fontFamily: 'Helvetica',
+                        fontSize: win.W*.1,
+                        fontWeight: 'bold',
+                        fill: 0xFFFFFF
+                    }));
+                    break;
+
+
+                case 'good':
+                    msg = new PIXI.Text('Good!', new PIXI.TextStyle({
+                        fontFamily: 'Helvetica',
+                        fontSize: win.W*.07,
+                        fontWeight: 'bold',
+                        fill: 0xCCEEFF
+                    }));
+                    break;
+
+                case 'bad':
+                    msg = new PIXI.Text('爛透了!', new PIXI.TextStyle({
+                        fontFamily: 'Helvetica',
+                        fontSize: win.W*.08,
+                        fontWeight: 'bold',
+                        fill: 0x007799
+                    }));
+                    break;
+
+            }
+            msg.anchor.set(.5); 
+            msg.x = win.W*rndFloat(4, 6)*.1,
+            msg.y = win.H*rndFloat(1, 5)*.1,
+            msg.displayGroup = msgLayer;
+            app.stage.addChild(msg);
+        }
+
+        app.ticker.add(function(delta) {
+            if(isMusicPlay){
+                if(score < targetScore){
+                    score += delta*30;
+                    scoreInfo.innerHTML = Math.round(score);
+                }
+
+                timeStamp+=delta*.5;
+                if(timeStamp>0){
+                    music.play();
+                }else{
+                    music.pause();
+                }
+
+                if(timeStamp > 6330){
+                    isMusicPlay = false;
+                    music.pause();
+
+                    scoreInfo.className='final';
+                    scoreInfo.innerHTML = '遊戲結束<br/>最終成績：'+ Math.round(score);
+                }
+
+                // if(app.stage.displayList.displayGroups[1]){
+                //     var currentDrumDist = 99999;
+                //     var runDrum = app.stage.displayList.displayGroups[1].computedChildren;
+
+                //     for(var i=nextBegin;runDrum[i];i++){
+                //         // drum[i].y = win.H*unit*(Math.round(drum[i].time/1.005+167)-timeStamp+15);
+                //         var drumDist = runDrum[i].time-timeStamp;
+                //         runDrum[i].y = win.H*(goalLineY-drumDist*unit);
+
+                //         if(runDrum[i].y > win.H*1.2){
+                //             nextBegin = i;
+                //         }else if(runDrum[i].y< win.H *-.2){
+                //             break;
+                //         }
+
+                //         if(isClick && Math.abs(drumDist) < currentDrumDist){
+                //             currentDrumDist = Math.abs(drumDist);
+                //             removeIndex = i;
+                //         }
+                //     }
+
+                //     if(isClick){
+                //         if(currentDrumDist < 1){
+                //             makeCallback('perfect');
+                //             runDrum[removeIndex].displayGroup = msgLayer;
+                //             targetScore += 500;
+                //         }else if(currentDrumDist < 5){
+                //             makeCallback('good');
+                //             runDrum[removeIndex].displayGroup = msgLayer;
+                //             targetScore += 100;
+                //         }else {
+                //             makeCallback('bad');
+                //         }
+                //         isClick = false;
+                //     }
+                // }
+                
+                var currentDrumDist = 99999;
+                for(var i=nextBegin;drum[i];i++){
+                    // drum[i].y = win.H*unit*(Math.round(drum[i].time/1.005+167)-timeStamp+15);
+
+                    if(drum[i].status == 'out'){
+                        drum[i].alpha -= delta*.08;
+                        drum[i].width = drum[i].height = win.H*(.3*(1-drum[i].alpha)+.2); 
+                        continue;
+                    }
+
+                    var drumDist = drum[i].time-timeStamp;
+                    drum[i].y = win.H*(goalLineY-drumDist*unit);
+                    if(drum[i].y > win.H*1.5){
+                        nextBegin = i;
+                    }else if(drum[i].y< win.H *-.2){
+                        break;
+                    }
+
+                    if(isClick && Math.abs(drumDist) < currentDrumDist){
+                        currentDrumDist = Math.abs(drumDist);
+                        removeIndex = i;
+                    }
+                }
+
+                if(isClick){
+                    if(currentDrumDist < 1){
+                        makeCallback('perfect');
+                        drum[removeIndex].status = 'out';
+                        // app.stage.removeChild(drum[removeIndex]);
+                        targetScore += 500;
+                    }else if(currentDrumDist < 5){
+                        makeCallback('good');
+                        drum[removeIndex].status = 'out';
+                        // app.stage.removeChild(drum[removeIndex]);
+                        targetScore += 100;
+                    }else {
+                        makeCallback('bad');
+                    }
+                    isClick = false;
+                }
+            }
+
+            if(app.stage.displayList.displayGroups[2]){
+                var clickDot = app.stage.displayList.displayGroups[2].computedChildren;
+                for(var i=clickDot.length-1;i>=0;i--){
+                    var scale = clickDot[i].scale._x + delta*.04;
+                    clickDot[i].scale.set(scale);
+                    clickDot[i].alpha = 1-scale;
+                    if(scale >= 1){
+                        app.stage.removeChild(clickDot[i]);
+                    }
+     
+                }
+            }
+
+            if(app.stage.displayList.displayGroups[3]){
+                var msg = app.stage.displayList.displayGroups[3].computedChildren;
+                for(var i=msg.length-1;i>=0;i--){
+                    var alpha = msg[i].alpha-delta*.02;
+                    msg[i].scale.set(2-alpha);
+                    msg[i].alpha = alpha;
+                    if(alpha <= 0){
+                        app.stage.removeChild(msg[i]);
+                    }
+     
+                }
+            }
+
+        });
+
+
+
+        function rndFloat(min, max) { 
+            return Math.floor(Math.random() * (max - min + 1) + min); 
+        };
+       
+
+        
+    </script>
+</body>
+</html>

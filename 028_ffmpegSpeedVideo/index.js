@@ -106,7 +106,7 @@ io.sockets.on('connection', function (socket) {
         }
     });
 
-    socket.on('UPLOADING', function (data){
+    socket.on('TRANSLATE_VIDEO', function (data){
         var firstCutLen = '00:00:20';
         var SecondCutLen = '00:00:05';
 
