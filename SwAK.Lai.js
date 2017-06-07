@@ -6,21 +6,23 @@ SwAK.rndFloat = function(min, max) { return Math.random() * (max - min) + min; }
 SwAK.rndInt = function(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); };
 
 // ========= 取得網址參數 =========================================================================
-SwAK.param = function(sParameter) {
+SwAK.param = (function() {
+    var params = {};
     var url = window.location.toString();
-    var str = "";
-    var value = "";
-    if (url.indexOf("?") != -1) {
-        var ary = url.split("?")[1].split("&");
+    var key = '';
+    var value = '';
+
+    if (url.indexOf('?') != -1) {
+        var ary = url.split('?')[1].split('&');
         for (var i in ary) {
-            str = ary[i].split("=")[0];
-            if (str == sParameter) {
-                value = decodeURI(ary[i].split("=")[1]);
-            }
+            key = ary[i].split('=')[0];
+            value = decodeURIComponent(ary[i].split('=')[1]);
+
+            params[key] = value;
         }
     }
-    return value;
-};
+    return params;
+}());
 // ========= 取得網址資料夾 =========================================================================
 SwAK.getURLdir = function() {
     var url = location.href;
