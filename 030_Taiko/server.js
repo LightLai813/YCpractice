@@ -4,7 +4,7 @@ const AudioContext = require('web-audio-api').AudioContext;
 const context = new AudioContext;
 
 let pcmdata = [];
-const soundfile = 'BlameItOntheBoogieDrum-drum.mp3';
+const soundfile = 'BIOTB.mp3';
 
 decodeSoundFile(soundfile);
 function decodeSoundFile(soundfile) {

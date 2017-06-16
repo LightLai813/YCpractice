@@ -132,6 +132,7 @@ SwAK.isCE = SwAK.userAgent.match(/windows ce/i) == "windows ce";
 SwAK.isWM = SwAK.userAgent.match(/windows mobile/i) == "windows mobile";
 SwAK.isLine = SwAK.userAgent.match(/line/i) == "line";
 SwAK.isFB = SwAK.userAgent.match(/fb/i) == "fb";
+SwAK.isWechat = SwAK.userAgent.search("micromessenger") > -1;
 SwAK.isIE = navigator.userAgent.search("MSIE") > -1;
 SwAK.isIE11 = navigator.userAgent.search("Trident") > -1;
 SwAK.isFirefox = navigator.userAgent.search("Firefox") > -1;
