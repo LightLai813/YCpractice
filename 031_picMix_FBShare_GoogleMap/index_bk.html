@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>多重功能測試</title>
+    <style>
+        html, body{
+            margin: 0;
+            background:#fefefe;
+            width: 100%;
+            height: 100%;
+        }
+
+        #gMap {
+            height: 100%;
+        }
+
+        .DIV_Upload{
+            position: absolute;
+            z-index: 9999;
+            bottom: 50px;
+            right: 50px;
+        }
+        .BTN_Upload{
+            color: #FFF;
+            background: #808284;
+            padding: 10px 50px;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .BTN_Upload:hover{
+            background: #303234;
+        }
+    </style>
+</head>
+<body>
+    <div id="gMap"></div>
+    <div class="DIV_Upload">
+        <input type="file" id="FIL_userImage" accept="image/*;capture=camera" style="display: none;" />
+        <label for="FIL_userImage" class="BTN_Upload">上傳圖片</label>
+    </div>
+    <script src="/YCpractice/SwAK.Lai.js"></script>
+    <script src="scripts/binaryajax.js"></script>
+    <script src="scripts/exif.js"></script>
+    <script src="scripts/megapix-image.js"></script>
+    <script src="scripts/FCClientJS.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyD5SXW4-dpux6EWMfKSYwHsWfCc8a0Fag8"></script>
+    <script>        
+        (function() {
+            if (navigator.geolocation) {
+                //SwAK.showLoading(document.body, .5);
+                navigator.geolocation.getCurrentPosition(showLocation, errorHandler, { timeout: 10000 });
+            } else {
+                errorHandler();
+            }
+
+            function showLocation(position) {
+                // var geoInfo = '';
+                // var location = { 'lat': 0, 'lng': 0 };
+                // if (position.coords) {
+                //     location.lat = position.coords.latitude;
+                //     location.lng = position.coords.longitude;
+                //     document.getElementById('mapArea').innerHTML = '<iframe width="'+window.innerWidth+'" height="'+(window.innerHeight-45)+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q='+location.lat+','+location.lng+'&hl=zh-TW;z=14&amp;output=embed"></iframe>'
+                //     SwAK.hideLoading();
+                // } else {
+                //     errorHandler();
+                // }
+            }
+
+            function errorHandler(err) {
+                // var msg = '';
+                // switch (err.code) {
+                //     case err.PERMISSION_DENIED:
+                //         msg = customErrorWoding();
+                //         break;
+                //     case err.POSITION_UNAVAILABLE:
+                //         msg = '無法取得目前位置。';
+                //         break;
+                //     case err.TIMEOUT:
+                //         msg = '連線過慢，偵測不到您的地理位置。';
+                //         break;
+                //     case err.UNKNOWN_ERROR:
+                //         msg = '連線過慢，偵測不到您的地理位置。';
+                //         break;
+                //     default:
+                //         msg = '偵測不到您的地理位置。';
+                // }
+
+                // alert(msg);
+                // SwAK.hideLoading();
+                // location.href = 'https://anz.tw/zh/contact-us/branches.jsp';
+
+                // function customErrorWoding() {
+                //     if (SwAK.isIphoneOs || SwAK.isIpad || SwAK.isAndroid) return '您未授權分享您的所在位置，請至設定中的隱私權開啟定位';
+                //     return '您未授權分享您的所在位置喔。';
+                // }
+            }
+
+            // 初始定位
+            var defaultLoc = {
+                lat: 23.5438454,
+                lon: 121.0144043
+            }
+
+            // google map style
+            var gMapStyle =[{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"visibility":"on"}]},{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#656563"}]},{"featureType":"administrative","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"weight":4.1}]},{"featureType":"landscape","elementType":"geometry.fill","stylers":[{"color":"#F7951F"},{"visibility":"on"}]},{"featureType":"landscape.natural.terrain","elementType":"geometry.fill","stylers":[{"color":"#F7951F"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"color":"#F7951F"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#656563"}]},{"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#ffcc8e"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"visibility":"simplified"},{"color":"#F7951F"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#ff0000"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#656563"}]},{"featureType":"road","elementType":"labels.text.stroke","stylers":[{"color":"#ffcc8e"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#ffcc8e"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#ffcc8e"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#d8d8d8"}]},{"featureType":"transit","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"geometry","stylers":[{"visibility":"on"},{"color":"#F8F8F8"}]}];
+            var mapOptions = {
+                zoom: 8,
+                center: new google.maps.LatLng(defaultLoc.lat, defaultLoc.lon),
+                styles:gMapStyle,
+                scrollwheel: true,
+                minZoom:8,
+                maxZoom:15,
+                disableDefaultUI: true
+            }
+
+            var map =new google.maps.Map(document.getElementById('gMap'), mapOptions);
+
+            map.addListener( 'zoom_changed', function(e){
+	            if(map.getZoom()<15) minZoom=map.getZoom();
+	            //console.log(minZoom);
+	        });
+	  
+            function setMark(){
+                //標記全部據點
+                for (var i = 0; i < markerall.length; i++) {
+                    markerall[i].setMap(null);
+                }
+	            markerall=[];
+
+                for(var i =0;i<USER.length;i++){ 
+	                var getLatLng=USER[i].ig_pt.split(',');
+                    var myLatLng = new google.maps.LatLng(getLatLng[0], getLatLng[1]);
+                    var beachMarker = new google.maps.Marker({
+                        position: myLatLng,
+                        map: map,
+                        icon: image,
+                        title:USER[i].ig_pn,
+                        uid:i
+                    });
+                    markerall[i]=beachMarker;
+                    var _x = i;
+                    google.maps.event.addListener(beachMarker, 'click', function() {   
+                        console.log(this);     
+                    }); 
+
+                    google.maps.event.addListener(beachMarker, 'mouseover', function() {
+ 				        _ran=this.uid;
+				        clearTimeout(infowindowtime);
+				        if(infowindow){infowindow.close();}
+				        contentString = '<div style="position:absolute;width:130px;height:130px;overflow: hidden;transition:0.5s;z-index: 10001;top: 2px;left: 2px;cursor: pointer;" class="popbg"><img width="100%" src="'+USER[_ran].ig_ph+'" /></div>';
+			            infowindow = new google.maps.InfoWindow({
+                            content: contentString,
+                            disableAutoPan: true
+                        });
+
+				        google.maps.event.addListener(infowindow, 'domready', function() {
+				            var iwOuter = $('.gm-style-iw');
+				            var pw =iwOuter.find('.popbg img').width(),ph =iwOuter.find('.popbg img').height();
+                            if(pw>ph){
+                                iwOuter.find('.popbg img').css({height:'100%',width:'auto'});
+                            }
+                            var iwBackground = iwOuter.prev();
+                            iwBackground.children(':nth-child(2)').css({'display' : 'none'});
+                            iwBackground.children(':nth-child(4)').css({'display' : 'none'});
+                            iwBackground.css({top: '-14px'});
+                        });
+
+				        infowindow.open(map,markerall[_ran]);
+
+                        $('.popbg').click(function(){ 
+                            InfoWindowclick=true; 
+                            openinfo(_ran);
+                        })
+ 
+				        setTimeout(function(){
+					        if(infowindow && !InfoWindowclick){
+						        infowindow.close();
+						        openinfo('no');
+						    }
+					    },5000);
+                    });
+                }
+            }
+
+
+            document.getElementById('FIL_userImage').addEventListener('change' ,function(e){
+                SwAK.showLoading(document.body);
+                if (FIL_userImage.value != '') {
+                    var file = this.files[0];
+                    mpImg = new MegaPixImage(file);
+
+                    if(!/image\/(jpg|jpeg|JPG|JPEG|png|PNG)/.test(file.type)){
+                        FIL_userImage.value = '';
+                        alert('請上傳正確的圖檔格式，接受副檔名包含.jpg .jpeg .png');
+                        SwAK.hideLoading();
+                    }else{
+                        var reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = function(e){
+                            //辨別相片旋轉
+                            var bin = atob(this.result.split(',')[1]);
+                            var exif = EXIF.readFromBinaryFile(new BinaryFile(bin));
+                            var isRotate = false;
+                            var scale = 1;
+
+                            document.getElementById('orientation').value=exif.Orientation;
+                            switch( exif.Orientation ){
+                                case 6:
+                                case 8:
+                                case 5:
+                                case 7:
+                                    isRotate = true;
+                                    break;
+                                default:
+                                    isRotate = false;
+                            }
+
+                            if(file.size/1024>399){
+                                scale = 399/(file.size/1024);
+                            }
+
+                            userImg = new Image();
+                            userImg.onload = function(){
+                                if(picUrl != ''){
+                                    faceDetection(picUrl);
+                                    tempImg.src = picUrl;
+                                }else{
+                                    var cW = isRotate ? userImg.height : userImg.width;
+                                    var cH = isRotate ? userImg.width : userImg.height;
+
+                                    if(scale < 1){
+                                        cW = parseInt(cW*scale);
+                                        cH = parseInt(cH*scale);
+                                    }
+
+                                    canvas.setAttribute('width', cW);
+                                    canvas.setAttribute('height', cH);
+                                
+                                    ctx.fillStyle='#FFF';
+                                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                    ctx.save();
+                                    if(isRotate) ctx.rotate(Math.PI / 2);
+                                    ctx.drawImage(userImg, 0, isRotate ? -cW : 0, isRotate ? cH : cW, isRotate ? cW : cH);
+                                    ctx.restore();
+                                    
+                                    tempImg.src = canvas.toDataURL('image/jpeg');
+                                    canvasToUrl();
+                                }
+                            }
+                            userImg.src = picUrl != '' ? picUrl : this.result;
+                        }
+                    }
+                } else return false;
+            });
+        }());
+    </script>
+</body>
+</html>

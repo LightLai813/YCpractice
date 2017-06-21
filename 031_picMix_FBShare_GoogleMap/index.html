@@ -16,77 +16,53 @@
         #gMap {
             height: 100%;
         }
+
+        .DIV_Upload{
+            position: absolute;
+            z-index: 9999;
+            bottom: 50px;
+            right: 50px;
+        }
+        .BTN_Upload{
+            color: #FFF;
+            background: #808284;
+            padding: 10px 50px;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .BTN_Upload:hover{
+            background: #303234;
+        }
     </style>
-   
-   
 </head>
 <body>
     <div id="gMap"></div>
+    <div class="DIV_Upload">
+        <input type="file" id="FIL_userImage" accept="image/*;capture=camera" style="display: none;" />
+        <label for="FIL_userImage" class="BTN_Upload">上傳圖片</label>
+    </div>
     <script src="https://rawgit.com/LightLai813/YCpractice/master/SwAK.Lai.js"></script>
-    <script src="scripts/FCClientJS.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyD5SXW4-dpux6EWMfKSYwHsWfCc8a0Fag8"></script>
     <script>        
         (function() {
-            if (navigator.geolocation) {
-                SwAK.showLoading(document.body, .5);
-                navigator.geolocation.getCurrentPosition(showLocation, errorHandler, { timeout: 10000 });
-            } else {
-                errorHandler();
+            // 初始定位
+            var defaultLoc = {
+                lat: 23.5438454,
+                lon: 121.0144043
             }
 
-            function showLocation(position) {
-                var geoInfo = '';
-                var location = { 'lat': 0, 'lng': 0 };
-                if (position.coords) {
-                    location.lat = position.coords.latitude;
-                    location.lng = position.coords.longitude;
-                    document.getElementById('mapArea').innerHTML = '<iframe width="'+window.innerWidth+'" height="'+(window.innerHeight-45)+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q='+location.lat+','+location.lng+'&hl=zh-TW;z=14&amp;output=embed"></iframe>'
-                    SwAK.hideLoading();
-                } else {
-                    errorHandler();
-                }
-            }
-
-            function errorHandler(err) {
-                var msg = '';
-                switch (err.code) {
-                    case err.PERMISSION_DENIED:
-                        msg = customErrorWoding();
-                        break;
-                    case err.POSITION_UNAVAILABLE:
-                        msg = '無法取得目前位置。';
-                        break;
-                    case err.TIMEOUT:
-                        msg = '連線過慢，偵測不到您的地理位置。';
-                        break;
-                    case err.UNKNOWN_ERROR:
-                        msg = '連線過慢，偵測不到您的地理位置。';
-                        break;
-                    default:
-                        msg = '偵測不到您的地理位置。';
-                }
-
-                alert(msg);
-                SwAK.hideLoading();
-                location.href = 'https://anz.tw/zh/contact-us/branches.jsp';
-
-                function customErrorWoding() {
-                    if (SwAK.isIphoneOs || SwAK.isIpad || SwAK.isAndroid) return '您未授權分享您的所在位置，請至設定中的隱私權開啟定位';
-                    return '您未授權分享您的所在位置喔。';
-                }
-            }
-
-
-            var dlat=23.5438454,
-                dlon=121.0144043;
-
-            var styleArray =[{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"visibility":"on"}]},{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#656563"}]},{"featureType":"administrative","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"weight":4.1}]},{"featureType":"landscape","elementType":"geometry.fill","stylers":[{"color":"#E3D5CA"},{"visibility":"on"}]},{"featureType":"landscape.natural.terrain","elementType":"geometry.fill","stylers":[{"color":"#E3D6CA"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"color":"#E3D5CA"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#656563"}]},{"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#ffffff"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"visibility":"simplified"},{"color":"#E3D5CA"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#ff0000"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#656563"}]},{"featureType":"road","elementType":"labels.text.stroke","stylers":[{"color":"#ffffff"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#ffffff"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#d8d8d8"}]},{"featureType":"transit","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"geometry","stylers":[{"visibility":"on"},{"color":"#EAEAE4"}]}];
+            // google map style
+            var gMapStyle =[{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"visibility":"on"}]},{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#656563"}]},{"featureType":"administrative","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"weight":4.1}]},{"featureType":"landscape","elementType":"geometry.fill","stylers":[{"color":"#F7951F"},{"visibility":"on"}]},{"featureType":"landscape.natural.terrain","elementType":"geometry.fill","stylers":[{"color":"#F7951F"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"color":"#F7951F"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#656563"}]},{"featureType":"poi","elementType":"labels.text.stroke","stylers":[{"color":"#ffcc8e"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"visibility":"simplified"},{"color":"#F7951F"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#ff0000"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#656563"}]},{"featureType":"road","elementType":"labels.text.stroke","stylers":[{"color":"#ffcc8e"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#ffcc8e"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#ffcc8e"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#d8d8d8"}]},{"featureType":"transit","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"geometry","stylers":[{"visibility":"on"},{"color":"#F8F8F8"}]}];
             var mapOptions = {
-                zoom: 7,
-                center: new google.maps.LatLng(dlat, dlon),
-                styles:styleArray,
+                zoom: 8,
+                center: new google.maps.LatLng(defaultLoc.lat, defaultLoc.lon),
+                styles:gMapStyle,
                 scrollwheel: true,
-                minZoom:7,
+                minZoom:8,
                 maxZoom:15,
                 disableDefaultUI: true
             }
@@ -97,65 +73,36 @@
 	            if(map.getZoom()<15) minZoom=map.getZoom();
 	            //console.log(minZoom);
 	        });
+
+            setMark();
 	  
             function setMark(){
-                //標記全部據點
-                for (var i = 0; i < markerall.length; i++) {
-                    markerall[i].setMap(null);
-                }
-	            markerall=[];
+                var USER = [
+                    {fbid: 1368219256528934},//
+                    {fbid: 10209718213332278},//
+                    {fbid: 10206918118379608},//
+                    {fbid: 1243414375723890},
+                    {fbid: 1274716662546111}
+                ];
 
-                for(var i =0;i<USER.length;i++){ 
-	                var getLatLng=USER[i].ig_pt.split(',');
-                    var myLatLng = new google.maps.LatLng(getLatLng[0], getLatLng[1]);
+               
+                for(var i =0,u;u=USER[i];i++){ 
+                    var myLatLng = new google.maps.LatLng(SwAK.rndFloat(23,25), SwAK.rndFloat(121,122));
+                    console.log(u.fbid);
                     var beachMarker = new google.maps.Marker({
                         position: myLatLng,
                         map: map,
-                        icon: image,
-                        title:USER[i].ig_pn,
-                        uid:i
+                        icon: 'https://graph.facebook.com/'+u.fbid+'/picture?height=50&width=50',
+                        title: 'vpon test',
+                        uid:u.fbid
                     });
-                    markerall[i]=beachMarker;
-                    var _x = i;
+                    // markerall[i]=beachMarker;
                     google.maps.event.addListener(beachMarker, 'click', function() {   
-                        console.log(this);     
+                        alert('hi');     
                     }); 
 
                     google.maps.event.addListener(beachMarker, 'mouseover', function() {
- 				        _ran=this.uid;
-				        clearTimeout(infowindowtime);
-				        if(infowindow){infowindow.close();}
-				        contentString = '<div style="position:absolute;width:130px;height:130px;overflow: hidden;transition:0.5s;z-index: 10001;top: 2px;left: 2px;cursor: pointer;" class="popbg"><img width="100%" src="'+USER[_ran].ig_ph+'" /></div>';
-			            infowindow = new google.maps.InfoWindow({
-                            content: contentString,
-                            disableAutoPan: true
-                        });
-
-				        google.maps.event.addListener(infowindow, 'domready', function() {
-				            var iwOuter = $('.gm-style-iw');
-				            var pw =iwOuter.find('.popbg img').width(),ph =iwOuter.find('.popbg img').height();
-                            if(pw>ph){
-                                iwOuter.find('.popbg img').css({height:'100%',width:'auto'});
-                            }
-                            var iwBackground = iwOuter.prev();
-                            iwBackground.children(':nth-child(2)').css({'display' : 'none'});
-                            iwBackground.children(':nth-child(4)').css({'display' : 'none'});
-                            iwBackground.css({top: '-14px'});
-                        });
-
-				        infowindow.open(map,markerall[_ran]);
-
-                        $('.popbg').click(function(){ 
-                            InfoWindowclick=true; 
-                            openinfo(_ran);
-                        })
- 
-				        setTimeout(function(){
-					        if(infowindow && !InfoWindowclick){
-						        infowindow.close();
-						        openinfo('no');
-						    }
-					    },5000);
+ 				        console.log(this);
                     });
                 }
             }
