@@ -110,10 +110,6 @@ var SwAK = (function(){
         // firefox
     }
 
-    function checkData(){
-        return _cData;
-    }
-
     function writeCookie(name, value, hours) {
         var date, expires;
         if (hours) {
@@ -185,7 +181,7 @@ var SwAK = (function(){
         param:param,                // url params => {input:(key), output:string}
         getURLdir:getURLdir,        // get url path => {input:null, output:string}
         isDorB : isDorB,            // check device/browser => {input:(key), output:boolean}
-        checkData: checkData,       // data regex => {input:(object), output:boolean}
+        cData: _cData,       // data regex => {input:(object), output:boolean}
 
         writeCookie : writeCookie,  // write cookie => {input:(name, value, hours), output:null}
         readCookie : readCookie,    // read cookie => {input:(name), output:string}
