@@ -12,7 +12,7 @@ var exec = require('child_process').exec;
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 var smtpTransport = nodemailer.createTransport(smtpTransport({
-    host : '10.0.4.12',
+    host : '127.0.0.1',
     port: 25
 }));
 

@@ -160,13 +160,13 @@
 
         window.onload = function(){
             //var svr="'http://"+window.location.href.replace("http://","").split("/")[0];;
-			socket = io.connect('192.168.168.123:20001',{'force new connection':true, 'reconnect':false});
-            //socket = io.connect('//cmp.vpadn.com', { path: '/fbprofile/socket.io',});
-	    // socket = io.connect('http://cmp.vpadn.com', {
-        //     //socket = io.connect('10.0.4.12:20001', { 
-        //         'path': '/fbprofile/socket.io',
-		// 'upgrade': false,
-        //     });
+			// socket = io.connect('192.168.168.123:20001',{'force new connection':true, 'reconnect':false});
+            socket = io.connect('//cmp.vpadn.com', { path: '/fbprofile/socket.io',});
+	        socket = io.connect('http://cmp.vpadn.com', {
+            //socket = io.connect('10.0.4.12:20001', { 
+                'path': '/fbprofile/socket.io',
+		        'upgrade': false,
+            });
             socket.on('welcome', function (data) {
                 isConnect=true;
                 socketID = data.socketId;
@@ -316,8 +316,8 @@
                     isFinal:true,
                 },
                 success: function (data, txtSataus) {
+                    console.log(data);
                     if(data.code == 0){
-                        console.log(data.imgUrl);
                         faceDetection(data.imgUrl);
                     }else{
                         alert(data.msg);
@@ -331,9 +331,12 @@
 
         var faceDetection = function (imgUrl) {
             var client = new FCClientJS('d25866759bbd42e49c21e6401ee6041d', '2918cb1b43a5428ba3d01c49f92d828e');
+
 			client.facesDetect(imgUrl, null, {detect_all_feature_points: true}, function(data){
                 $('#BTN_UploadPic').html('重新上傳照片');
                 $('#BTN_DLProfile').css({'display':'inline-block'}).html('動動大頭貼製作中');
+
+                console.log(data);
 
                 var picW = data.photos[0].width;
                 var picH = data.photos[0].height;
