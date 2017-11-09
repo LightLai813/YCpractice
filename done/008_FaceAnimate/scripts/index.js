@@ -25,13 +25,13 @@ var planeGeo;
 
 var emotionObj;
 
-// var socket = io.connect('192.168.168.159:20008', { 'force new connection': true, 'reconnect': true });
-var socket = io('https://cmp.vpadn.com', {
-    secure: true,
-    path: '/vponpoc1703emotiongif/socket.io',
-    upgrade: false,
-    transports: ['websocket']
-});
+var socket = io.connect('192.168.168.21:20008', { 'force new connection': true, 'reconnect': true });
+// var socket = io('https://cmp.vpadn.com', {
+//     secure: true,
+//     path: '/vponpoc1703emotiongif/socket.io',
+//     upgrade: false,
+//     transports: ['websocket']
+// });
 
 socket.on('GIFComplete', function (data) {
     $('#IMG_Result').attr('src','gif/' + data.imgID);

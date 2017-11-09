@@ -6,28 +6,28 @@ var mime = require('mime');
 var cport = 20008;
 
 /*----- test server ---------------*/
-// var http = require('http');
-// var server = http.createServer(app);
-// var io = require('socket.io')({
-// 	path: '/socket.io',
-// }).listen(server);
+var http = require('http');
+var server = http.createServer(app);
+var io = require('socket.io')({
+	path: '/socket.io',
+}).listen(server);
 
-// server.listen(cport, function () {
-//     console.log((new Date()) + ' ready on port ' + cport);
-// })
+server.listen(cport, function () {
+    console.log((new Date()) + ' ready on port ' + cport);
+})
 /*----- test server ---------------*/
 
 
 /*----- formal server ---------------*/
-var httpServer = app.listen(cport, function() {
-    console.log((new Date()) + ' ready on port ' + cport);
-});
+// var httpServer = app.listen(cport, function() {
+//     console.log((new Date()) + ' ready on port ' + cport);
+// });
 
-// socket io
-var io = require('socket.io')(httpServer, { path: '/socket.io' });
-var redis = require('socket.io-redis');
-// for socket.io cluster mode
-io.adapter(redis({ host: 'localhost', port: 6379 }));
+// // socket io
+// var io = require('socket.io')(httpServer, { path: '/socket.io' });
+// var redis = require('socket.io-redis');
+// // for socket.io cluster mode
+// io.adapter(redis({ host: 'localhost', port: 6379 }));
 /*----- formal server ---------------*/
 
 /***** 載入 css *****/
